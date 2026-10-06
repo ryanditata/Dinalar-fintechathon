@@ -1,0 +1,3806 @@
+[
+  {
+    "ticker": "AADI.JK",
+    "name": "Adaro Andalan Indonesia Tbk"
+  },
+  {
+    "ticker": "AALI.JK",
+    "name": "Astra Agro Lestari Tbk"
+  },
+  {
+    "ticker": "ABBA.JK",
+    "name": "Mahaka Media Tbk"
+  },
+  {
+    "ticker": "ABDA.JK",
+    "name": "Asuransi Bina Dana Arta Tbk"
+  },
+  {
+    "ticker": "ABMM.JK",
+    "name": "ABM Investama Tbk"
+  },
+  {
+    "ticker": "ACES.JK",
+    "name": "Aspirasi Hidup Indonesia Tbk"
+  },
+  {
+    "ticker": "ACRO.JK",
+    "name": "Samcro Hyosung Adilestari Tbk"
+  },
+  {
+    "ticker": "ACST.JK",
+    "name": "Acset Indonusa Tbk"
+  },
+  {
+    "ticker": "ADCP.JK",
+    "name": "Adhi Commuter Properti Tbk"
+  },
+  {
+    "ticker": "ADES.JK",
+    "name": "Akasha Wira International Tbk"
+  },
+  {
+    "ticker": "ADHI.JK",
+    "name": "Adhi Karya (Persero) Tbk"
+  },
+  {
+    "ticker": "ADMF.JK",
+    "name": "Adira Dinamika Multi Finance T"
+  },
+  {
+    "ticker": "ADMG.JK",
+    "name": "Polychem Indonesia Tbk"
+  },
+  {
+    "ticker": "ADMR.JK",
+    "name": "Adaro Minerals Indonesia Tbk"
+  },
+  {
+    "ticker": "ADRO.JK",
+    "name": "Alamtri Resources Indonesia Tb"
+  },
+  {
+    "ticker": "AEGS.JK",
+    "name": "Anugerah Spareparts Sejahtera"
+  },
+  {
+    "ticker": "AGAR.JK",
+    "name": "Asia Sejahtera Mina Tbk"
+  },
+  {
+    "ticker": "AGII.JK",
+    "name": "Samator Indo Gas Tbk"
+  },
+  {
+    "ticker": "AGRO.JK",
+    "name": "Bank Raya Indonesia Tbk"
+  },
+  {
+    "ticker": "AGRS.JK",
+    "name": "Bank IBK Indonesia Tbk"
+  },
+  {
+    "ticker": "AHAP.JK",
+    "name": "Asuransi Harta Aman Pratama Tb"
+  },
+  {
+    "ticker": "AIMS.JK",
+    "name": "Artha Mahiya Investama Tbk"
+  },
+  {
+    "ticker": "AISA.JK",
+    "name": "FKS Food Sejahtera Tbk"
+  },
+  {
+    "ticker": "AKKU.JK",
+    "name": "Anugerah Kagum Karya Utama Tbk"
+  },
+  {
+    "ticker": "AKPI.JK",
+    "name": "Argha Karya Prima Industry Tbk"
+  },
+  {
+    "ticker": "AKRA.JK",
+    "name": "AKR Corporindo Tbk"
+  },
+  {
+    "ticker": "AKSI.JK",
+    "name": "Mineral Sumberdaya Mandiri Tbk"
+  },
+  {
+    "ticker": "ALDO.JK",
+    "name": "Alkindo Naratama Tbk"
+  },
+  {
+    "ticker": "ALII.JK",
+    "name": "Ancara Logistics Indonesia Tbk"
+  },
+  {
+    "ticker": "ALKA.JK",
+    "name": "Alakasa Industrindo Tbk"
+  },
+  {
+    "ticker": "ALMI.JK",
+    "name": "Alumindo Light Metal Industry"
+  },
+  {
+    "ticker": "ALTO.JK",
+    "name": "Tri Banyan Tirta Tbk"
+  },
+  {
+    "ticker": "AMAG.JK",
+    "name": "Asuransi Multi Artha Guna Tbk"
+  },
+  {
+    "ticker": "AMAN.JK",
+    "name": "Makmur Berkah Amanda Tbk"
+  },
+  {
+    "ticker": "AMAR.JK",
+    "name": "Bank Amar Indonesia Tbk"
+  },
+  {
+    "ticker": "AMFG.JK",
+    "name": "Asahimas Flat Glass Tbk"
+  },
+  {
+    "ticker": "AMIN.JK",
+    "name": "Ateliers Mecaniques D Indonesi"
+  },
+  {
+    "ticker": "AMMN.JK",
+    "name": "Amman Mineral Internasional Tb"
+  },
+  {
+    "ticker": "AMMS.JK",
+    "name": "Agung Menjangan Mas Tbk"
+  },
+  {
+    "ticker": "AMOR.JK",
+    "name": "Ashmore Asset Management Indon"
+  },
+  {
+    "ticker": "AMRT.JK",
+    "name": "Sumber Alfaria Trijaya Tbk"
+  },
+  {
+    "ticker": "ANDI.JK",
+    "name": "Andira Agro Tbk"
+  },
+  {
+    "ticker": "ANJT.JK",
+    "name": "Austindo Nusantara Jaya Tbk"
+  },
+  {
+    "ticker": "ANTM.JK",
+    "name": "Aneka Tambang Tbk"
+  },
+  {
+    "ticker": "APEX.JK",
+    "name": "Apexindo Pratama Duta Tbk"
+  },
+  {
+    "ticker": "APIC.JK",
+    "name": "Pacific Strategic Financial Tb"
+  },
+  {
+    "ticker": "APII.JK",
+    "name": "Arita Prima Indonesia Tbk"
+  },
+  {
+    "ticker": "APLI.JK",
+    "name": "Asiaplast Industries Tbk"
+  },
+  {
+    "ticker": "APLN.JK",
+    "name": "Agung Podomoro Land Tbk"
+  },
+  {
+    "ticker": "ARCI.JK",
+    "name": "Archi Indonesia Tbk"
+  },
+  {
+    "ticker": "AREA.JK",
+    "name": "Dunia Virtual Online Tbk"
+  },
+  {
+    "ticker": "ARGO.JK",
+    "name": "Argo Pantes Tbk"
+  },
+  {
+    "ticker": "ARII.JK",
+    "name": "Atlas Resources Tbk"
+  },
+  {
+    "ticker": "ARKA.JK",
+    "name": "Arkha Jayanti Persada Tbk"
+  },
+  {
+    "ticker": "ARKO.JK",
+    "name": "Arkora Hydro Tbk"
+  },
+  {
+    "ticker": "ARMY.JK",
+    "name": "Armidian Karyatama Tbk"
+  },
+  {
+    "ticker": "ARNA.JK",
+    "name": "Arwana Citramulia Tbk"
+  },
+  {
+    "ticker": "ARTA.JK",
+    "name": "Arthavest Tbk"
+  },
+  {
+    "ticker": "ARTI.JK",
+    "name": "Ratu Prabu Energi Tbk"
+  },
+  {
+    "ticker": "ARTO.JK",
+    "name": "Bank Jago Tbk"
+  },
+  {
+    "ticker": "ASBI.JK",
+    "name": "Asuransi Bintang Tbk"
+  },
+  {
+    "ticker": "ASDM.JK",
+    "name": "Asuransi Dayin Mitra Tbk"
+  },
+  {
+    "ticker": "ASGR.JK",
+    "name": "Astra Graphia Tbk"
+  },
+  {
+    "ticker": "ASHA.JK",
+    "name": "Cilacap Samudera Fishing Indus"
+  },
+  {
+    "ticker": "ASII.JK",
+    "name": "Astra International Tbk"
+  },
+  {
+    "ticker": "ASJT.JK",
+    "name": "Asuransi Jasa Tania Tbk"
+  },
+  {
+    "ticker": "ASLC.JK",
+    "name": "Autopedia Sukses Lestari Tbk"
+  },
+  {
+    "ticker": "ASLI.JK",
+    "name": "Asri Karya Lestari Tbk"
+  },
+  {
+    "ticker": "ASMI.JK",
+    "name": "Asuransi Maximus Graha Persada"
+  },
+  {
+    "ticker": "ASPI.JK",
+    "name": "Andalan Sakti Primaindo Tbk"
+  },
+  {
+    "ticker": "ASRI.JK",
+    "name": "Alam Sutera Realty Tbk"
+  },
+  {
+    "ticker": "ASRM.JK",
+    "name": "Asuransi Ramayana Tbk"
+  },
+  {
+    "ticker": "ASSA.JK",
+    "name": "Adi Sarana Armada Tbk"
+  },
+  {
+    "ticker": "ATAP.JK",
+    "name": "Trimitra Prawara Goldland Tbk"
+  },
+  {
+    "ticker": "ATIC.JK",
+    "name": "Anabatic Technologies Tbk"
+  },
+  {
+    "ticker": "ATLA.JK",
+    "name": "Atlantis Subsea Indonesia Tbk"
+  },
+  {
+    "ticker": "AUTO.JK",
+    "name": "Astra Otoparts Tbk"
+  },
+  {
+    "ticker": "AVIA.JK",
+    "name": "Avia Avian Tbk"
+  },
+  {
+    "ticker": "AWAN.JK",
+    "name": "Era Digital Media Tbk"
+  },
+  {
+    "ticker": "AXIO.JK",
+    "name": "Tera Data Indonusa Tbk"
+  },
+  {
+    "ticker": "AYAM.JK",
+    "name": "Janu Putra Sejahtera Tbk"
+  },
+  {
+    "ticker": "AYLS.JK",
+    "name": "Agro Yasa Lestari Tbk"
+  },
+  {
+    "ticker": "BABP.JK",
+    "name": "Bank MNC Internasional Tbk"
+  },
+  {
+    "ticker": "BABY.JK",
+    "name": "Multitrend Indo Tbk"
+  },
+  {
+    "ticker": "BACA.JK",
+    "name": "Bank Capital Indonesia Tbk"
+  },
+  {
+    "ticker": "BAIK.JK",
+    "name": "Bersama Mencapai Puncak Tbk"
+  },
+  {
+    "ticker": "BAJA.JK",
+    "name": "Saranacentral Bajatama Tbk"
+  },
+  {
+    "ticker": "BALI.JK",
+    "name": "Bali Towerindo Sentra Tbk"
+  },
+  {
+    "ticker": "BANK.JK",
+    "name": "Bank Aladin Syariah Tbk"
+  },
+  {
+    "ticker": "BAPA.JK",
+    "name": "Bekasi Asri Pemula Tbk"
+  },
+  {
+    "ticker": "BAPI.JK",
+    "name": "Bhakti Agung Propertindo Tbk"
+  },
+  {
+    "ticker": "BATA.JK",
+    "name": "Sepatu Bata Tbk"
+  },
+  {
+    "ticker": "BATR.JK",
+    "name": "Benteng Api Technic Tbk"
+  },
+  {
+    "ticker": "BAUT.JK",
+    "name": "Mitra Angkasa Sejahtera Tbk"
+  },
+  {
+    "ticker": "BAYU.JK",
+    "name": "Bayu Buana Tbk"
+  },
+  {
+    "ticker": "BBCA.JK",
+    "name": "Bank Central Asia Tbk"
+  },
+  {
+    "ticker": "BBHI.JK",
+    "name": "Allo Bank Indonesia Tbk"
+  },
+  {
+    "ticker": "BBKP.JK",
+    "name": "Bank KB Bukopin Tbk"
+  },
+  {
+    "ticker": "BBLD.JK",
+    "name": "Buana Finance Tbk"
+  },
+  {
+    "ticker": "BBMD.JK",
+    "name": "Bank Mestika Dharma Tbk"
+  },
+  {
+    "ticker": "BBNI.JK",
+    "name": "Bank Negara Indonesia (Persero"
+  },
+  {
+    "ticker": "BBRI.JK",
+    "name": "Bank Rakyat Indonesia (Persero"
+  },
+  {
+    "ticker": "BBRM.JK",
+    "name": "Pelayaran Nasional Bina Buana"
+  },
+  {
+    "ticker": "BBSI.JK",
+    "name": "Krom Bank Indonesia Tbk"
+  },
+  {
+    "ticker": "BBSS.JK",
+    "name": "Bumi Benowo Sukses Sejahtera T"
+  },
+  {
+    "ticker": "BBTN.JK",
+    "name": "Bank Tabungan Negara (Persero)"
+  },
+  {
+    "ticker": "BBYB.JK",
+    "name": "Bank Neo Commerce Tbk"
+  },
+  {
+    "ticker": "BCAP.JK",
+    "name": "MNC Kapital Indonesia Tbk"
+  },
+  {
+    "ticker": "BCIC.JK",
+    "name": "Bank JTrust Indonesia Tbk"
+  },
+  {
+    "ticker": "BCIP.JK",
+    "name": "Bumi Citra Permai Tbk"
+  },
+  {
+    "ticker": "BDKR.JK",
+    "name": "Berdikari Pondasi Perkasa Tbk"
+  },
+  {
+    "ticker": "BDMN.JK",
+    "name": "Bank Danamon Indonesia Tbk"
+  },
+  {
+    "ticker": "BEBS.JK",
+    "name": "Berkah Beton Sadaya Tbk"
+  },
+  {
+    "ticker": "BEEF.JK",
+    "name": "Estika Tata Tiara Tbk"
+  },
+  {
+    "ticker": "BEER.JK",
+    "name": "Jobubu Jarum Minahasa Tbk"
+  },
+  {
+    "ticker": "BEKS.JK",
+    "name": "Bank Pembangunan Daerah Banten"
+  },
+  {
+    "ticker": "BELI.JK",
+    "name": "Global Digital Niaga Tbk"
+  },
+  {
+    "ticker": "BELL.JK",
+    "name": "Trisula Textile Industries Tbk"
+  },
+  {
+    "ticker": "BESS.JK",
+    "name": "Batulicin Nusantara Maritim Tb"
+  },
+  {
+    "ticker": "BEST.JK",
+    "name": "Bekasi Fajar Industrial Estate"
+  },
+  {
+    "ticker": "BFIN.JK",
+    "name": "BFI Finance  Indonesia Tbk"
+  },
+  {
+    "ticker": "BGTG.JK",
+    "name": "Bank Ganesha Tbk"
+  },
+  {
+    "ticker": "BHAT.JK",
+    "name": "Bhakti Multi Artha Tbk"
+  },
+  {
+    "ticker": "BHIT.JK",
+    "name": "MNC Asia Holding Tbk"
+  },
+  {
+    "ticker": "BIKA.JK",
+    "name": "Binakarya Jaya Abadi Tbk"
+  },
+  {
+    "ticker": "BIKE.JK",
+    "name": "Sepeda Bersama Indonesia Tbk"
+  },
+  {
+    "ticker": "BIMA.JK",
+    "name": "Primarindo Asia Infrastructure"
+  },
+  {
+    "ticker": "BINA.JK",
+    "name": "Bank Ina Perdana Tbk"
+  },
+  {
+    "ticker": "BINO.JK",
+    "name": "Perma Plasindo Tbk"
+  },
+  {
+    "ticker": "BIPI.JK",
+    "name": "Astrindo Nusantara Infrastrukt"
+  },
+  {
+    "ticker": "BIPP.JK",
+    "name": "Bhuwanatala Indah Permai Tbk"
+  },
+  {
+    "ticker": "BIRD.JK",
+    "name": "Blue Bird Tbk"
+  },
+  {
+    "ticker": "BISI.JK",
+    "name": "BISI International Tbk"
+  },
+  {
+    "ticker": "BJBR.JK",
+    "name": "Bank Pembangunan Daerah Jawa B"
+  },
+  {
+    "ticker": "BJTM.JK",
+    "name": "Bank Pembangunan Daerah Jawa T"
+  },
+  {
+    "ticker": "BKDP.JK",
+    "name": "Bukit Darmo Property Tbk"
+  },
+  {
+    "ticker": "BKSL.JK",
+    "name": "Sentul City Tbk"
+  },
+  {
+    "ticker": "BKSW.JK",
+    "name": "Bank QNB Indonesia Tbk"
+  },
+  {
+    "ticker": "BLES.JK",
+    "name": "Superior Prima Sukses Tbk"
+  },
+  {
+    "ticker": "BLTA.JK",
+    "name": "Berlian Laju Tanker Tbk"
+  },
+  {
+    "ticker": "BLTZ.JK",
+    "name": "Graha Layar Prima Tbk"
+  },
+  {
+    "ticker": "BLUE.JK",
+    "name": "Berkah Prima Perkasa Tbk"
+  },
+  {
+    "ticker": "BMAS.JK",
+    "name": "Bank Maspion Indonesia Tbk"
+  },
+  {
+    "ticker": "BMBL.JK",
+    "name": "Lavender Bina Cendikia Tbk"
+  },
+  {
+    "ticker": "BMHS.JK",
+    "name": "Bundamedik Tbk"
+  },
+  {
+    "ticker": "BMRI.JK",
+    "name": "Bank Mandiri (Persero) Tbk"
+  },
+  {
+    "ticker": "BMSR.JK",
+    "name": "Bintang Mitra Semestaraya Tbk"
+  },
+  {
+    "ticker": "BMTR.JK",
+    "name": "Global Mediacom Tbk"
+  },
+  {
+    "ticker": "BNBA.JK",
+    "name": "Bank Bumi Arta Tbk"
+  },
+  {
+    "ticker": "BNBR.JK",
+    "name": "Bakrie & Brothers Tbk"
+  },
+  {
+    "ticker": "BNGA.JK",
+    "name": "Bank CIMB Niaga Tbk"
+  },
+  {
+    "ticker": "BNII.JK",
+    "name": "Bank Maybank Indonesia Tbk"
+  },
+  {
+    "ticker": "BNLI.JK",
+    "name": "Bank Permata Tbk"
+  },
+  {
+    "ticker": "BOAT.JK",
+    "name": "Newport Marine Services Tbk"
+  },
+  {
+    "ticker": "BOBA.JK",
+    "name": "Formosa Ingredient Factory Tbk"
+  },
+  {
+    "ticker": "BOGA.JK",
+    "name": "Bintang Oto Global Tbk"
+  },
+  {
+    "ticker": "BOLA.JK",
+    "name": "Bali Bintang Sejahtera Tbk"
+  },
+  {
+    "ticker": "BOLT.JK",
+    "name": "Garuda Metalindo Tbk"
+  },
+  {
+    "ticker": "BOSS.JK",
+    "name": "Borneo Olah Sarana Sukses Tbk"
+  },
+  {
+    "ticker": "BPFI.JK",
+    "name": "Woori Finance Indonesia Tbk"
+  },
+  {
+    "ticker": "BPII.JK",
+    "name": "Batavia Prosperindo Internasio"
+  },
+  {
+    "ticker": "BPTR.JK",
+    "name": "Batavia Prosperindo Trans Tbk"
+  },
+  {
+    "ticker": "BRAM.JK",
+    "name": "Indo Kordsa Tbk"
+  },
+  {
+    "ticker": "BREN.JK",
+    "name": "Barito Renewables Energy Tbk"
+  },
+  {
+    "ticker": "BRIS.JK",
+    "name": "Bank Syariah Indonesia Tbk"
+  },
+  {
+    "ticker": "BRMS.JK",
+    "name": "Bumi Resources Minerals Tbk"
+  },
+  {
+    "ticker": "BRNA.JK",
+    "name": "Berlina Tbk"
+  },
+  {
+    "ticker": "BRPT.JK",
+    "name": "Barito Pacific Tbk"
+  },
+  {
+    "ticker": "BRRC.JK",
+    "name": "Raja Roti Cemerlang Tbk"
+  },
+  {
+    "ticker": "BSBK.JK",
+    "name": "Wulandari Bangun Laksana Tbk"
+  },
+  {
+    "ticker": "BSDE.JK",
+    "name": "Bumi Serpong Damai Tbk"
+  },
+  {
+    "ticker": "BSIM.JK",
+    "name": "Bank Sinarmas Tbk"
+  },
+  {
+    "ticker": "BSML.JK",
+    "name": "Bintang Samudera Mandiri Lines"
+  },
+  {
+    "ticker": "BSSR.JK",
+    "name": "Baramulti Suksessarana Tbk"
+  },
+  {
+    "ticker": "BSWD.JK",
+    "name": "Bank Of India Indonesia Tbk"
+  },
+  {
+    "ticker": "BTEK.JK",
+    "name": "Bumi Teknokultura Unggul Tbk"
+  },
+  {
+    "ticker": "BTEL.JK",
+    "name": "Bakrie Telecom Tbk"
+  },
+  {
+    "ticker": "BTON.JK",
+    "name": "Betonjaya Manunggal Tbk"
+  },
+  {
+    "ticker": "BTPN.JK",
+    "name": "Bank SMBC Indonesia Tbk"
+  },
+  {
+    "ticker": "BTPS.JK",
+    "name": "Bank BTPN Syariah Tbk"
+  },
+  {
+    "ticker": "BUAH.JK",
+    "name": "Segar Kumala Indonesia Tbk"
+  },
+  {
+    "ticker": "BUDI.JK",
+    "name": "Budi Starch & Sweetener Tbk"
+  },
+  {
+    "ticker": "BUKA.JK",
+    "name": "Bukalapak.com Tbk"
+  },
+  {
+    "ticker": "BUKK.JK",
+    "name": "Bukaka Teknik Utama Tbk"
+  },
+  {
+    "ticker": "BULL.JK",
+    "name": "Buana Lintas Lautan Tbk"
+  },
+  {
+    "ticker": "BUMI.JK",
+    "name": "Bumi Resources Tbk"
+  },
+  {
+    "ticker": "BUVA.JK",
+    "name": "Bukit Uluwatu Villa Tbk"
+  },
+  {
+    "ticker": "BVIC.JK",
+    "name": "Bank Victoria International Tb"
+  },
+  {
+    "ticker": "BWPT.JK",
+    "name": "Eagle High Plantations Tbk"
+  },
+  {
+    "ticker": "BYAN.JK",
+    "name": "Bayan Resources Tbk"
+  },
+  {
+    "ticker": "CAKK.JK",
+    "name": "Cahayaputra Asa Keramik Tbk"
+  },
+  {
+    "ticker": "CAMP.JK",
+    "name": "Campina Ice Cream Industry Tbk"
+  },
+  {
+    "ticker": "CANI.JK",
+    "name": "Capitol Nusantara Indonesia Tb"
+  },
+  {
+    "ticker": "CARE.JK",
+    "name": "Metro Healthcare Indonesia Tbk"
+  },
+  {
+    "ticker": "CARS.JK",
+    "name": "Industri dan Perdagangan Bintr"
+  },
+  {
+    "ticker": "CASA.JK",
+    "name": "Capital Financial Indonesia Tb"
+  },
+  {
+    "ticker": "CASH.JK",
+    "name": "Cashlez Worldwide Indonesia Tb"
+  },
+  {
+    "ticker": "CASS.JK",
+    "name": "Cardig Aero Services Tbk"
+  },
+  {
+    "ticker": "CBDK.JK",
+    "name": "Bangun Kosambi Sukses Tbk"
+  },
+  {
+    "ticker": "CBMF.JK",
+    "name": "Cahaya Bintang Medan Tbk"
+  },
+  {
+    "ticker": "CBPE.JK",
+    "name": "Citra Buana Prasida Tbk"
+  },
+  {
+    "ticker": "CBRE.JK",
+    "name": "Cakra Buana Resources Energi T"
+  },
+  {
+    "ticker": "CBUT.JK",
+    "name": "Citra Borneo Utama Tbk"
+  },
+  {
+    "ticker": "CCSI.JK",
+    "name": "Communication Cable Systems In"
+  },
+  {
+    "ticker": "CEKA.JK",
+    "name": "Wilmar Cahaya Indonesia Tbk"
+  },
+  {
+    "ticker": "CENT.JK",
+    "name": "Centratama Telekomunikasi Indo"
+  },
+  {
+    "ticker": "CFIN.JK",
+    "name": "Clipan Finance Indonesia Tbk"
+  },
+  {
+    "ticker": "CGAS.JK",
+    "name": "Citra Nusantara Gemilang Tbk"
+  },
+  {
+    "ticker": "CHEM.JK",
+    "name": "Chemstar Indonesia Tbk"
+  },
+  {
+    "ticker": "CHIP.JK",
+    "name": "Pelita Teknologi Global Tbk"
+  },
+  {
+    "ticker": "CINT.JK",
+    "name": "Chitose Internasional Tbk"
+  },
+  {
+    "ticker": "CITA.JK",
+    "name": "Cita Mineral Investindo Tbk"
+  },
+  {
+    "ticker": "CITY.JK",
+    "name": "Natura City Developments Tbk"
+  },
+  {
+    "ticker": "CLAY.JK",
+    "name": "Citra Putra Realty Tbk"
+  },
+  {
+    "ticker": "CLEO.JK",
+    "name": "Sariguna Primatirta Tbk"
+  },
+  {
+    "ticker": "CLPI.JK",
+    "name": "Colorpak Indonesia Tbk"
+  },
+  {
+    "ticker": "CMNP.JK",
+    "name": "Citra Marga Nusaphala Persada"
+  },
+  {
+    "ticker": "CMNT.JK",
+    "name": "Cemindo Gemilang Tbk"
+  },
+  {
+    "ticker": "CMPP.JK",
+    "name": "AirAsia Indonesia Tbk"
+  },
+  {
+    "ticker": "CMRY.JK",
+    "name": "Cisarua Mountain Dairy Tbk"
+  },
+  {
+    "ticker": "CNKO.JK",
+    "name": "Exploitasi Energi Indonesia Tb"
+  },
+  {
+    "ticker": "CNMA.JK",
+    "name": "Nusantara Sejahtera Raya Tbk"
+  },
+  {
+    "ticker": "CNTX.JK",
+    "name": "Century Textile Industry Tbk"
+  },
+  {
+    "ticker": "COAL.JK",
+    "name": "Black Diamond Resources Tbk"
+  },
+  {
+    "ticker": "COCO.JK",
+    "name": "Wahana Interfood Nusantara Tbk"
+  },
+  {
+    "ticker": "COWL.JK",
+    "name": "Cowell Development Tbk"
+  },
+  {
+    "ticker": "CPIN.JK",
+    "name": "Charoen Pokphand Indonesia Tbk"
+  },
+  {
+    "ticker": "CPRI.JK",
+    "name": "Capri Nusa Satu Properti Tbk"
+  },
+  {
+    "ticker": "CPRO.JK",
+    "name": "Central Proteina Prima Tbk"
+  },
+  {
+    "ticker": "CRAB.JK",
+    "name": "Toba Surimi Industries Tbk"
+  },
+  {
+    "ticker": "CRSN.JK",
+    "name": "Carsurin Tbk"
+  },
+  {
+    "ticker": "CSAP.JK",
+    "name": "Catur Sentosa Adiprana Tbk"
+  },
+  {
+    "ticker": "CSIS.JK",
+    "name": "Cahayasakti Investindo Sukses"
+  },
+  {
+    "ticker": "CSMI.JK",
+    "name": "Cipta Selera Murni Tbk"
+  },
+  {
+    "ticker": "CSRA.JK",
+    "name": "Cisadane Sawit Raya Tbk"
+  },
+  {
+    "ticker": "CTBN.JK",
+    "name": "Citra Tubindo Tbk"
+  },
+  {
+    "ticker": "CTRA.JK",
+    "name": "Ciputra Development Tbk"
+  },
+  {
+    "ticker": "CTTH.JK",
+    "name": "Citatah Tbk"
+  },
+  {
+    "ticker": "CUAN.JK",
+    "name": "Petrindo Jaya Kreasi Tbk"
+  },
+  {
+    "ticker": "CYBR.JK",
+    "name": "ITSEC Asia Tbk"
+  },
+  {
+    "ticker": "DAAZ.JK",
+    "name": "Daaz Bara Lestari Tbk"
+  },
+  {
+    "ticker": "DADA.JK",
+    "name": "Diamond Citra Propertindo Tbk"
+  },
+  {
+    "ticker": "DART.JK",
+    "name": "Duta Anggada Realty Tbk"
+  },
+  {
+    "ticker": "DATA.JK",
+    "name": "Remala Abadi Tbk"
+  },
+  {
+    "ticker": "DAYA.JK",
+    "name": "Duta Intidaya Tbk"
+  },
+  {
+    "ticker": "DCII.JK",
+    "name": "DCI Indonesia Tbk"
+  },
+  {
+    "ticker": "DEAL.JK",
+    "name": "Dewata Freightinternational Tb"
+  },
+  {
+    "ticker": "DEFI.JK",
+    "name": "Danasupra Erapacific Tbk"
+  },
+  {
+    "ticker": "DEPO.JK",
+    "name": "Caturkarda Depo Bangunan Tbk"
+  },
+  {
+    "ticker": "DEWA.JK",
+    "name": "Darma Henwa Tbk"
+  },
+  {
+    "ticker": "DEWI.JK",
+    "name": "Dewi Shri Farmindo Tbk"
+  },
+  {
+    "ticker": "DFAM.JK",
+    "name": "Dafam Property Indonesia Tbk"
+  },
+  {
+    "ticker": "DGIK.JK",
+    "name": "Nusa Konstruksi Enjiniring Tbk"
+  },
+  {
+    "ticker": "DGNS.JK",
+    "name": "Diagnos Laboratorium Utama Tbk"
+  },
+  {
+    "ticker": "DGWG.JK",
+    "name": "Delta Giri Wacana Tbk"
+  },
+  {
+    "ticker": "DIGI.JK",
+    "name": "Arkadia Digital Media Tbk"
+  },
+  {
+    "ticker": "DILD.JK",
+    "name": "Intiland Development Tbk"
+  },
+  {
+    "ticker": "DIVA.JK",
+    "name": "Distribusi Voucher Nusantara T"
+  },
+  {
+    "ticker": "DKFT.JK",
+    "name": "Central Omega Resources Tbk"
+  },
+  {
+    "ticker": "DLTA.JK",
+    "name": "Delta Djakarta Tbk"
+  },
+  {
+    "ticker": "DMAS.JK",
+    "name": "Puradelta Lestari Tbk"
+  },
+  {
+    "ticker": "DMMX.JK",
+    "name": "Digital Mediatama Maxima Tbk"
+  },
+  {
+    "ticker": "DMND.JK",
+    "name": "Diamond Food Indonesia Tbk"
+  },
+  {
+    "ticker": "DNAR.JK",
+    "name": "Bank Oke Indonesia Tbk"
+  },
+  {
+    "ticker": "DNET.JK",
+    "name": "Indoritel Makmur Internasional"
+  },
+  {
+    "ticker": "DOID.JK",
+    "name": "Delta Dunia Makmur Tbk"
+  },
+  {
+    "ticker": "DOOH.JK",
+    "name": "Era Media Sejahtera Tbk"
+  },
+  {
+    "ticker": "DOSS.JK",
+    "name": "Global Sukses Digital Tbk"
+  },
+  {
+    "ticker": "DPNS.JK",
+    "name": "Duta Pertiwi Nusantara Tbk"
+  },
+  {
+    "ticker": "DPUM.JK",
+    "name": "Dua Putra Utama Makmur Tbk"
+  },
+  {
+    "ticker": "DRMA.JK",
+    "name": "Dharma Polimetal Tbk"
+  },
+  {
+    "ticker": "DSFI.JK",
+    "name": "Dharma Samudera Fishing Indust"
+  },
+  {
+    "ticker": "DSNG.JK",
+    "name": "Dharma Satya Nusantara Tbk"
+  },
+  {
+    "ticker": "DSSA.JK",
+    "name": "Dian Swastatika Sentosa Tbk"
+  },
+  {
+    "ticker": "DUCK.JK",
+    "name": "Jaya Bersama Indo Tbk"
+  },
+  {
+    "ticker": "DUTI.JK",
+    "name": "Duta Pertiwi Tbk"
+  },
+  {
+    "ticker": "DVLA.JK",
+    "name": "Darya-Varia Laboratoria Tbk"
+  },
+  {
+    "ticker": "DWGL.JK",
+    "name": "Dwi Guna Laksana Tbk"
+  },
+  {
+    "ticker": "DYAN.JK",
+    "name": "Dyandra Media International Tb"
+  },
+  {
+    "ticker": "EAST.JK",
+    "name": "Eastparc Hotel Tbk"
+  },
+  {
+    "ticker": "ECII.JK",
+    "name": "Electronic City Indonesia Tbk"
+  },
+  {
+    "ticker": "EDGE.JK",
+    "name": "Indointernet Tbk"
+  },
+  {
+    "ticker": "EKAD.JK",
+    "name": "Ekadharma International Tbk"
+  },
+  {
+    "ticker": "ELIT.JK",
+    "name": "Data Sinergitama Jaya Tbk"
+  },
+  {
+    "ticker": "ELPI.JK",
+    "name": "Pelayaran Nasional Ekalya Purn"
+  },
+  {
+    "ticker": "ELSA.JK",
+    "name": "Elnusa Tbk"
+  },
+  {
+    "ticker": "ELTY.JK",
+    "name": "Bakrieland Development Tbk"
+  },
+  {
+    "ticker": "EMDE.JK",
+    "name": "Megapolitan Developments Tbk"
+  },
+  {
+    "ticker": "EMTK.JK",
+    "name": "Elang Mahkota Teknologi Tbk"
+  },
+  {
+    "ticker": "ENAK.JK",
+    "name": "Champ Resto Indonesia Tbk"
+  },
+  {
+    "ticker": "ENRG.JK",
+    "name": "Energi Mega Persada Tbk"
+  },
+  {
+    "ticker": "ENVY.JK",
+    "name": "Envy Technologies Indonesia Tb"
+  },
+  {
+    "ticker": "ENZO.JK",
+    "name": "Morenzo Abadi Perkasa Tbk"
+  },
+  {
+    "ticker": "EPAC.JK",
+    "name": "Megalestari Epack Sentosaraya"
+  },
+  {
+    "ticker": "EPMT.JK",
+    "name": "Enseval Putera Megatrading Tbk"
+  },
+  {
+    "ticker": "ERAA.JK",
+    "name": "Erajaya Swasembada Tbk"
+  },
+  {
+    "ticker": "ERAL.JK",
+    "name": "Sinar Eka Selaras Tbk"
+  },
+  {
+    "ticker": "ERTX.JK",
+    "name": "Eratex Djaja Tbk"
+  },
+  {
+    "ticker": "ESIP.JK",
+    "name": "Sinergi Inti Plastindo Tbk"
+  },
+  {
+    "ticker": "ESSA.JK",
+    "name": "ESSA Industries Indonesia Tbk"
+  },
+  {
+    "ticker": "ESTA.JK",
+    "name": "Esta Multi Usaha Tbk"
+  },
+  {
+    "ticker": "ESTI.JK",
+    "name": "Ever Shine Tex Tbk"
+  },
+  {
+    "ticker": "ETWA.JK",
+    "name": "Eterindo Wahanatama Tbk"
+  },
+  {
+    "ticker": "EURO.JK",
+    "name": "Estee Gold Feet Tbk"
+  },
+  {
+    "ticker": "EXCL.JK",
+    "name": "XL Axiata Tbk"
+  },
+  {
+    "ticker": "FAPA.JK",
+    "name": "FAP Agri Tbk"
+  },
+  {
+    "ticker": "FAST.JK",
+    "name": "Fast Food Indonesia Tbk"
+  },
+  {
+    "ticker": "FASW.JK",
+    "name": "Fajar Surya Wisesa Tbk"
+  },
+  {
+    "ticker": "FILM.JK",
+    "name": "MD Entertainment Tbk"
+  },
+  {
+    "ticker": "FIMP.JK",
+    "name": "Fimperkasa Utama Tbk"
+  },
+  {
+    "ticker": "FIRE.JK",
+    "name": "Alfa Energi Investama Tbk"
+  },
+  {
+    "ticker": "FISH.JK",
+    "name": "FKS Multi Agro Tbk"
+  },
+  {
+    "ticker": "FITT.JK",
+    "name": "Hotel Fitra International Tbk"
+  },
+  {
+    "ticker": "FLMC.JK",
+    "name": "Falmaco Nonwoven Industri Tbk"
+  },
+  {
+    "ticker": "FMII.JK",
+    "name": "Fortune Mate Indonesia Tbk"
+  },
+  {
+    "ticker": "FOLK.JK",
+    "name": "Multi Garam Utama Tbk"
+  },
+  {
+    "ticker": "FOOD.JK",
+    "name": "Sentra Food Indonesia Tbk"
+  },
+  {
+    "ticker": "FORU.JK",
+    "name": "Fortune Indonesia Tbk"
+  },
+  {
+    "ticker": "FORZ.JK",
+    "name": "Forza Land Indonesia Tbk"
+  },
+  {
+    "ticker": "FPNI.JK",
+    "name": "Lotte Chemical Titan Tbk"
+  },
+  {
+    "ticker": "FREN.JK",
+    "name": "Smartfren Telecom Tbk"
+  },
+  {
+    "ticker": "FUJI.JK",
+    "name": "Fuji Finance Indonesia Tbk"
+  },
+  {
+    "ticker": "FUTR.JK",
+    "name": "Lini Imaji Kreasi Ekosistem Tb"
+  },
+  {
+    "ticker": "FWCT.JK",
+    "name": "Wijaya Cahaya Timber Tbk"
+  },
+  {
+    "ticker": "GAMA.JK",
+    "name": "Aksara Global Development Tbk"
+  },
+  {
+    "ticker": "GDST.JK",
+    "name": "Gunawan Dianjaya Steel Tbk"
+  },
+  {
+    "ticker": "GDYR.JK",
+    "name": "Goodyear Indonesia Tbk"
+  },
+  {
+    "ticker": "GEMA.JK",
+    "name": "Gema Grahasarana Tbk"
+  },
+  {
+    "ticker": "GEMS.JK",
+    "name": "Golden Energy Mines Tbk"
+  },
+  {
+    "ticker": "GGRM.JK",
+    "name": "Gudang Garam Tbk"
+  },
+  {
+    "ticker": "GGRP.JK",
+    "name": "Gunung Raja Paksi Tbk"
+  },
+  {
+    "ticker": "GHON.JK",
+    "name": "Gihon Telekomunikasi Indonesia"
+  },
+  {
+    "ticker": "GIAA.JK",
+    "name": "Garuda Indonesia (Persero) Tbk"
+  },
+  {
+    "ticker": "GJTL.JK",
+    "name": "Gajah Tunggal Tbk"
+  },
+  {
+    "ticker": "GLOB.JK",
+    "name": "Globe Kita Terang Tbk"
+  },
+  {
+    "ticker": "GLVA.JK",
+    "name": "Galva Technologies Tbk"
+  },
+  {
+    "ticker": "GMFI.JK",
+    "name": "Garuda Maintenance Facility Ae"
+  },
+  {
+    "ticker": "GMTD.JK",
+    "name": "Gowa Makassar Tourism Developm"
+  },
+  {
+    "ticker": "GOLD.JK",
+    "name": "Visi Telekomunikasi Infrastruk"
+  },
+  {
+    "ticker": "GOLF.JK",
+    "name": "Intra Golflink Resorts Tbk"
+  },
+  {
+    "ticker": "GOLL.JK",
+    "name": "Golden Plantation Tbk"
+  },
+  {
+    "ticker": "GOOD.JK",
+    "name": "Garudafood Putra Putri Jaya Tb"
+  },
+  {
+    "ticker": "GOTO.JK",
+    "name": "GoTo Gojek Tokopedia Tbk"
+  },
+  {
+    "ticker": "GPRA.JK",
+    "name": "Perdana Gapuraprima Tbk"
+  },
+  {
+    "ticker": "GPSO.JK",
+    "name": "Geoprima Solusi Tbk"
+  },
+  {
+    "ticker": "GRIA.JK",
+    "name": "Ingria Pratama Capitalindo Tbk"
+  },
+  {
+    "ticker": "GRPH.JK",
+    "name": "Griptha Putra Persada Tbk"
+  },
+  {
+    "ticker": "GRPM.JK",
+    "name": "Graha Prima Mentari Tbk"
+  },
+  {
+    "ticker": "GSMF.JK",
+    "name": "Equity Development Investment"
+  },
+  {
+    "ticker": "GTBO.JK",
+    "name": "Garda Tujuh Buana Tbk"
+  },
+  {
+    "ticker": "GTRA.JK",
+    "name": "Grahaprima Suksesmandiri Tbk"
+  },
+  {
+    "ticker": "GTSI.JK",
+    "name": "GTS Internasional Tbk"
+  },
+  {
+    "ticker": "GULA.JK",
+    "name": "Aman Agrindo Tbk"
+  },
+  {
+    "ticker": "GUNA.JK",
+    "name": "Gunanusa Eramandiri Tbk"
+  },
+  {
+    "ticker": "GWSA.JK",
+    "name": "Greenwood Sejahtera Tbk"
+  },
+  {
+    "ticker": "GZCO.JK",
+    "name": "Gozco Plantations Tbk"
+  },
+  {
+    "ticker": "HADE.JK",
+    "name": "Himalaya Energi Perkasa Tbk"
+  },
+  {
+    "ticker": "HAIS.JK",
+    "name": "Hasnur Internasional Shipping"
+  },
+  {
+    "ticker": "HAJJ.JK",
+    "name": "Arsy Buana Travelindo Tbk"
+  },
+  {
+    "ticker": "HALO.JK",
+    "name": "Haloni Jane Tbk"
+  },
+  {
+    "ticker": "HATM.JK",
+    "name": "Habco Trans Maritima Tbk"
+  },
+  {
+    "ticker": "HBAT.JK",
+    "name": "Minahasa Membangun Hebat Tbk"
+  },
+  {
+    "ticker": "HDFA.JK",
+    "name": "Radana Bhaskara Finance Tbk"
+  },
+  {
+    "ticker": "HDIT.JK",
+    "name": "Hensel Davest Indonesia Tbk"
+  },
+  {
+    "ticker": "HDTX.JK",
+    "name": "Panasia Indo Resources Tbk"
+  },
+  {
+    "ticker": "HEAL.JK",
+    "name": "Medikaloka Hermina Tbk"
+  },
+  {
+    "ticker": "HELI.JK",
+    "name": "Jaya Trishindo Tbk"
+  },
+  {
+    "ticker": "HERO.JK",
+    "name": "DFI Retail Nusantara Tbk"
+  },
+  {
+    "ticker": "HEXA.JK",
+    "name": "Hexindo Adiperkasa Tbk"
+  },
+  {
+    "ticker": "HGII.JK",
+    "name": "Hero Global Investment Tbk"
+  },
+  {
+    "ticker": "HILL.JK",
+    "name": "Hillcon Tbk"
+  },
+  {
+    "ticker": "HITS.JK",
+    "name": "Humpuss Intermoda Transportasi"
+  },
+  {
+    "ticker": "HKMU.JK",
+    "name": "HK Metals Utama Tbk"
+  },
+  {
+    "ticker": "HMSP.JK",
+    "name": "H.M. Sampoerna Tbk"
+  },
+  {
+    "ticker": "HOKI.JK",
+    "name": "Buyung Poetra Sembada Tbk"
+  },
+  {
+    "ticker": "HOME.JK",
+    "name": "Hotel Mandarine Regency Tbk"
+  },
+  {
+    "ticker": "HOMI.JK",
+    "name": "Grand House Mulia Tbk"
+  },
+  {
+    "ticker": "HOPE.JK",
+    "name": "Harapan Duta Pertiwi Tbk"
+  },
+  {
+    "ticker": "HOTL.JK",
+    "name": "Saraswati Griya Lestari Tbk"
+  },
+  {
+    "ticker": "HRME.JK",
+    "name": "Menteng Heritage Realty Tbk"
+  },
+  {
+    "ticker": "HRTA.JK",
+    "name": "Hartadinata Abadi Tbk"
+  },
+  {
+    "ticker": "HRUM.JK",
+    "name": "Harum Energy Tbk"
+  },
+  {
+    "ticker": "HUMI.JK",
+    "name": "Humpuss Maritim Internasional"
+  },
+  {
+    "ticker": "HYGN.JK",
+    "name": "Ecocare Indo Pasifik Tbk"
+  },
+  {
+    "ticker": "IATA.JK",
+    "name": "MNC Energy Investments Tbk"
+  },
+  {
+    "ticker": "IBFN.JK",
+    "name": "Intan Baru Prana Tbk"
+  },
+  {
+    "ticker": "IBOS.JK",
+    "name": "Indo Boga Sukses Tbk"
+  },
+  {
+    "ticker": "IBST.JK",
+    "name": "Inti Bangun Sejahtera Tbk"
+  },
+  {
+    "ticker": "ICBP.JK",
+    "name": "Indofood CBP Sukses Makmur Tbk"
+  },
+  {
+    "ticker": "ICON.JK",
+    "name": "Island Concepts Indonesia Tbk"
+  },
+  {
+    "ticker": "IDEA.JK",
+    "name": "Idea Indonesia Akademi Tbk"
+  },
+  {
+    "ticker": "IDPR.JK",
+    "name": "Indonesia Pondasi Raya Tbk"
+  },
+  {
+    "ticker": "IFII.JK",
+    "name": "Indonesia Fibreboard Industry"
+  },
+  {
+    "ticker": "IFSH.JK",
+    "name": "Ifishdeco Tbk"
+  },
+  {
+    "ticker": "IGAR.JK",
+    "name": "Champion Pacific Indonesia Tbk"
+  },
+  {
+    "ticker": "IIKP.JK",
+    "name": "Inti Agri Resources Tbk"
+  },
+  {
+    "ticker": "IKAI.JK",
+    "name": "Intikeramik Alamasri Industri"
+  },
+  {
+    "ticker": "IKAN.JK",
+    "name": "Era Mandiri Cemerlang Tbk"
+  },
+  {
+    "ticker": "IKBI.JK",
+    "name": "Sumi Indo Kabel Tbk"
+  },
+  {
+    "ticker": "IKPM.JK",
+    "name": "Ikapharmindo Putramas Tbk"
+  },
+  {
+    "ticker": "IMAS.JK",
+    "name": "Indomobil Sukses Internasional"
+  },
+  {
+    "ticker": "IMJS.JK",
+    "name": "Indomobil Multi Jasa Tbk"
+  },
+  {
+    "ticker": "IMPC.JK",
+    "name": "Impack Pratama Industri Tbk"
+  },
+  {
+    "ticker": "INAF.JK",
+    "name": "Indofarma Tbk"
+  },
+  {
+    "ticker": "INAI.JK",
+    "name": "Indal Aluminium Industry Tbk"
+  },
+  {
+    "ticker": "INCF.JK",
+    "name": "Indo Komoditi Korpora Tbk"
+  },
+  {
+    "ticker": "INCI.JK",
+    "name": "Intanwijaya Internasional Tbk"
+  },
+  {
+    "ticker": "INCO.JK",
+    "name": "Vale Indonesia Tbk"
+  },
+  {
+    "ticker": "INDF.JK",
+    "name": "Indofood Sukses Makmur Tbk"
+  },
+  {
+    "ticker": "INDO.JK",
+    "name": "Royalindo Investa Wijaya Tbk"
+  },
+  {
+    "ticker": "INDR.JK",
+    "name": "Indo-Rama Synthetics Tbk"
+  },
+  {
+    "ticker": "INDS.JK",
+    "name": "Indospring Tbk"
+  },
+  {
+    "ticker": "INDX.JK",
+    "name": "Tanah Laut Tbk"
+  },
+  {
+    "ticker": "INDY.JK",
+    "name": "Indika Energy Tbk"
+  },
+  {
+    "ticker": "INET.JK",
+    "name": "Sinergi Inti Andalan Prima Tbk"
+  },
+  {
+    "ticker": "INKP.JK",
+    "name": "Indah Kiat Pulp & Paper Tbk"
+  },
+  {
+    "ticker": "INOV.JK",
+    "name": "Inocycle Technology Group Tbk"
+  },
+  {
+    "ticker": "INPC.JK",
+    "name": "Bank Artha Graha Internasional"
+  },
+  {
+    "ticker": "INPP.JK",
+    "name": "Indonesian Paradise Property T"
+  },
+  {
+    "ticker": "INPS.JK",
+    "name": "Indah Prakasa Sentosa Tbk"
+  },
+  {
+    "ticker": "INRU.JK",
+    "name": "Toba Pulp Lestari Tbk"
+  },
+  {
+    "ticker": "INTA.JK",
+    "name": "Intraco Penta Tbk"
+  },
+  {
+    "ticker": "INTD.JK",
+    "name": "Inter Delta Tbk"
+  },
+  {
+    "ticker": "INTP.JK",
+    "name": "Indocement Tunggal Prakarsa Tb"
+  },
+  {
+    "ticker": "IOTF.JK",
+    "name": "Sumber Sinergi Makmur Tbk"
+  },
+  {
+    "ticker": "IPAC.JK",
+    "name": "Era Graharealty Tbk"
+  },
+  {
+    "ticker": "IPCC.JK",
+    "name": "Indonesia Kendaraan Terminal T"
+  },
+  {
+    "ticker": "IPCM.JK",
+    "name": "Jasa Armada Indonesia Tbk"
+  },
+  {
+    "ticker": "IPOL.JK",
+    "name": "Indopoly Swakarsa Industry Tbk"
+  },
+  {
+    "ticker": "IPPE.JK",
+    "name": "Indo Pureco Pratama Tbk"
+  },
+  {
+    "ticker": "IPTV.JK",
+    "name": "MNC Vision Networks Tbk"
+  },
+  {
+    "ticker": "IRRA.JK",
+    "name": "Itama Ranoraya Tbk"
+  },
+  {
+    "ticker": "IRSX.JK",
+    "name": "Aviana Sinar Abadi Tbk"
+  },
+  {
+    "ticker": "ISAP.JK",
+    "name": "Isra Presisi Indonesia Tbk"
+  },
+  {
+    "ticker": "ISAT.JK",
+    "name": "Indosat Tbk"
+  },
+  {
+    "ticker": "ISEA.JK",
+    "name": "Indo American Seafoods Tbk"
+  },
+  {
+    "ticker": "ISSP.JK",
+    "name": "Steel Pipe Industry of Indones"
+  },
+  {
+    "ticker": "ITIC.JK",
+    "name": "Indonesian Tobacco Tbk"
+  },
+  {
+    "ticker": "ITMA.JK",
+    "name": "Sumber Energi Andalan Tbk"
+  },
+  {
+    "ticker": "ITMG.JK",
+    "name": "Indo Tambangraya Megah Tbk"
+  },
+  {
+    "ticker": "JARR.JK",
+    "name": "Jhonlin Agro Raya Tbk"
+  },
+  {
+    "ticker": "JAST.JK",
+    "name": "Jasnita Telekomindo Tbk"
+  },
+  {
+    "ticker": "JATI.JK",
+    "name": "Informasi Teknologi Indonesia"
+  },
+  {
+    "ticker": "JAWA.JK",
+    "name": "Jaya Agra Wattie Tbk"
+  },
+  {
+    "ticker": "JAYA.JK",
+    "name": "Armada Berjaya Trans Tbk"
+  },
+  {
+    "ticker": "JECC.JK",
+    "name": "Jembo Cable Company Tbk"
+  },
+  {
+    "ticker": "JGLE.JK",
+    "name": "Graha Andrasentra Propertindo"
+  },
+  {
+    "ticker": "JIHD.JK",
+    "name": "Jakarta International Hotels &"
+  },
+  {
+    "ticker": "JKON.JK",
+    "name": "Jaya Konstruksi Manggala Prata"
+  },
+  {
+    "ticker": "JKSW.JK",
+    "name": "Jakarta Kyoei Steel Works Tbk"
+  },
+  {
+    "ticker": "JMAS.JK",
+    "name": "Asuransi Jiwa Syariah Jasa Mit"
+  },
+  {
+    "ticker": "JPFA.JK",
+    "name": "Japfa Comfeed Indonesia Tbk"
+  },
+  {
+    "ticker": "JRPT.JK",
+    "name": "Jaya Real Property Tbk"
+  },
+  {
+    "ticker": "JSKY.JK",
+    "name": "Sky Energy Indonesia Tbk"
+  },
+  {
+    "ticker": "JSMR.JK",
+    "name": "Jasa Marga (Persero) Tbk"
+  },
+  {
+    "ticker": "JSPT.JK",
+    "name": "Jakarta Setiabudi Internasiona"
+  },
+  {
+    "ticker": "JTPE.JK",
+    "name": "Jasuindo Tiga Perkasa Tbk"
+  },
+  {
+    "ticker": "KAEF.JK",
+    "name": "Kimia Farma Tbk"
+  },
+  {
+    "ticker": "KARW.JK",
+    "name": "Meratus Jasa Prima Tbk"
+  },
+  {
+    "ticker": "KAYU.JK",
+    "name": "Darmi Bersaudara Tbk"
+  },
+  {
+    "ticker": "KBAG.JK",
+    "name": "Karya Bersama Anugerah Tbk"
+  },
+  {
+    "ticker": "KBLI.JK",
+    "name": "KMI Wire & Cable Tbk"
+  },
+  {
+    "ticker": "KBLM.JK",
+    "name": "Kabelindo Murni Tbk"
+  },
+  {
+    "ticker": "KBLV.JK",
+    "name": "First Media Tbk"
+  },
+  {
+    "ticker": "KBRI.JK",
+    "name": "Kertas Basuki Rachmat Indonesi"
+  },
+  {
+    "ticker": "KDSI.JK",
+    "name": "Kedawung Setia Industrial Tbk"
+  },
+  {
+    "ticker": "KDTN.JK",
+    "name": "Puri Sentul Permai Tbk"
+  },
+  {
+    "ticker": "KEEN.JK",
+    "name": "Kencana Energi Lestari Tbk"
+  },
+  {
+    "ticker": "KEJU.JK",
+    "name": "Mulia Boga Raya Tbk"
+  },
+  {
+    "ticker": "KETR.JK",
+    "name": "Ketrosden Triasmitra Tbk"
+  },
+  {
+    "ticker": "KIAS.JK",
+    "name": "Keramika Indonesia Assosiasi T"
+  },
+  {
+    "ticker": "KICI.JK",
+    "name": "Kedaung Indah Can Tbk"
+  },
+  {
+    "ticker": "KIJA.JK",
+    "name": "Kawasan Industri Jababeka Tbk"
+  },
+  {
+    "ticker": "KING.JK",
+    "name": "Hoffmen Cleanindo Tbk"
+  },
+  {
+    "ticker": "KINO.JK",
+    "name": "Kino Indonesia Tbk"
+  },
+  {
+    "ticker": "KIOS.JK",
+    "name": "Kioson Komersial Indonesia Tbk"
+  },
+  {
+    "ticker": "KJEN.JK",
+    "name": "Krida Jaringan Nusantara Tbk"
+  },
+  {
+    "ticker": "KKES.JK",
+    "name": "Kusuma Kemindo Sentosa Tbk"
+  },
+  {
+    "ticker": "KKGI.JK",
+    "name": "Resource Alam Indonesia Tbk"
+  },
+  {
+    "ticker": "KLAS.JK",
+    "name": "Pelayaran Kurnia Lautan Semest"
+  },
+  {
+    "ticker": "KLBF.JK",
+    "name": "Kalbe Farma Tbk"
+  },
+  {
+    "ticker": "KLIN.JK",
+    "name": "Klinko Karya Imaji Tbk"
+  },
+  {
+    "ticker": "KMDS.JK",
+    "name": "Kurniamitra Duta Sentosa Tbk"
+  },
+  {
+    "ticker": "KMTR.JK",
+    "name": "Kirana Megatara Tbk"
+  },
+  {
+    "ticker": "KOBX.JK",
+    "name": "Kobexindo Tractors Tbk"
+  },
+  {
+    "ticker": "KOCI.JK",
+    "name": "Kokoh Exa Nusantara Tbk"
+  },
+  {
+    "ticker": "KOIN.JK",
+    "name": "Kokoh Inti Arebama Tbk"
+  },
+  {
+    "ticker": "KOKA.JK",
+    "name": "Koka Indonesia Tbk"
+  },
+  {
+    "ticker": "KONI.JK",
+    "name": "Perdana Bangun Pusaka Tbk"
+  },
+  {
+    "ticker": "KOPI.JK",
+    "name": "Mitra Energi Persada Tbk"
+  },
+  {
+    "ticker": "KOTA.JK",
+    "name": "DMS Propertindo Tbk"
+  },
+  {
+    "ticker": "KPAL.JK",
+    "name": "Steadfast Marine Tbk"
+  },
+  {
+    "ticker": "KPAS.JK",
+    "name": "Cottonindo Ariesta Tbk"
+  },
+  {
+    "ticker": "KPIG.JK",
+    "name": "MNC Land Tbk"
+  },
+  {
+    "ticker": "KRAH.JK",
+    "name": "Grand Kartech Tbk"
+  },
+  {
+    "ticker": "KRAS.JK",
+    "name": "Krakatau Steel (Persero) Tbk"
+  },
+  {
+    "ticker": "KREN.JK",
+    "name": "Quantum Clovera Investama Tbk"
+  },
+  {
+    "ticker": "KRYA.JK",
+    "name": "Bangun Karya Perkasa Jaya Tbk"
+  },
+  {
+    "ticker": "KSIX.JK",
+    "name": "Kentanix Supra International T"
+  },
+  {
+    "ticker": "KUAS.JK",
+    "name": "Ace Oldfields Tbk"
+  },
+  {
+    "ticker": "LABA.JK",
+    "name": "Green Power Group Tbk"
+  },
+  {
+    "ticker": "LABS.JK",
+    "name": "UBC Medical Indonesia Tbk"
+  },
+  {
+    "ticker": "LAJU.JK",
+    "name": "Jasa Berdikari Logistics Tbk"
+  },
+  {
+    "ticker": "LAND.JK",
+    "name": "Trimitra Propertindo Tbk"
+  },
+  {
+    "ticker": "LAPD.JK",
+    "name": "Leyand International Tbk"
+  },
+  {
+    "ticker": "LCGP.JK",
+    "name": "Eureka Prima Jakarta Tbk"
+  },
+  {
+    "ticker": "LCKM.JK",
+    "name": "LCK Global Kedaton Tbk"
+  },
+  {
+    "ticker": "LEAD.JK",
+    "name": "Logindo Samudramakmur Tbk"
+  },
+  {
+    "ticker": "LFLO.JK",
+    "name": "Imago Mulia Persada Tbk"
+  },
+  {
+    "ticker": "LIFE.JK",
+    "name": "MSIG Life Insurance Indonesia"
+  },
+  {
+    "ticker": "LINK.JK",
+    "name": "Link Net Tbk"
+  },
+  {
+    "ticker": "LION.JK",
+    "name": "Lion Metal Works Tbk"
+  },
+  {
+    "ticker": "LIVE.JK",
+    "name": "Homeco Victoria Makmur Tbk"
+  },
+  {
+    "ticker": "LMAS.JK",
+    "name": "Limas Indonesia Makmur Tbk"
+  },
+  {
+    "ticker": "LMAX.JK",
+    "name": "Lupromax Pelumas Indonesia Tbk"
+  },
+  {
+    "ticker": "LMPI.JK",
+    "name": "Langgeng Makmur Industri Tbk"
+  },
+  {
+    "ticker": "LMSH.JK",
+    "name": "Lionmesh Prima Tbk"
+  },
+  {
+    "ticker": "LOPI.JK",
+    "name": "Logisticsplus International Tb"
+  },
+  {
+    "ticker": "LPCK.JK",
+    "name": "Lippo Cikarang Tbk"
+  },
+  {
+    "ticker": "LPGI.JK",
+    "name": "Lippo General Insurance Tbk"
+  },
+  {
+    "ticker": "LPIN.JK",
+    "name": "Multi Prima Sejahtera Tbk"
+  },
+  {
+    "ticker": "LPKR.JK",
+    "name": "Lippo Karawaci Tbk"
+  },
+  {
+    "ticker": "LPLI.JK",
+    "name": "Star Pacific Tbk"
+  },
+  {
+    "ticker": "LPPF.JK",
+    "name": "Matahari Department Store Tbk"
+  },
+  {
+    "ticker": "LPPS.JK",
+    "name": "Lenox Pasifik Investama Tbk"
+  },
+  {
+    "ticker": "LRNA.JK",
+    "name": "Eka Sari Lorena Transport Tbk"
+  },
+  {
+    "ticker": "LSIP.JK",
+    "name": "PP London Sumatra Indonesia Tb"
+  },
+  {
+    "ticker": "LTLS.JK",
+    "name": "Lautan Luas Tbk"
+  },
+  {
+    "ticker": "LUCK.JK",
+    "name": "Sentral Mitra Informatika Tbk"
+  },
+  {
+    "ticker": "LUCY.JK",
+    "name": "Lima Dua Lima Tiga Tbk"
+  },
+  {
+    "ticker": "MABA.JK",
+    "name": "Marga Abhinaya Abadi Tbk"
+  },
+  {
+    "ticker": "MAGP.JK",
+    "name": "Multi Agro Gemilang Plantation"
+  },
+  {
+    "ticker": "MAHA.JK",
+    "name": "Mandiri Herindo Adiperkasa Tbk"
+  },
+  {
+    "ticker": "MAIN.JK",
+    "name": "Malindo Feedmill Tbk"
+  },
+  {
+    "ticker": "MAMI.JK",
+    "name": "Mas Murni Indonesia Tbk"
+  },
+  {
+    "ticker": "MANG.JK",
+    "name": "Manggung Polahraya Tbk"
+  },
+  {
+    "ticker": "MAPA.JK",
+    "name": "Map Aktif Adiperkasa Tbk"
+  },
+  {
+    "ticker": "MAPB.JK",
+    "name": "MAP Boga Adiperkasa Tbk"
+  },
+  {
+    "ticker": "MAPI.JK",
+    "name": "Mitra Adiperkasa Tbk"
+  },
+  {
+    "ticker": "MARI.JK",
+    "name": "Mahaka Radio Integra Tbk"
+  },
+  {
+    "ticker": "MARK.JK",
+    "name": "Mark Dynamics Indonesia Tbk"
+  },
+  {
+    "ticker": "MASA.JK",
+    "name": "Multistrada Arah Sarana Tbk"
+  },
+  {
+    "ticker": "MASB.JK",
+    "name": "Bank Multiarta Sentosa Tbk"
+  },
+  {
+    "ticker": "MAXI.JK",
+    "name": "Maxindo Karya Anugerah Tbk"
+  },
+  {
+    "ticker": "MAYA.JK",
+    "name": "Bank Mayapada Internasional Tb"
+  },
+  {
+    "ticker": "MBAP.JK",
+    "name": "Mitrabara Adiperdana Tbk"
+  },
+  {
+    "ticker": "MBMA.JK",
+    "name": "Merdeka Battery Materials Tbk"
+  },
+  {
+    "ticker": "MBSS.JK",
+    "name": "Mitrabahtera Segara Sejati Tbk"
+  },
+  {
+    "ticker": "MBTO.JK",
+    "name": "Martina Berto Tbk"
+  },
+  {
+    "ticker": "MCAS.JK",
+    "name": "M Cash Integrasi Tbk"
+  },
+  {
+    "ticker": "MCOL.JK",
+    "name": "Prima Andalan Mandiri Tbk"
+  },
+  {
+    "ticker": "MCOR.JK",
+    "name": "Bank China Construction Bank I"
+  },
+  {
+    "ticker": "MDIA.JK",
+    "name": "Intermedia Capital Tbk"
+  },
+  {
+    "ticker": "MDIY.JK",
+    "name": "Daya Intiguna Yasa Tbk"
+  },
+  {
+    "ticker": "MDKA.JK",
+    "name": "Merdeka Copper Gold Tbk"
+  },
+  {
+    "ticker": "MDKI.JK",
+    "name": "Emdeki Utama Tbk"
+  },
+  {
+    "ticker": "MDLN.JK",
+    "name": "Modernland Realty Tbk"
+  },
+  {
+    "ticker": "MDRN.JK",
+    "name": "Modern Internasional Tbk"
+  },
+  {
+    "ticker": "MEDC.JK",
+    "name": "Medco Energi Internasional Tbk"
+  },
+  {
+    "ticker": "MEDS.JK",
+    "name": "Hetzer Medical Indonesia Tbk"
+  },
+  {
+    "ticker": "MEGA.JK",
+    "name": "Bank Mega Tbk"
+  },
+  {
+    "ticker": "MEJA.JK",
+    "name": "Harta Djaya Karya Tbk"
+  },
+  {
+    "ticker": "MENN.JK",
+    "name": "Menn Teknologi Indonesia Tbk"
+  },
+  {
+    "ticker": "MERK.JK",
+    "name": "Merck Tbk"
+  },
+  {
+    "ticker": "META.JK",
+    "name": "Nusantara Infrastructure Tbk"
+  },
+  {
+    "ticker": "MFIN.JK",
+    "name": "Mandala Multifinance Tbk"
+  },
+  {
+    "ticker": "MFMI.JK",
+    "name": "Multifiling Mitra Indonesia Tb"
+  },
+  {
+    "ticker": "MGLV.JK",
+    "name": "Panca Anugrah Wisesa Tbk"
+  },
+  {
+    "ticker": "MGNA.JK",
+    "name": "Magna Investama Mandiri Tbk"
+  },
+  {
+    "ticker": "MGRO.JK",
+    "name": "Mahkota Group Tbk"
+  },
+  {
+    "ticker": "MHKI.JK",
+    "name": "Multi Hanna Kreasindo Tbk"
+  },
+  {
+    "ticker": "MICE.JK",
+    "name": "Multi Indocitra Tbk"
+  },
+  {
+    "ticker": "MIDI.JK",
+    "name": "Midi Utama Indonesia Tbk"
+  },
+  {
+    "ticker": "MIKA.JK",
+    "name": "Mitra Keluarga Karyasehat Tbk"
+  },
+  {
+    "ticker": "MINA.JK",
+    "name": "Sanurhasta Mitra Tbk"
+  },
+  {
+    "ticker": "MIRA.JK",
+    "name": "Mitra International Resources"
+  },
+  {
+    "ticker": "MITI.JK",
+    "name": "Mitra Investindo Tbk"
+  },
+  {
+    "ticker": "MKAP.JK",
+    "name": "Multikarya Asia Pasifik Raya T"
+  },
+  {
+    "ticker": "MKNT.JK",
+    "name": "Mitra Komunikasi Nusantara Tbk"
+  },
+  {
+    "ticker": "MKPI.JK",
+    "name": "Metropolitan Kentjana Tbk"
+  },
+  {
+    "ticker": "MKTR.JK",
+    "name": "Menthobi Karyatama Raya Tbk"
+  },
+  {
+    "ticker": "MLBI.JK",
+    "name": "Multi Bintang Indonesia Tbk"
+  },
+  {
+    "ticker": "MLIA.JK",
+    "name": "Mulia Industrindo Tbk"
+  },
+  {
+    "ticker": "MLPL.JK",
+    "name": "Multipolar Tbk"
+  },
+  {
+    "ticker": "MLPT.JK",
+    "name": "Multipolar Technology Tbk"
+  },
+  {
+    "ticker": "MMIX.JK",
+    "name": "Multi Medika Internasional Tbk"
+  },
+  {
+    "ticker": "MMLP.JK",
+    "name": "Mega Manunggal Property Tbk"
+  },
+  {
+    "ticker": "MNCN.JK",
+    "name": "Media Nusantara Citra Tbk"
+  },
+  {
+    "ticker": "MOLI.JK",
+    "name": "Madusari Murni Indah Tbk"
+  },
+  {
+    "ticker": "MORA.JK",
+    "name": "Mora Telematika Indonesia Tbk"
+  },
+  {
+    "ticker": "MPIX.JK",
+    "name": "Mitra Pedagang Indonesia Tbk"
+  },
+  {
+    "ticker": "MPMX.JK",
+    "name": "Mitra Pinasthika Mustika Tbk"
+  },
+  {
+    "ticker": "MPOW.JK",
+    "name": "Megapower Makmur Tbk"
+  },
+  {
+    "ticker": "MPPA.JK",
+    "name": "Matahari Putra Prima Tbk"
+  },
+  {
+    "ticker": "MPRO.JK",
+    "name": "Maha Properti Indonesia Tbk"
+  },
+  {
+    "ticker": "MPXL.JK",
+    "name": "MPX Logistics International Tb"
+  },
+  {
+    "ticker": "MRAT.JK",
+    "name": "Mustika Ratu Tbk"
+  },
+  {
+    "ticker": "MREI.JK",
+    "name": "Maskapai Reasuransi Indonesia"
+  },
+  {
+    "ticker": "MSIE.JK",
+    "name": "Multisarana Intan Eduka Tbk"
+  },
+  {
+    "ticker": "MSIN.JK",
+    "name": "MNC Digital Entertainment Tbk"
+  },
+  {
+    "ticker": "MSJA.JK",
+    "name": "Multi Spunindo Jaya Tbk"
+  },
+  {
+    "ticker": "MSKY.JK",
+    "name": "MNC Sky Vision Tbk"
+  },
+  {
+    "ticker": "MSTI.JK",
+    "name": "Mastersystem Infotama Tbk"
+  },
+  {
+    "ticker": "MTDL.JK",
+    "name": "Metrodata Electronics Tbk"
+  },
+  {
+    "ticker": "MTEL.JK",
+    "name": "Dayamitra Telekomunikasi Tbk"
+  },
+  {
+    "ticker": "MTFN.JK",
+    "name": "Capitalinc Investment Tbk"
+  },
+  {
+    "ticker": "MTLA.JK",
+    "name": "Metropolitan Land Tbk"
+  },
+  {
+    "ticker": "MTMH.JK",
+    "name": "Murni Sadar Tbk"
+  },
+  {
+    "ticker": "MTPS.JK",
+    "name": "Meta Epsi Tbk"
+  },
+  {
+    "ticker": "MTRA.JK",
+    "name": "Mitra Pemuda Tbk"
+  },
+  {
+    "ticker": "MTSM.JK",
+    "name": "Metro Realty Tbk"
+  },
+  {
+    "ticker": "MTWI.JK",
+    "name": "Malacca Trust Wuwungan Insuran"
+  },
+  {
+    "ticker": "MUTU.JK",
+    "name": "Mutuagung Lestari Tbk"
+  },
+  {
+    "ticker": "MYOH.JK",
+    "name": "Samindo Resources Tbk"
+  },
+  {
+    "ticker": "MYOR.JK",
+    "name": "Mayora Indah Tbk"
+  },
+  {
+    "ticker": "MYRX.JK",
+    "name": "Hanson International Tbk"
+  },
+  {
+    "ticker": "MYTX.JK",
+    "name": "Asia Pacific Investama Tbk"
+  },
+  {
+    "ticker": "NAIK.JK",
+    "name": "Adiwarna Anugerah Abadi Tbk"
+  },
+  {
+    "ticker": "NANO.JK",
+    "name": "Nanotech Indonesia Global Tbk"
+  },
+  {
+    "ticker": "NASA.JK",
+    "name": "Andalan Perkasa Abadi Tbk"
+  },
+  {
+    "ticker": "NASI.JK",
+    "name": "Wahana Inti Makmur Tbk"
+  },
+  {
+    "ticker": "NATO.JK",
+    "name": "Surya Permata Andalan Tbk"
+  },
+  {
+    "ticker": "NAYZ.JK",
+    "name": "Hassana Boga Sejahtera Tbk"
+  },
+  {
+    "ticker": "NCKL.JK",
+    "name": "Trimegah Bangun Persada Tbk"
+  },
+  {
+    "ticker": "NELY.JK",
+    "name": "Pelayaran Nelly Dwi Putri Tbk"
+  },
+  {
+    "ticker": "NEST.JK",
+    "name": "Esta Indonesia Tbk"
+  },
+  {
+    "ticker": "NETV.JK",
+    "name": "MDTV Media Technologies Tbk"
+  },
+  {
+    "ticker": "NFCX.JK",
+    "name": "NFC Indonesia Tbk"
+  },
+  {
+    "ticker": "NICE.JK",
+    "name": "Adhi Kartiko Pratama Tbk"
+  },
+  {
+    "ticker": "NICK.JK",
+    "name": "Charnic Capital Tbk"
+  },
+  {
+    "ticker": "NICL.JK",
+    "name": "PAM Mineral Tbk"
+  },
+  {
+    "ticker": "NIKL.JK",
+    "name": "Pelat Timah Nusantara Tbk"
+  },
+  {
+    "ticker": "NINE.JK",
+    "name": "Techno9 Indonesia Tbk"
+  },
+  {
+    "ticker": "NIPS.JK",
+    "name": "Nipress Tbk"
+  },
+  {
+    "ticker": "NIRO.JK",
+    "name": "City Retail Developments Tbk"
+  },
+  {
+    "ticker": "NISP.JK",
+    "name": "Bank OCBC NISP Tbk"
+  },
+  {
+    "ticker": "NOBU.JK",
+    "name": "Bank Nationalnobu Tbk"
+  },
+  {
+    "ticker": "NPGF.JK",
+    "name": "Nusa Palapa Gemilang Tbk"
+  },
+  {
+    "ticker": "NRCA.JK",
+    "name": "Nusa Raya Cipta Tbk"
+  },
+  {
+    "ticker": "NSSS.JK",
+    "name": "Nusantara Sawit Sejahtera Tbk"
+  },
+  {
+    "ticker": "NTBK.JK",
+    "name": "Nusatama Berkah Tbk"
+  },
+  {
+    "ticker": "NUSA.JK",
+    "name": "Sinergi Megah Internusa Tbk"
+  },
+  {
+    "ticker": "NZIA.JK",
+    "name": "Nusantara Almazia Tbk"
+  },
+  {
+    "ticker": "OASA.JK",
+    "name": "Maharaksa Biru Energi Tbk"
+  },
+  {
+    "ticker": "OBAT.JK",
+    "name": "Brigit Biofarmaka Teknologi Tb"
+  },
+  {
+    "ticker": "OBMD.JK",
+    "name": "OBM Drilchem Tbk"
+  },
+  {
+    "ticker": "OCAP.JK",
+    "name": "Onix Capital Tbk"
+  },
+  {
+    "ticker": "OILS.JK",
+    "name": "Indo Oil Perkasa Tbk"
+  },
+  {
+    "ticker": "OKAS.JK",
+    "name": "Ancora Indonesia Resources Tbk"
+  },
+  {
+    "ticker": "OLIV.JK",
+    "name": "Oscar Mitra Sukses Sejahtera T"
+  },
+  {
+    "ticker": "OMED.JK",
+    "name": "Jayamas Medica Industri Tbk"
+  },
+  {
+    "ticker": "OMRE.JK",
+    "name": "Indonesia Prima Property Tbk"
+  },
+  {
+    "ticker": "OPMS.JK",
+    "name": "Optima Prima Metal Sinergi Tbk"
+  },
+  {
+    "ticker": "PACK.JK",
+    "name": "Abadi Nusantara Hijau Investam"
+  },
+  {
+    "ticker": "PADA.JK",
+    "name": "Personel Alih Daya Tbk"
+  },
+  {
+    "ticker": "PADI.JK",
+    "name": "Minna Padi Investama Sekuritas"
+  },
+  {
+    "ticker": "PALM.JK",
+    "name": "Provident Investasi Bersama Tb"
+  },
+  {
+    "ticker": "PAMG.JK",
+    "name": "Bima Sakti Pertiwi Tbk"
+  },
+  {
+    "ticker": "PANI.JK",
+    "name": "Pantai Indah Kapuk Dua Tbk"
+  },
+  {
+    "ticker": "PANR.JK",
+    "name": "Panorama Sentrawisata Tbk"
+  },
+  {
+    "ticker": "PANS.JK",
+    "name": "Panin Sekuritas Tbk"
+  },
+  {
+    "ticker": "PART.JK",
+    "name": "Cipta Perdana Lancar Tbk"
+  },
+  {
+    "ticker": "PBID.JK",
+    "name": "Panca Budi Idaman Tbk"
+  },
+  {
+    "ticker": "PBRX.JK",
+    "name": "Pan Brothers Tbk"
+  },
+  {
+    "ticker": "PBSA.JK",
+    "name": "Paramita Bangun Sarana Tbk"
+  },
+  {
+    "ticker": "PCAR.JK",
+    "name": "Prima Cakrawala Abadi Tbk"
+  },
+  {
+    "ticker": "PDES.JK",
+    "name": "Destinasi Tirta Nusantara Tbk"
+  },
+  {
+    "ticker": "PDPP.JK",
+    "name": "Primadaya Plastisindo Tbk"
+  },
+  {
+    "ticker": "PEGE.JK",
+    "name": "Panca Global Kapital Tbk"
+  },
+  {
+    "ticker": "PEHA.JK",
+    "name": "Phapros Tbk"
+  },
+  {
+    "ticker": "PEVE.JK",
+    "name": "Penta Valent Tbk"
+  },
+  {
+    "ticker": "PGAS.JK",
+    "name": "Perusahaan Gas Negara Tbk"
+  },
+  {
+    "ticker": "PGEO.JK",
+    "name": "Pertamina Geothermal Energy Tb"
+  },
+  {
+    "ticker": "PGJO.JK",
+    "name": "Tourindo Guide Indonesia Tbk"
+  },
+  {
+    "ticker": "PGLI.JK",
+    "name": "Pembangunan Graha Lestari Inda"
+  },
+  {
+    "ticker": "PGUN.JK",
+    "name": "Pradiksi Gunatama Tbk"
+  },
+  {
+    "ticker": "PICO.JK",
+    "name": "Pelangi Indah Canindo Tbk"
+  },
+  {
+    "ticker": "PIPA.JK",
+    "name": "Multi Makmur Lemindo Tbk"
+  },
+  {
+    "ticker": "PJAA.JK",
+    "name": "Pembangunan Jaya Ancol Tbk"
+  },
+  {
+    "ticker": "PKPK.JK",
+    "name": "Perdana Karya Perkasa Tbk"
+  },
+  {
+    "ticker": "PLAN.JK",
+    "name": "Planet Properindo Jaya Tbk"
+  },
+  {
+    "ticker": "PLAS.JK",
+    "name": "Polaris Investama Tbk"
+  },
+  {
+    "ticker": "PLIN.JK",
+    "name": "Plaza Indonesia Realty Tbk"
+  },
+  {
+    "ticker": "PMJS.JK",
+    "name": "Putra Mandiri Jembar Tbk"
+  },
+  {
+    "ticker": "PMMP.JK",
+    "name": "Panca Mitra Multiperdana Tbk"
+  },
+  {
+    "ticker": "PNBN.JK",
+    "name": "Bank Pan Indonesia Tbk"
+  },
+  {
+    "ticker": "PNBS.JK",
+    "name": "Bank Panin Dubai Syariah Tbk"
+  },
+  {
+    "ticker": "PNGO.JK",
+    "name": "Pinago Utama Tbk"
+  },
+  {
+    "ticker": "PNIN.JK",
+    "name": "Paninvest Tbk"
+  },
+  {
+    "ticker": "PNLF.JK",
+    "name": "Panin Financial Tbk"
+  },
+  {
+    "ticker": "PNSE.JK",
+    "name": "Pudjiadi & Sons Tbk"
+  },
+  {
+    "ticker": "POLA.JK",
+    "name": "Pool Advista Finance Tbk"
+  },
+  {
+    "ticker": "POLI.JK",
+    "name": "Pollux Hotels Group Tbk"
+  },
+  {
+    "ticker": "POLL.JK",
+    "name": "Pollux Properties Indonesia Tb"
+  },
+  {
+    "ticker": "POLU.JK",
+    "name": "Golden Flower Tbk"
+  },
+  {
+    "ticker": "POLY.JK",
+    "name": "Asia Pacific Fibers Tbk"
+  },
+  {
+    "ticker": "POOL.JK",
+    "name": "Pool Advista Indonesia Tbk"
+  },
+  {
+    "ticker": "PORT.JK",
+    "name": "Nusantara Pelabuhan Handal Tbk"
+  },
+  {
+    "ticker": "POSA.JK",
+    "name": "Bliss Properti Indonesia Tbk"
+  },
+  {
+    "ticker": "POWR.JK",
+    "name": "Cikarang Listrindo Tbk"
+  },
+  {
+    "ticker": "PPGL.JK",
+    "name": "Prima Globalindo Logistik Tbk"
+  },
+  {
+    "ticker": "PPRE.JK",
+    "name": "PP Presisi Tbk"
+  },
+  {
+    "ticker": "PPRI.JK",
+    "name": "Paperocks Indonesia Tbk"
+  },
+  {
+    "ticker": "PPRO.JK",
+    "name": "PP Properti Tbk"
+  },
+  {
+    "ticker": "PRAS.JK",
+    "name": "Prima Alloy Steel Universal Tb"
+  },
+  {
+    "ticker": "PRAY.JK",
+    "name": "Famon Awal Bros Sedaya Tbk"
+  },
+  {
+    "ticker": "PRDA.JK",
+    "name": "Prodia Widyahusada Tbk"
+  },
+  {
+    "ticker": "PRIM.JK",
+    "name": "Royal Prima Tbk"
+  },
+  {
+    "ticker": "PSAB.JK",
+    "name": "J Resources Asia Pasifik Tbk"
+  },
+  {
+    "ticker": "PSDN.JK",
+    "name": "Prasidha Aneka Niaga Tbk"
+  },
+  {
+    "ticker": "PSGO.JK",
+    "name": "Palma Serasih Tbk"
+  },
+  {
+    "ticker": "PSKT.JK",
+    "name": "Red Planet Indonesia Tbk"
+  },
+  {
+    "ticker": "PSSI.JK",
+    "name": "IMC Pelita Logistik Tbk"
+  },
+  {
+    "ticker": "PTBA.JK",
+    "name": "Bukit Asam Tbk"
+  },
+  {
+    "ticker": "PTDU.JK",
+    "name": "Djasa Ubersakti Tbk"
+  },
+  {
+    "ticker": "PTIS.JK",
+    "name": "Indo Straits Tbk"
+  },
+  {
+    "ticker": "PTMP.JK",
+    "name": "Mitra Pack Tbk"
+  },
+  {
+    "ticker": "PTMR.JK",
+    "name": "Master Print Tbk"
+  },
+  {
+    "ticker": "PTPP.JK",
+    "name": "PP (Persero) Tbk"
+  },
+  {
+    "ticker": "PTPS.JK",
+    "name": "Pulau Subur Tbk"
+  },
+  {
+    "ticker": "PTPW.JK",
+    "name": "Pratama Widya Tbk"
+  },
+  {
+    "ticker": "PTRO.JK",
+    "name": "Petrosea Tbk"
+  },
+  {
+    "ticker": "PTSN.JK",
+    "name": "Sat Nusapersada Tbk"
+  },
+  {
+    "ticker": "PTSP.JK",
+    "name": "Pioneerindo Gourmet Internatio"
+  },
+  {
+    "ticker": "PUDP.JK",
+    "name": "Pudjiadi Prestige Tbk"
+  },
+  {
+    "ticker": "PURA.JK",
+    "name": "Putra Rajawali Kencana Tbk"
+  },
+  {
+    "ticker": "PURE.JK",
+    "name": "Trinitan Metals and Minerals T"
+  },
+  {
+    "ticker": "PURI.JK",
+    "name": "Puri Global Sukses Tbk"
+  },
+  {
+    "ticker": "PWON.JK",
+    "name": "Pakuwon Jati Tbk"
+  },
+  {
+    "ticker": "PYFA.JK",
+    "name": "Pyridam Farma Tbk"
+  },
+  {
+    "ticker": "PZZA.JK",
+    "name": "Sarimelati Kencana Tbk"
+  },
+  {
+    "ticker": "RAAM.JK",
+    "name": "Tripar Multivision Plus Tbk"
+  },
+  {
+    "ticker": "RAFI.JK",
+    "name": "Sari Kreasi Boga Tbk"
+  },
+  {
+    "ticker": "RAJA.JK",
+    "name": "Rukun Raharja Tbk"
+  },
+  {
+    "ticker": "RALS.JK",
+    "name": "Ramayana Lestari Sentosa Tbk"
+  },
+  {
+    "ticker": "RANC.JK",
+    "name": "Supra Boga Lestari Tbk"
+  },
+  {
+    "ticker": "RATU.JK",
+    "name": "Raharja Energi Cepu Tbk"
+  },
+  {
+    "ticker": "RBMS.JK",
+    "name": "Ristia Bintang Mahkotasejati T"
+  },
+  {
+    "ticker": "RCCC.JK",
+    "name": "Utama Radar Cahaya Tbk"
+  },
+  {
+    "ticker": "RDTX.JK",
+    "name": "Roda Vivatex Tbk"
+  },
+  {
+    "ticker": "REAL.JK",
+    "name": "Repower Asia Indonesia Tbk"
+  },
+  {
+    "ticker": "RELF.JK",
+    "name": "Graha Mitra Asia Tbk"
+  },
+  {
+    "ticker": "RELI.JK",
+    "name": "Reliance Sekuritas Indonesia T"
+  },
+  {
+    "ticker": "RGAS.JK",
+    "name": "Kian Santang Muliatama Tbk"
+  },
+  {
+    "ticker": "RICY.JK",
+    "name": "Ricky Putra Globalindo Tbk"
+  },
+  {
+    "ticker": "RIGS.JK",
+    "name": "Rig Tenders Indonesia Tbk"
+  },
+  {
+    "ticker": "RIMO.JK",
+    "name": "Rimo International Lestari Tbk"
+  },
+  {
+    "ticker": "RISE.JK",
+    "name": "Jaya Sukses Makmur Sentosa Tbk"
+  },
+  {
+    "ticker": "RMKE.JK",
+    "name": "RMK Energy Tbk"
+  },
+  {
+    "ticker": "RMKO.JK",
+    "name": "Royaltama Mulia Kontraktorindo"
+  },
+  {
+    "ticker": "ROCK.JK",
+    "name": "Rockfields Properti Indonesia"
+  },
+  {
+    "ticker": "RODA.JK",
+    "name": "Pikko Land Development Tbk"
+  },
+  {
+    "ticker": "RONY.JK",
+    "name": "Aesler Grup Internasional Tbk"
+  },
+  {
+    "ticker": "ROTI.JK",
+    "name": "Nippon Indosari Corpindo Tbk"
+  },
+  {
+    "ticker": "RSCH.JK",
+    "name": "Charlie Hospital Semarang Tbk"
+  },
+  {
+    "ticker": "RSGK.JK",
+    "name": "Kedoya Adyaraya Tbk"
+  },
+  {
+    "ticker": "RUIS.JK",
+    "name": "Radiant Utama Interinsco Tbk"
+  },
+  {
+    "ticker": "RUNS.JK",
+    "name": "Global Sukses Solusi Tbk"
+  },
+  {
+    "ticker": "SAFE.JK",
+    "name": "Steady Safe Tbk"
+  },
+  {
+    "ticker": "SAGE.JK",
+    "name": "Saptausaha Gemilangindah Tbk"
+  },
+  {
+    "ticker": "SAME.JK",
+    "name": "Sarana Meditama Metropolitan T"
+  },
+  {
+    "ticker": "SAMF.JK",
+    "name": "Saraswanti Anugerah Makmur Tbk"
+  },
+  {
+    "ticker": "SAPX.JK",
+    "name": "Satria Antaran Prima Tbk"
+  },
+  {
+    "ticker": "SATU.JK",
+    "name": "Kota Satu Properti Tbk"
+  },
+  {
+    "ticker": "SBAT.JK",
+    "name": "Sejahtera Bintang Abadi Textil"
+  },
+  {
+    "ticker": "SBMA.JK",
+    "name": "Surya Biru Murni Acetylene Tbk"
+  },
+  {
+    "ticker": "SCCO.JK",
+    "name": "Supreme Cable Manufacturing &"
+  },
+  {
+    "ticker": "SCMA.JK",
+    "name": "Surya Citra Media Tbk"
+  },
+  {
+    "ticker": "SCNP.JK",
+    "name": "Selaras Citra Nusantara Perkas"
+  },
+  {
+    "ticker": "SCPI.JK",
+    "name": "Organon Pharma Indonesia Tbk"
+  },
+  {
+    "ticker": "SDMU.JK",
+    "name": "Sidomulyo Selaras Tbk"
+  },
+  {
+    "ticker": "SDPC.JK",
+    "name": "Millennium Pharmacon Internati"
+  },
+  {
+    "ticker": "SDRA.JK",
+    "name": "Bank Woori Saudara Indonesia 1"
+  },
+  {
+    "ticker": "SEMA.JK",
+    "name": "Semacom Integrated Tbk"
+  },
+  {
+    "ticker": "SFAN.JK",
+    "name": "Surya Fajar Capital Tbk"
+  },
+  {
+    "ticker": "SGER.JK",
+    "name": "Sumber Global Energy Tbk"
+  },
+  {
+    "ticker": "SGRO.JK",
+    "name": "Sampoerna Agro Tbk"
+  },
+  {
+    "ticker": "SHID.JK",
+    "name": "Hotel Sahid Jaya International"
+  },
+  {
+    "ticker": "SHIP.JK",
+    "name": "Sillo Maritime Perdana Tbk"
+  },
+  {
+    "ticker": "SICO.JK",
+    "name": "Sigma Energy Compressindo Tbk"
+  },
+  {
+    "ticker": "SIDO.JK",
+    "name": "Industri Jamu dan Farmasi Sido"
+  },
+  {
+    "ticker": "SILO.JK",
+    "name": "Siloam International Hospitals"
+  },
+  {
+    "ticker": "SIMA.JK",
+    "name": "Siwani Makmur Tbk"
+  },
+  {
+    "ticker": "SIMP.JK",
+    "name": "Salim Ivomas Pratama Tbk"
+  },
+  {
+    "ticker": "SINI.JK",
+    "name": "Singaraja Putra Tbk"
+  },
+  {
+    "ticker": "SIPD.JK",
+    "name": "Sreeya Sewu Indonesia Tbk"
+  },
+  {
+    "ticker": "SKBM.JK",
+    "name": "Sekar Bumi Tbk"
+  },
+  {
+    "ticker": "SKLT.JK",
+    "name": "Sekar Laut Tbk"
+  },
+  {
+    "ticker": "SKRN.JK",
+    "name": "Superkrane Mitra Utama Tbk"
+  },
+  {
+    "ticker": "SKYB.JK",
+    "name": "Northcliff Citranusa Indonesia"
+  },
+  {
+    "ticker": "SLIS.JK",
+    "name": "Gaya Abadi Sempurna Tbk"
+  },
+  {
+    "ticker": "SMAR.JK",
+    "name": "Smart Tbk"
+  },
+  {
+    "ticker": "SMBR.JK",
+    "name": "Semen Baturaja Tbk"
+  },
+  {
+    "ticker": "SMCB.JK",
+    "name": "Solusi Bangun Indonesia Tbk"
+  },
+  {
+    "ticker": "SMDM.JK",
+    "name": "Suryamas Dutamakmur Tbk"
+  },
+  {
+    "ticker": "SMDR.JK",
+    "name": "Samudera Indonesia  Tbk"
+  },
+  {
+    "ticker": "SMGA.JK",
+    "name": "Sumber Mineral Global Abadi Tb"
+  },
+  {
+    "ticker": "SMGR.JK",
+    "name": "Semen Indonesia (Persero) Tbk"
+  },
+  {
+    "ticker": "SMIL.JK",
+    "name": "Sarana Mitra Luas Tbk"
+  },
+  {
+    "ticker": "SMKL.JK",
+    "name": "Satyamitra Kemas Lestari Tbk"
+  },
+  {
+    "ticker": "SMKM.JK",
+    "name": "Sumber Mas Konstruksi Tbk"
+  },
+  {
+    "ticker": "SMLE.JK",
+    "name": "Sinergi Multi Lestarindo Tbk"
+  },
+  {
+    "ticker": "SMMA.JK",
+    "name": "Sinarmas Multiartha Tbk"
+  },
+  {
+    "ticker": "SMMT.JK",
+    "name": "Golden Eagle Energy Tbk"
+  },
+  {
+    "ticker": "SMRA.JK",
+    "name": "Summarecon Agung Tbk"
+  },
+  {
+    "ticker": "SMRU.JK",
+    "name": "SMR Utama Tbk"
+  },
+  {
+    "ticker": "SMSM.JK",
+    "name": "Selamat Sempurna Tbk"
+  },
+  {
+    "ticker": "SNLK.JK",
+    "name": "Sunter Lakeside Hotel Tbk"
+  },
+  {
+    "ticker": "SOCI.JK",
+    "name": "Soechi Lines Tbk"
+  },
+  {
+    "ticker": "SOFA.JK",
+    "name": "Boston Furniture Industries Tb"
+  },
+  {
+    "ticker": "SOHO.JK",
+    "name": "Soho Global Health Tbk"
+  },
+  {
+    "ticker": "SOLA.JK",
+    "name": "Xolare RCR Energy Tbk"
+  },
+  {
+    "ticker": "SONA.JK",
+    "name": "Sona Topas Tourism Industry Tb"
+  },
+  {
+    "ticker": "SOSS.JK",
+    "name": "Shield On Service Tbk"
+  },
+  {
+    "ticker": "SOTS.JK",
+    "name": "Satria Mega Kencana Tbk"
+  },
+  {
+    "ticker": "SOUL.JK",
+    "name": "Mitra Tirta Buwana Tbk"
+  },
+  {
+    "ticker": "SPMA.JK",
+    "name": "Suparma Tbk"
+  },
+  {
+    "ticker": "SPRE.JK",
+    "name": "Soraya Berjaya Indonesia Tbk"
+  },
+  {
+    "ticker": "SPTO.JK",
+    "name": "Surya Pertiwi Tbk"
+  },
+  {
+    "ticker": "SQMI.JK",
+    "name": "Wilton Makmur Indonesia Tbk"
+  },
+  {
+    "ticker": "SRAJ.JK",
+    "name": "Sejahteraraya Anugrahjaya Tbk"
+  },
+  {
+    "ticker": "SRIL.JK",
+    "name": "Sri Rejeki Isman Tbk"
+  },
+  {
+    "ticker": "SRSN.JK",
+    "name": "Indo Acidatama Tbk"
+  },
+  {
+    "ticker": "SRTG.JK",
+    "name": "Saratoga Investama Sedaya Tbk"
+  },
+  {
+    "ticker": "SSIA.JK",
+    "name": "Surya Semesta Internusa Tbk"
+  },
+  {
+    "ticker": "SSMS.JK",
+    "name": "Sawit Sumbermas Sarana Tbk"
+  },
+  {
+    "ticker": "SSTM.JK",
+    "name": "Sunson Textile Manufacture Tbk"
+  },
+  {
+    "ticker": "STAA.JK",
+    "name": "Sumber Tani Agung Resources Tb"
+  },
+  {
+    "ticker": "STAR.JK",
+    "name": "Buana Artha Anugerah Tbk"
+  },
+  {
+    "ticker": "STRK.JK",
+    "name": "Lovina Beach Brewery Tbk"
+  },
+  {
+    "ticker": "STTP.JK",
+    "name": "Siantar Top Tbk"
+  },
+  {
+    "ticker": "SUGI.JK",
+    "name": "Sugih Energy Tbk"
+  },
+  {
+    "ticker": "SULI.JK",
+    "name": "SLJ Global Tbk"
+  },
+  {
+    "ticker": "SUNI.JK",
+    "name": "Sunindo Pratama Tbk"
+  },
+  {
+    "ticker": "SUPR.JK",
+    "name": "Solusi Tunas Pratama Tbk"
+  },
+  {
+    "ticker": "SURE.JK",
+    "name": "Super Energy Tbk"
+  },
+  {
+    "ticker": "SURI.JK",
+    "name": "Maja Agung Latexindo Tbk"
+  },
+  {
+    "ticker": "SWAT.JK",
+    "name": "Sriwahana Adityakarta Tbk"
+  },
+  {
+    "ticker": "SWID.JK",
+    "name": "Saraswanti Indoland Developmen"
+  },
+  {
+    "ticker": "TALF.JK",
+    "name": "Tunas Alfin Tbk"
+  },
+  {
+    "ticker": "TAMA.JK",
+    "name": "Lancartama Sejati Tbk"
+  },
+  {
+    "ticker": "TAMU.JK",
+    "name": "Pelayaran Tamarin Samudra Tbk"
+  },
+  {
+    "ticker": "TAPG.JK",
+    "name": "Triputra Agro Persada Tbk"
+  },
+  {
+    "ticker": "TARA.JK",
+    "name": "Agung Semesta Sejahtera Tbk"
+  },
+  {
+    "ticker": "TAXI.JK",
+    "name": "Express Transindo Utama Tbk"
+  },
+  {
+    "ticker": "TAYS.JK",
+    "name": "Jaya Swarasa Agung Tbk"
+  },
+  {
+    "ticker": "TBIG.JK",
+    "name": "Tower Bersama Infrastructure T"
+  },
+  {
+    "ticker": "TBLA.JK",
+    "name": "Tunas Baru Lampung Tbk"
+  },
+  {
+    "ticker": "TBMS.JK",
+    "name": "Tembaga Mulia Semanan Tbk"
+  },
+  {
+    "ticker": "TCID.JK",
+    "name": "Mandom Indonesia Tbk"
+  },
+  {
+    "ticker": "TCPI.JK",
+    "name": "Transcoal Pacific Tbk"
+  },
+  {
+    "ticker": "TDPM.JK",
+    "name": "Tianrong Chemicals Industry Tb"
+  },
+  {
+    "ticker": "TEBE.JK",
+    "name": "Dana Brata Luhur Tbk"
+  },
+  {
+    "ticker": "TECH.JK",
+    "name": "Indosterling Technomedia Tbk"
+  },
+  {
+    "ticker": "TELE.JK",
+    "name": "Omni Inovasi Indonesia Tbk"
+  },
+  {
+    "ticker": "TFAS.JK",
+    "name": "Telefast Indonesia Tbk"
+  },
+  {
+    "ticker": "TFCO.JK",
+    "name": "Tifico Fiber Indonesia Tbk"
+  },
+  {
+    "ticker": "TGKA.JK",
+    "name": "Tigaraksa Satria Tbk"
+  },
+  {
+    "ticker": "TGRA.JK",
+    "name": "Terregra Asia Energy Tbk"
+  },
+  {
+    "ticker": "TGUK.JK",
+    "name": "Platinum Wahab Nusantara Tbk"
+  },
+  {
+    "ticker": "TIFA.JK",
+    "name": "KDB Tifa Finance Tbk"
+  },
+  {
+    "ticker": "TINS.JK",
+    "name": "Timah Tbk"
+  },
+  {
+    "ticker": "TIRA.JK",
+    "name": "Tira Austenite Tbk"
+  },
+  {
+    "ticker": "TIRT.JK",
+    "name": "Tirta Mahakam Resources Tbk"
+  },
+  {
+    "ticker": "TKIM.JK",
+    "name": "Pabrik Kertas Tjiwi Kimia Tbk"
+  },
+  {
+    "ticker": "TLDN.JK",
+    "name": "Teladan Prima Agro Tbk"
+  },
+  {
+    "ticker": "TLKM.JK",
+    "name": "Telkom Indonesia (Persero) Tbk"
+  },
+  {
+    "ticker": "TMAS.JK",
+    "name": "Temas Tbk"
+  },
+  {
+    "ticker": "TMPO.JK",
+    "name": "Tempo Intimedia Tbk"
+  },
+  {
+    "ticker": "TNCA.JK",
+    "name": "Trimuda Nuansa Citra Tbk"
+  },
+  {
+    "ticker": "TOBA.JK",
+    "name": "TBS Energi Utama Tbk"
+  },
+  {
+    "ticker": "TOOL.JK",
+    "name": "Rohartindo Nusantara Luas Tbk"
+  },
+  {
+    "ticker": "TOPS.JK",
+    "name": "Totalindo Eka Persada Tbk"
+  },
+  {
+    "ticker": "TOSK.JK",
+    "name": "Topindo Solusi Komunika Tbk"
+  },
+  {
+    "ticker": "TOTL.JK",
+    "name": "Total Bangun Persada Tbk"
+  },
+  {
+    "ticker": "TOTO.JK",
+    "name": "Surya Toto Indonesia Tbk"
+  },
+  {
+    "ticker": "TOWR.JK",
+    "name": "Sarana Menara Nusantara Tbk"
+  },
+  {
+    "ticker": "TOYS.JK",
+    "name": "Sunindo Adipersada Tbk"
+  },
+  {
+    "ticker": "TPIA.JK",
+    "name": "Chandra Asri Pacific Tbk"
+  },
+  {
+    "ticker": "TPMA.JK",
+    "name": "Trans Power Marine Tbk"
+  },
+  {
+    "ticker": "TRAM.JK",
+    "name": "Trada Alam Minera Tbk"
+  },
+  {
+    "ticker": "TRGU.JK",
+    "name": "Cerestar Indonesia Tbk"
+  },
+  {
+    "ticker": "TRIL.JK",
+    "name": "Triwira Insanlestari Tbk"
+  },
+  {
+    "ticker": "TRIM.JK",
+    "name": "Trimegah Sekuritas Indonesia T"
+  },
+  {
+    "ticker": "TRIN.JK",
+    "name": "Perintis Triniti Properti Tbk"
+  },
+  {
+    "ticker": "TRIO.JK",
+    "name": "Trikomsel Oke Tbk"
+  },
+  {
+    "ticker": "TRIS.JK",
+    "name": "Trisula International Tbk"
+  },
+  {
+    "ticker": "TRJA.JK",
+    "name": "Transkon Jaya Tbk"
+  },
+  {
+    "ticker": "TRON.JK",
+    "name": "Teknologi Karya Digital Nusa T"
+  },
+  {
+    "ticker": "TRST.JK",
+    "name": "Trias Sentosa Tbk"
+  },
+  {
+    "ticker": "TRUE.JK",
+    "name": "Triniti Dinamik Tbk"
+  },
+  {
+    "ticker": "TRUK.JK",
+    "name": "Guna Timur Raya Tbk"
+  },
+  {
+    "ticker": "TRUS.JK",
+    "name": "Trust Finance Indonesia Tbk"
+  },
+  {
+    "ticker": "TSPC.JK",
+    "name": "Tempo Scan Pacific Tbk"
+  },
+  {
+    "ticker": "TUGU.JK",
+    "name": "Asuransi Tugu Pratama Indonesi"
+  },
+  {
+    "ticker": "TYRE.JK",
+    "name": "King Tire Indonesia Tbk"
+  },
+  {
+    "ticker": "UANG.JK",
+    "name": "Pakuan Tbk"
+  },
+  {
+    "ticker": "UCID.JK",
+    "name": "Uni-Charm Indonesia Tbk"
+  },
+  {
+    "ticker": "UDNG.JK",
+    "name": "Agro Bahari Nusantara Tbk"
+  },
+  {
+    "ticker": "UFOE.JK",
+    "name": "Damai Sejahtera Abadi Tbk"
+  },
+  {
+    "ticker": "ULTJ.JK",
+    "name": "Ultrajaya Milk Industry & Trad"
+  },
+  {
+    "ticker": "UNIC.JK",
+    "name": "Unggul Indah Cahaya Tbk"
+  },
+  {
+    "ticker": "UNIQ.JK",
+    "name": "Ulima Nitra Tbk"
+  },
+  {
+    "ticker": "UNIT.JK",
+    "name": "Nusantara Inti Corpora Tbk"
+  },
+  {
+    "ticker": "UNSP.JK",
+    "name": "Bakrie Sumatera Plantations Tb"
+  },
+  {
+    "ticker": "UNTD.JK",
+    "name": "Terang Dunia Internusa Tbk"
+  },
+  {
+    "ticker": "UNTR.JK",
+    "name": "United Tractors Tbk"
+  },
+  {
+    "ticker": "UNVR.JK",
+    "name": "Unilever Indonesia Tbk"
+  },
+  {
+    "ticker": "URBN.JK",
+    "name": "Urban Jakarta Propertindo Tbk"
+  },
+  {
+    "ticker": "UVCR.JK",
+    "name": "Trimegah Karya Pratama Tbk"
+  },
+  {
+    "ticker": "VAST.JK",
+    "name": "Vastland Indonesia Tbk"
+  },
+  {
+    "ticker": "VERN.JK",
+    "name": "Verona Indah Pictures Tbk"
+  },
+  {
+    "ticker": "VICI.JK",
+    "name": "Victoria Care Indonesia Tbk"
+  },
+  {
+    "ticker": "VICO.JK",
+    "name": "Victoria Investama Tbk"
+  },
+  {
+    "ticker": "VINS.JK",
+    "name": "Victoria Insurance Tbk"
+  },
+  {
+    "ticker": "VISI.JK",
+    "name": "Satu Visi Putra Tbk"
+  },
+  {
+    "ticker": "VIVA.JK",
+    "name": "Visi Media Asia Tbk"
+  },
+  {
+    "ticker": "VKTR.JK",
+    "name": "VKTR Teknologi Mobilitas Tbk"
+  },
+  {
+    "ticker": "VOKS.JK",
+    "name": "Voksel Electric Tbk"
+  },
+  {
+    "ticker": "VRNA.JK",
+    "name": "Mizuho Leasing Indonesia Tbk"
+  },
+  {
+    "ticker": "VTNY.JK",
+    "name": "Venteny Fortuna International"
+  },
+  {
+    "ticker": "WAPO.JK",
+    "name": "Wahana Pronatural Tbk"
+  },
+  {
+    "ticker": "WEGE.JK",
+    "name": "Wijaya Karya Bangunan Gedung T"
+  },
+  {
+    "ticker": "WEHA.JK",
+    "name": "WEHA Transportasi Indonesia Tb"
+  },
+  {
+    "ticker": "WGSH.JK",
+    "name": "Wira Global Solusi Tbk"
+  },
+  {
+    "ticker": "WICO.JK",
+    "name": "Wicaksana Overseas Internation"
+  },
+  {
+    "ticker": "WIDI.JK",
+    "name": "Widiant Jaya Krenindo Tbk"
+  },
+  {
+    "ticker": "WIFI.JK",
+    "name": "Solusi Sinergi Digital Tbk"
+  },
+  {
+    "ticker": "WIIM.JK",
+    "name": "Wismilak Inti Makmur Tbk"
+  },
+  {
+    "ticker": "WIKA.JK",
+    "name": "Wijaya Karya (Persero) Tbk"
+  },
+  {
+    "ticker": "WINE.JK",
+    "name": "Hatten Bali Tbk"
+  },
+  {
+    "ticker": "WINR.JK",
+    "name": "Winner Nusantara Jaya Tbk"
+  },
+  {
+    "ticker": "WINS.JK",
+    "name": "Wintermar Offshore Marine Tbk"
+  },
+  {
+    "ticker": "WIRG.JK",
+    "name": "WIR ASIA Tbk"
+  },
+  {
+    "ticker": "WMPP.JK",
+    "name": "Widodo Makmur Perkasa Tbk"
+  },
+  {
+    "ticker": "WMUU.JK",
+    "name": "Widodo Makmur Unggas Tbk"
+  },
+  {
+    "ticker": "WOMF.JK",
+    "name": "Wahana Ottomitra Multiartha Tb"
+  },
+  {
+    "ticker": "WOOD.JK",
+    "name": "Integra Indocabinet Tbk"
+  },
+  {
+    "ticker": "WOWS.JK",
+    "name": "Ginting Jaya Energi Tbk"
+  },
+  {
+    "ticker": "WSBP.JK",
+    "name": "Waskita Beton Precast Tbk"
+  },
+  {
+    "ticker": "WSKT.JK",
+    "name": "Waskita Karya (Persero) Tbk"
+  },
+  {
+    "ticker": "WTON.JK",
+    "name": "Wijaya Karya Beton Tbk"
+  },
+  {
+    "ticker": "YELO.JK",
+    "name": "Yelooo Integra Datanet Tbk"
+  },
+  {
+    "ticker": "YOII.JK",
+    "name": "Asuransi Digital Bersama Tbk"
+  },
+  {
+    "ticker": "YPAS.JK",
+    "name": "Yanaprima Hastapersada Tbk"
+  },
+  {
+    "ticker": "YULE.JK",
+    "name": "Yulie Sekuritas Indonesia Tbk"
+  },
+  {
+    "ticker": "ZATA.JK",
+    "name": "Bersama Zatta Jaya Tbk"
+  },
+  {
+    "ticker": "ZBRA.JK",
+    "name": "Dosni Roha Indonesia Tbk"
+  },
+  {
+    "ticker": "ZINC.JK",
+    "name": "Kapuas Prima Coal Tbk"
+  },
+  {
+    "ticker": "ZONE.JK",
+    "name": "Mega Perintis Tbk"
+  },
+  {
+    "ticker": "ZYRX.JK",
+    "name": "Zyrexindo Mandiri Buana Tbk"
+  }
+]

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dinalar - AI Stock Portfolio Optimization Platform</title>
+
+    <!-- Meta SEO -->
+    <meta name="description"
+        content="Platform optimasi portofolio saham berbasis Artificial Intelligence. Maksimalkan return dan kendalikan risiko saham pilihan Anda.">
+    <meta name="theme-color" content="#0A0B0A">
+
+    <!-- Favicon -->
+    <link rel="icon" href="/images/newLogo.png?v=3" type="image/png">
+
+    <!-- Fonts: Instrument Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind Configuration matching the project theme -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Instrument Sans"', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        border: 'hsl(var(--border) / <alpha-value>)',
+                        background: 'hsl(var(--background) / <alpha-value>)',
+                        foreground: 'hsl(var(--foreground) / <alpha-value>)',
+                        primary: {
+                            DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
+                            foreground: 'hsl(var(--primary-foreground) / <alpha-value>)',
+                        },
+                        muted: {
+                            DEFAULT: 'hsl(var(--muted) / <alpha-value>)',
+                            foreground: 'hsl(var(--muted-foreground) / <alpha-value>)',
+                        },
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '0.35', transform: 'scale(1)' },
+                            '50%': { opacity: '0.65', transform: 'scale(1.05)' },
+                        }
+                    },
+                    animation: {
+                        pulseGlow: 'pulseGlow 6s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --background: 240 10% 4%;
+            --foreground: 0 0% 98%;
+            --primary: 160 84% 39%;
+            --primary-foreground: 0 0% 100%;
+            --muted: 240 6% 13%;
+            --muted-foreground: 240 5% 65%;
+            --border: 240 6% 16%;
+        }
+
+        body {
+            background-color: #0A0B0A;
+            color: #FFFFFF;
+            font-family: 'Instrument Sans', system-ui, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .glass-card {
+            background: rgba(18, 20, 18, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 9999px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(16, 185, 129, 0.4);
+        }
+    </style>
+</head>
+
+<body
+    class="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 relative selection:bg-emerald-500/20 selection:text-emerald-400">
+
+    <!-- Concentric Planetary Orbit Rings (Matching landingPage.tsx) -->
+    <div
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] sm:w-[1000px] h-[700px] sm:h-[1000px] rounded-full border border-emerald-500/15 pointer-events-none -z-10 [mask-image:radial-gradient(circle_at_center,black_45%,transparent_75%)]">
+    </div>
+    <div
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1050px] sm:w-[1450px] h-[1050px] sm:h-[1450px] rounded-full border border-emerald-500/10 pointer-events-none -z-10 [mask-image:radial-gradient(circle_at_center,black_35%,transparent_70%)]">
+    </div>
+    <div
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1400px] sm:w-[1900px] h-[1400px] sm:h-[1900px] rounded-full border border-emerald-500/[0.04] pointer-events-none -z-10 [mask-image:radial-gradient(circle_at_center,black_25%,transparent_65%)]">
+    </div>
+
+    <!-- Deep Atmospheric Glow Aura (Matching landingPage.tsx) -->
+    <div
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] sm:w-[1100px] h-[480px] sm:h-[620px] bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.35)_0%,rgba(16,185,129,0.12)_45%,transparent_75%)] blur-[100px] rounded-full pointer-events-none -z-10 animate-pulseGlow">
+    </div>
+    <div
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] sm:w-[700px] h-[260px] bg-emerald-400/25 blur-[70px] rounded-full pointer-events-none -z-10">
+    </div>
+
+    <!-- 2. MAIN HERO SECTION -->
+    <main class="w-full max-w-5xl mx-auto relative z-10 py-8">
+        <!-- Hero Glassmorphism Container Card -->
+        <div
+            class="relative overflow-hidden rounded-3xl border border-white/15 bg-[#0A0B0A]/85 backdrop-blur-xl p-6 sm:p-10 md:p-14 shadow-[0_-25px_80px_-15px_rgba(16,185,129,0.4),0_0_120px_-20px_rgba(16,185,129,0.25),0_35px_100px_rgba(0,0,0,0.95)] text-center">
+
+            <!-- Top Laser Highlight Lines (Matching landingPage.tsx hero mockup) -->
+            <div
+                class="absolute -top-px left-1/2 -translate-x-1/2 w-[85%] sm:w-[700px] h-[2px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent z-30">
+            </div>
+            <div
+                class="absolute -top-0.5 left-1/2 -translate-x-1/2 w-[60%] sm:w-[480px] h-[4px] bg-gradient-to-r from-transparent via-emerald-400/70 to-transparent blur-[3px] z-30">
+            </div>
+
+            <!-- Ambient Internal Decorative Orbs -->
+            <div
+                class="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-emerald-500/20 blur-3xl">
+            </div>
+            <div
+                class="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-emerald-400/15 blur-2xl">
+            </div>
+
+            <div class="relative z-10 max-w-3xl mx-auto space-y-6 sm:space-y-8">
+
+                <!-- Status Badge (Glowing pill matching landingPage.tsx) -->
+                <div class="inline-flex items-center justify-center">
+                    <span
+                        class="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-emerald-400 border border-emerald-500/30 backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                        <i data-lucide="sparkles" class="h-3.5 w-3.5 text-emerald-400"></i>
+                        <span>Segera Hadir • Next-Gen AI Decision System</span>
+                    </span>
+                </div>
+
+                <!-- Main Heading (Two-tier gradient & shadow matching landingPage.tsx) -->
+                <div class="relative">
+                    <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.12]">
+                        <span
+                            class="bg-gradient-to-b from-white via-white/95 to-white/70 bg-clip-text text-transparent block">
+                            Menalarkan Data,
+                        </span>
+                        <span
+                            class="mt-1 sm:mt-2 block bg-gradient-to-b from-white via-emerald-200 to-emerald-400 bg-clip-text text-transparent drop-shadow-[0_10px_35px_rgba(16,185,129,0.45)]">
+                            Mengoptimasi Keputusan Finansial
+                        </span>
+                    </h1>
+                </div>
+
+                <!-- Subtitle Description -->
+                <p class="text-sm sm:text-base md:text-lg text-white/70 leading-relaxed max-w-2xl mx-auto">
+                    <strong class="text-white">Dinalar</strong> adalah platform riset saham dan analitik portofolio
+                    modern yang menggabungkan algoritma optimasi multi-objektif (NSGA-II), teori Markowitz modern, serta
+                    visualisasi Pareto frontier interaktif.
+                </p>
+
+                <!-- 3. COUNTDOWN TIMER COMPONENT (Glass boxes style) -->
+                <div class="pt-2 pb-1">
+                    <div class="grid grid-cols-4 gap-2.5 sm:gap-4 max-w-md mx-auto">
+                        <!-- Days -->
+                        <div
+                            class="p-3.5 sm:p-5 rounded-2xl bg-[#141614]/90 border border-white/10 backdrop-blur-md text-center shadow-md">
+                            <span id="countdownDays"
+                                class="block font-mono font-extrabold text-2xl sm:text-4xl text-emerald-400">
+                                00
+                            </span>
+                            <span
+                                class="text-[10px] sm:text-xs font-medium text-white/50 uppercase tracking-wider block mt-1">
+                                Hari
+                            </span>
+                        </div>
+                        <!-- Hours -->
+                        <div
+                            class="p-3.5 sm:p-5 rounded-2xl bg-[#141614]/90 border border-white/10 backdrop-blur-md text-center shadow-md">
+                            <span id="countdownHours"
+                                class="block font-mono font-extrabold text-2xl sm:text-4xl text-white">
+                                00
+                            </span>
+                            <span
+                                class="text-[10px] sm:text-xs font-medium text-white/50 uppercase tracking-wider block mt-1">
+                                Jam
+                            </span>
+                        </div>
+                        <!-- Minutes -->
+                        <div
+                            class="p-3.5 sm:p-5 rounded-2xl bg-[#141614]/90 border border-white/10 backdrop-blur-md text-center shadow-md">
+                            <span id="countdownMinutes"
+                                class="block font-mono font-extrabold text-2xl sm:text-4xl text-white">
+                                00
+                            </span>
+                            <span
+                                class="text-[10px] sm:text-xs font-medium text-white/50 uppercase tracking-wider block mt-1">
+                                Menit
+                            </span>
+                        </div>
+                        <!-- Seconds -->
+                        <div
+                            class="p-3.5 sm:p-5 rounded-2xl bg-[#141614]/90 border border-white/10 backdrop-blur-md text-center shadow-md">
+                            <span id="countdownSeconds"
+                                class="block font-mono font-extrabold text-2xl sm:text-4xl text-emerald-400">
+                                00
+                            </span>
+                            <span
+                                class="text-[10px] sm:text-xs font-medium text-white/50 uppercase tracking-wider block mt-1">
+                                Detik
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. EARLY ACCESS / EMAIL NOTIFICATION FORM (Glass style & glowing white CTA button) -->
+                <div class="pt-2 max-w-lg mx-auto">
+                    <form id="subscribeForm" onsubmit="handleSubscribe(event)"
+                        class="relative flex flex-col sm:flex-row items-center gap-2 p-1.5 rounded-2xl bg-[#141614]/80 border border-emerald-500/30 backdrop-blur-md shadow-[0_0_30px_rgba(16,185,129,0.15)]">
+                        <div class="relative w-full flex items-center pl-3">
+                            <i data-lucide="mail" class="h-4 w-4 text-white/50 shrink-0"></i>
+                            <input type="email" id="emailInput" required
+                                placeholder="Masukkan email Anda untuk akses awal..."
+                                class="w-full bg-transparent px-3 py-2.5 text-xs sm:text-sm text-white placeholder:text-white/40 outline-none">
+                        </div>
+                        <button type="submit" id="submitBtn"
+                            class="w-full sm:w-auto shrink-0 px-6 py-2.5 rounded-xl bg-white hover:bg-white/90 text-[#0A0B0A] font-semibold text-xs sm:text-sm shadow-[0_0_25px_rgba(255,255,255,0.4),0_0_50px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95">
+                            <span>Dapatkan Notifikasi</span>
+                            <i data-lucide="arrow-right" class="h-4 w-4 text-[#0A0B0A]"></i>
+                        </button>
+                    </form>
+
+                    <!-- Notification Success/Alert message -->
+                    <div id="formFeedback"
+                        class="hidden mt-3 text-xs font-medium text-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 py-2.5 px-4 rounded-xl shadow-xs">
+                        ✓ Terima kasih! Anda masuk dalam daftar prioritas peluncuran Dinalar.
+                    </div>
+                </div>
+
+                <!-- Trust Micro-pills (Matching landingPage.tsx) -->
+                <div class="flex flex-wrap items-center justify-center gap-2.5 pt-2 text-[11px] text-white/60">
+                    <span
+                        class="flex items-center gap-1.5 bg-[#141614]/80 border border-white/10 px-3 py-1.5 rounded-full">
+                        <i data-lucide="shield-check" class="h-3.5 w-3.5 text-emerald-400"></i>
+                        <span>Privasi Data Aman</span>
+                    </span>
+                    <span
+                        class="flex items-center gap-1.5 bg-[#141614]/80 border border-white/10 px-3 py-1.5 rounded-full">
+                        <i data-lucide="zap" class="h-3.5 w-3.5 text-emerald-400"></i>
+                        <span>Early Beta Invites</span>
+                    </span>
+                    <span
+                        class="flex items-center gap-1.5 bg-[#141614]/80 border border-white/10 px-3 py-1.5 rounded-full">
+                        <i data-lucide="badge-percent" class="h-3.5 w-3.5 text-emerald-400"></i>
+                        <span>Gratis Akses Perdana</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript: Countdown Timer & Form Handler -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // 1. COUNTDOWN LOGIC (Set to 30 Days from today)
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + 30);
+        targetDate.setHours(10, 0, 0, 0);
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate.getTime() - now;
+
+            const daysEl = document.getElementById('countdownDays');
+            const hoursEl = document.getElementById('countdownHours');
+            const minEl = document.getElementById('countdownMinutes');
+            const secEl = document.getElementById('countdownSeconds');
+
+            if (!daysEl || !hoursEl || !minEl || !secEl) return;
+
+            if (distance < 0) {
+                daysEl.textContent = "00";
+                hoursEl.textContent = "00";
+                minEl.textContent = "00";
+                secEl.textContent = "00";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            daysEl.textContent = String(days).padStart(2, '0');
+            hoursEl.textContent = String(hours).padStart(2, '0');
+            minEl.textContent = String(minutes).padStart(2, '0');
+            secEl.textContent = String(seconds).padStart(2, '0');
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // 2. EARLY ACCESS SUBSCRIPTION FORM HANDLER
+        function handleSubscribe(event) {
+            event.preventDefault();
+            const emailInput = document.getElementById('emailInput');
+            const feedback = document.getElementById('formFeedback');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (!emailInput || !emailInput.value) return;
+
+            // Loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>Menyimpan...</span>';
+
+            setTimeout(() => {
+                if (feedback) feedback.classList.remove('hidden');
+                emailInput.value = '';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Tersimpan! ✓</span><i data-lucide="check" class="h-4 w-4 text-[#0A0B0A]"></i>';
+                lucide.createIcons();
+
+                setTimeout(() => {
+                    submitBtn.innerHTML = '<span>Dapatkan Notifikasi</span><i data-lucide="arrow-right" class="h-4 w-4 text-[#0A0B0A]"></i>';
+                    lucide.createIcons();
+                }, 4000);
+            }, 600);
+        }
+    </script>
+</body>
+
+</html>
