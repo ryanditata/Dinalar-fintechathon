@@ -38,7 +38,7 @@
 ### Step 1: Clone Repository
 
 ```bash
-git clone https://github.com/ryanditata/Dinalar-saham.git
+git clone https://github.com/ryanditata/Dinalar-fintechathon.git
 cd Dinalar
 ```
 
@@ -142,7 +142,7 @@ npm run types
 ## 📁 Project Structure
 
 ```
-dinalar/
+Dinalar/
 ├── app/
 │   ├── Http/Controllers/       # Laravel controllers
 │   ├── Models/                 # Eloquent models
