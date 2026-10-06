@@ -224,7 +224,7 @@ export const PortfolioShareCard = forwardRef<HTMLDivElement, SingleShareCardProp
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <img
-                            src="/images/newLogo.png?v=3"
+                            src="/images/newLogo.png?v=4"
                             alt="Dinalar Logo"
                             style={{ height: '42px', width: 'auto', objectFit: 'contain' }}
                         />
@@ -530,7 +530,7 @@ export const PortfolioCompareShareCard = forwardRef<HTMLDivElement, CompareShare
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '22px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <img
-                            src="/images/newLogo.png?v=3"
+                            src="/images/newLogo.png?v=4"
                             alt="Dinalar Logo"
                             style={{ height: '44px', width: 'auto', objectFit: 'contain' }}
                         />

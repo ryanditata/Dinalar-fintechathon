@@ -25,7 +25,7 @@ export default function NotFoundPage({ status = 404 }: { status?: number }) {
                 {/* Logo & Brand Header */}
                 <div className="flex items-center justify-center mb-6">
                     <img
-                        src="/images/newLogo.png?v=3"
+                        src="/images/newLogo.png?v=4"
                         alt="Dinalar Logo"
                         className="h-14 w-auto object-contain"
                     />

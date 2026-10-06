@@ -150,7 +150,7 @@ export async function generatePortfolioPDFReport({
     // 1. TOP HEADER & BRANDING BAR
     // ==========================================
     try {
-        const logoImg = await loadImage('/images/newLogo.png?v=3');
+        const logoImg = await loadImage('/images/newLogo.png?v=4');
         const logoHeight = 36;
         const logoWidth = logoImg.height > 0 ? (logoImg.width / logoImg.height) * logoHeight : 36;
         doc.addImage(logoImg, 'PNG', margin, currentY - 2, logoWidth, logoHeight);

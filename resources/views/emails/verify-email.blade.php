@@ -65,7 +65,7 @@
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                     <tr>
                                         <td align="center" style="vertical-align: middle;">
-                                            <img src="{{ rtrim(config('app.url'), '/') }}/images/newLogo.png?v=3" alt="Dinalar Logo" class="logo-img" style="height: 36px; width: auto; max-height: 40px; object-fit: contain;" />
+                                            <img src="{{ rtrim(config('app.url'), '/') }}/images/newLogo.png?v=4" alt="Dinalar Logo" class="logo-img" style="height: 36px; width: auto; max-height: 40px; object-fit: contain;" />
                                         </td>
                                     </tr>
                                 </table>
