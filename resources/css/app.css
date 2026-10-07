@@ -173,3 +173,44 @@
     -webkit-mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
 }
 
+/* ==========================================================================
+   DESAIN.MD — FINTECH MOBILE APP DESIGN SYSTEM TOKENS
+   ========================================================================== */
+:root {
+    --fintech-bg: #F2F2F2;
+    --fintech-surface: #FFFFFF;
+    --fintech-surface-muted: #F0F0F0;
+    --fintech-border-subtle: #E8E8E8;
+    --fintech-border-default: #DADADA;
+    --fintech-text-primary: #121212;
+    --fintech-text-secondary: #757575;
+    --fintech-text-tertiary: #A8A8A8;
+
+    --fintech-dark-900: #1A1A1A;
+    --fintech-dark-800: #25282C;
+    --fintech-dark-700: #2F3236;
+    --fintech-dark-600: #3A3A3C;
+    --fintech-nav-inactive: #8E8E93;
+
+    --fintech-primary: #059669;
+    --fintech-primary-light: #34D399;
+    --fintech-primary-hatch: #A7F3D0;
+    --fintech-primary-tint: rgba(16, 185, 129, 0.14);
+    --fintech-primary-a11y: #047857;
+    --fintech-badge: #E5365F;
+
+    --pattern-hatch: repeating-linear-gradient(135deg, #A7F3D0 0 2px, #F0FDF4 2px 6px);
+    --grad-progress: linear-gradient(90deg, #34D399 0%, #059669 100%);
+    --grad-metal-card: linear-gradient(135deg, #E4E6E8 0%, #B9BCC0 45%, #D0D2D5 70%, #9EA2A7 100%);
+    --grad-wallet-front: linear-gradient(180deg, #31343A 0%, #25282C 100%);
+    --grad-chart-area: linear-gradient(180deg, rgba(16, 185, 129, 0.22) 0%, rgba(16, 185, 129, 0) 100%);
+}
+
+.tabular-nums {
+    font-variant-numeric: tabular-nums;
+}
+
+.stitch-border {
+    border: 1.5px dashed rgba(255, 255, 255, 0.28);
+}
+

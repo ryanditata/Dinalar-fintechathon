@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PortfolioOptimization;
 use App\Models\Stock;
 use App\Models\StockPrice;
+use App\Services\DeviceViewResolver;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -137,7 +138,7 @@ class StockController extends Controller
             ->values()
             ->toArray();
 
-        return Inertia::render('user/saham/index', [
+        return Inertia::render(DeviceViewResolver::resolve('user/saham/index', $request), [
             'stocks' => $stocks,
             'filters' => [
                 'search' => $request->search ?? '',

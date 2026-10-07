@@ -7,6 +7,7 @@ use App\Models\PortfolioOptimization;
 use App\Models\Stock;
 use App\Models\StockPrice;
 use App\Models\UserBasket;
+use App\Services\DeviceViewResolver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -42,7 +43,7 @@ class PortfolioController extends Controller
 
         // Jika keranjang kosong, kembalikan data kosong tanpa memuat histori harga apapun
         if ($basketItems->isEmpty()) {
-            return Inertia::render('user/analyze/keranjang', [
+            return Inertia::render(DeviceViewResolver::resolve('user/analyze/keranjang', $request), [
                 'available_stocks' => [],
                 'basket_items' => [],
                 'basket_tickers' => [],
@@ -131,7 +132,7 @@ class PortfolioController extends Controller
 
         $basketTickers = $basketItems->map(fn($item) => $item->stock?->ticker)->filter()->values();
 
-        return Inertia::render('user/analyze/keranjang', [
+        return Inertia::render(DeviceViewResolver::resolve('user/analyze/keranjang', $request), [
             'available_stocks' => $stocks,
             'basket_items' => $basketItems,
             'basket_tickers' => $basketTickers,
@@ -496,7 +497,7 @@ class PortfolioController extends Controller
             ->get(['id', 'user_id', 'title', 'initial_capital', 'created_at'])
             ->toArray();
 
-        return Inertia::render('user/analyze/result', [
+        return Inertia::render(DeviceViewResolver::resolve('user/analyze/result', $request), [
             'optimization' => $optimization,
             'stocks' => $stocksMap,
             'history' => $recentHistory,
@@ -513,7 +514,7 @@ class PortfolioController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return Inertia::render('user/analyze/history', [
+        return Inertia::render(DeviceViewResolver::resolve('user/analyze/history', $request), [
             'history' => $history,
         ]);
     }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PortfolioOptimization;
 use App\Models\Stock;
 use App\Models\StockPrice;
+use App\Services\DeviceViewResolver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -111,7 +112,7 @@ class UserDashboardController extends Controller
 
         $lastUpdated = StockPrice::max('created_at') ?: now()->toDateTimeString();
 
-        return Inertia::render('user/dashboard/index', [
+        return Inertia::render(DeviceViewResolver::resolve('user/dashboard/index', $request), [
             'popular_stocks' => $popularStocks,
             'top_gainers' => $topGainers,
             'top_losers' => $topLosers,
