@@ -7,6 +7,9 @@ interface WalletLeatherHeroProps {
     referenceCode?: string;
     label?: string;
     sublabel?: string;
+    expectedReturn?: number | string | null;
+    volatility?: number | string | null;
+    sharpeRatio?: number | string | null;
 }
 
 export function WalletLeatherHero({
@@ -15,6 +18,9 @@ export function WalletLeatherHero({
     referenceCode = '828749-2847-03',
     label = 'Modal Portofolio AI',
     sublabel = 'Kalkulasi Algoritma Markowitz',
+    expectedReturn,
+    volatility,
+    sharpeRatio,
 }: WalletLeatherHeroProps) {
     const [hideAmount, setHideAmount] = useState<boolean>(() => {
         if (typeof window !== 'undefined') {
@@ -38,10 +44,38 @@ export function WalletLeatherHero({
             ? amount.toLocaleString('en-US', { maximumFractionDigits: 2 })
             : amount;
 
+    const formatMetricPercent = (val: number | string | null | undefined, fallback: string) => {
+        if (val === null || val === undefined || val === '') return fallback;
+        const num = Number(val);
+        if (isNaN(num)) return String(val);
+        const percent = num <= 1.0 && num > 0 ? num * 100 : num;
+        const sign = percent > 0 ? '+' : '';
+        return `${sign}${percent.toFixed(2)}%`;
+    };
+
+    const formatVolatilityPercent = (val: number | string | null | undefined, fallback: string) => {
+        if (val === null || val === undefined || val === '') return fallback;
+        const num = Number(val);
+        if (isNaN(num)) return String(val);
+        const percent = num <= 1.0 && num > 0 ? num * 100 : num;
+        return `${percent.toFixed(2)}%`;
+    };
+
+    const formatSharpeValue = (val: number | string | null | undefined, fallback: string) => {
+        if (val === null || val === undefined || val === '') return fallback;
+        const num = Number(val);
+        if (isNaN(num)) return String(val);
+        return num.toFixed(2);
+    };
+
+    const formattedReturn = formatMetricPercent(expectedReturn, '+15.80%');
+    const formattedVolatility = formatVolatilityPercent(volatility, '8.20%');
+    const formattedSharpe = formatSharpeValue(sharpeRatio, '1.85');
+
     return (
         <section
             aria-label="Kartu Modal Portofolio"
-            className="relative mx-3 h-[225px] rounded-[28px] bg-emerald-900 shadow-xl shadow-emerald-950/20 overflow-hidden select-none"
+            className="relative mx-3 h-[235px] rounded-[28px] bg-emerald-900 shadow-xl shadow-emerald-950/20 overflow-hidden select-none"
         >
             {/* ==============================================================
                 LAPISAN 1: KARTU METALIK MENGINTIP DARI ATAS
@@ -55,7 +89,7 @@ export function WalletLeatherHero({
                             <Sparkles className="size-3 text-white" />
                         </div>
                         <span className="text-xs font-bold tracking-tight text-emerald-950 font-sans">
-                            {sublabel}
+                            Portofolio
                         </span>
                     </div>
 
@@ -93,20 +127,48 @@ export function WalletLeatherHero({
                 {/* ==============================================================
                     LAPISAN 3: KONTEN TEKS & NOMINAL SALDO MODAL
                     ============================================================== */}
-                <div className="relative z-20 pt-3 flex items-center justify-between text-white/90">
-                    <span className="text-base font-medium tracking-wide">
+                <div className="relative z-20 pt-2 flex flex-col gap-1.5 text-white/90">
+                    <span className="text-sm font-medium tracking-wide truncate max-w-[340px]">
                         {label}
                     </span>
+
+                    {/* 3 Metrik: Return | Volatilitas | Sharpe Ratio */}
+                    <div className="grid grid-cols-3 divide-x divide-emerald-400/20 py-1.5 px-1 rounded-xl bg-emerald-950/40 border border-emerald-400/20 backdrop-blur-xs text-center">
+                        <div className="px-1">
+                            <span className="text-[10px] text-emerald-200/90 font-medium block">
+                                Return
+                            </span>
+                            <span className="text-xs font-bold font-mono text-emerald-100 tabular-nums block mt-0.5">
+                                {formattedReturn}
+                            </span>
+                        </div>
+                        <div className="px-1">
+                            <span className="text-[10px] text-emerald-200/90 font-medium block">
+                                Volatilitas
+                            </span>
+                            <span className="text-xs font-bold font-mono text-emerald-100 tabular-nums block mt-0.5">
+                                {formattedVolatility}
+                            </span>
+                        </div>
+                        <div className="px-1">
+                            <span className="text-[10px] text-emerald-200/90 font-medium block">
+                                Sharpe Ratio
+                            </span>
+                            <span className="text-xs font-bold font-mono text-emerald-100 tabular-nums block mt-0.5">
+                                {formattedSharpe}
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="relative z-20 flex items-end justify-between pb-1">
                     <div>
                         <div className="flex items-baseline text-white">
                             {/* Simbol Mata Uang Kecil Terangkat (Superscript) */}
-                            <span className="text-base font-semibold text-emerald-200 mr-1.5 -translate-y-1">
+                            <span className="text-sm font-semibold text-emerald-200 mr-1.5 -translate-y-0.5">
                                 Rp
                             </span>
-                            <span className="text-[26px] font-bold tracking-tight font-sans tabular-nums text-white leading-none">
+                            <span className="text-[24px] font-bold tracking-tight font-sans tabular-nums text-white leading-none">
                                 {hideAmount ? '••••••••' : formattedAmount}
                             </span>
                         </div>
@@ -116,7 +178,7 @@ export function WalletLeatherHero({
                     <button
                         type="button"
                         onClick={toggleHide}
-                        className="p-2 rounded-full text-emerald-100/75 hover:text-white active:scale-95 transition-all cursor-pointer"
+                        className="p-1.5 rounded-full text-emerald-100/75 hover:text-white active:scale-95 transition-all cursor-pointer"
                         aria-label={hideAmount ? 'Tampilkan Saldo' : 'Sembunyikan Saldo'}
                     >
                         {hideAmount ? (

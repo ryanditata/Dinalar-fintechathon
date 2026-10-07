@@ -101,6 +101,9 @@ export default function MobileDashboard({
                     referenceCode={heroRefCode}
                     label={latest_portfolio ? latest_portfolio.title : 'Modal Portofolio AI'}
                     sublabel={latest_portfolio ? 'Portofolio Terakhir' : 'Estimasi Modal'}
+                    expectedReturn={latest_portfolio?.best_portfolios?.sharpe?.return}
+                    volatility={latest_portfolio?.best_portfolios?.sharpe?.risk}
+                    sharpeRatio={latest_portfolio?.best_portfolios?.sharpe?.sharpe}
                 />
 
                 {/* 3. Quick Action Tiles x3 (Pasar Saham, Keranjang, Riwayat AI) */}
