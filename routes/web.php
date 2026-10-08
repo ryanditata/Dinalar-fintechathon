@@ -25,6 +25,13 @@ Route::get('dashboard', function (Request $request) {
     return redirect()->route('user.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('user/profile', function (Request $request) {
+    if (!\App\Services\DeviceViewResolver::isMobile($request)) {
+        return redirect()->route('profile.edit');
+    }
+    return Inertia::render('user/mobile/profile/index');
+})->middleware(['auth', 'verified'])->name('user.profile');
+
 Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 

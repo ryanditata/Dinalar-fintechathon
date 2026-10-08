@@ -582,44 +582,56 @@ export function StockAnalysisSheet({
             <SheetContent
                 ref={sheetRef}
                 side="bottom"
-                className="w-full max-w-[430px] mx-auto rounded-t-[28px] max-h-[92vh] flex flex-col p-0 border-t border-zinc-200/90 bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden focus:outline-hidden z-50 [&>button.opacity-70]:hidden [&>button:last-child]:hidden will-change-transform"
+                className="w-full max-w-[430px] mx-auto rounded-t-[28px] max-h-[92vh] flex flex-col p-0 border-t border-zinc-200/90 bg-white text-zinc-900 shadow-2xl overflow-hidden focus:outline-hidden z-50 [&>button.opacity-70]:hidden [&>button:last-child]:hidden will-change-transform"
+                style={{
+                    colorScheme: 'light',
+                    ['--background' as any]: 'oklch(1 0 0)',
+                    ['--foreground' as any]: 'oklch(0.145 0 0)',
+                    ['--card' as any]: 'oklch(1 0 0)',
+                    ['--card-foreground' as any]: 'oklch(0.145 0 0)',
+                    ['--popover' as any]: 'oklch(1 0 0)',
+                    ['--popover-foreground' as any]: 'oklch(0.145 0 0)',
+                    ['--primary' as any]: 'oklch(0.205 0 0)',
+                    ['--primary-foreground' as any]: 'oklch(0.985 0 0)',
+                    ['--secondary' as any]: 'oklch(0.97 0 0)',
+                    ['--secondary-foreground' as any]: 'oklch(0.205 0 0)',
+                    ['--muted' as any]: 'oklch(0.97 0 0)',
+                    ['--muted-foreground' as any]: 'oklch(0.556 0 0)',
+                    ['--accent' as any]: 'oklch(0.97 0 0)',
+                    ['--accent-foreground' as any]: 'oklch(0.205 0 0)',
+                    ['--destructive' as any]: 'oklch(0.577 0.245 27.325)',
+                    ['--destructive-foreground' as any]: 'oklch(0.577 0.245 27.325)',
+                    ['--border' as any]: 'oklch(0.922 0 0)',
+                    ['--input' as any]: 'oklch(0.922 0 0)',
+                    ['--ring' as any]: 'oklch(0.87 0 0)',
+                }}
             >
                 {/* 1. DRAG HANDLE INDICATOR (Native Mobile Look & Slide to Close) */}
                 <div
                     data-drag-handle="true"
                     onMouseDown={handleMouseDown}
-                    className="w-full pt-3 pb-2 flex items-center justify-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0"
+                    className="w-full pt-3 flex items-center justify-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0"
                     title="Geser ke bawah untuk menutup"
                 >
-                    <div className="w-10 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full transition-transform active:scale-105" />
+                    <div className="w-10 h-1.5 bg-zinc-300 rounded-full transition-transform active:scale-105" />
                 </div>
-
-                {/* Tombol Custom di Atas Header Emiten & Harga (Posisi Bawaan Sheet) */}
-                <button
-                    type="button"
-                    onClick={onClose}
-                    className="absolute top-3.5 right-4 z-10 size-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-white active:scale-95 transition-all"
-                    aria-label="Tutup"
-                >
-                    <X className="size-4" />
-                </button>
 
                 {/* 2. HEADER EMITEN & HARGA */}
                 <SheetHeader
                     data-drag-header="true"
                     onMouseDown={handleMouseDown}
-                    className="px-4 py-2.5 border-b border-zinc-100 dark:border-zinc-800 shrink-0 bg-white/95 dark:bg-zinc-900/95 cursor-grab active:cursor-grabbing select-none"
+                    className="px-4 py-2.5 border-b border-zinc-100 shrink-0 bg-white/95 cursor-grab active:cursor-grabbing select-none"
                 >
                     <div className="flex items-center justify-between gap-3">
                         {/* Kiri: Avatar & Info Ticker */}
                         <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                            <div className="h-13 w-13 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 border border-primary/20 flex items-center justify-center text-primary font-bold text-base sm:text-lg shadow-2xs shrink-0">
+                            <div className="h-13 w-13 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-zinc-900/15 via-zinc-900/10 to-zinc-900/5 border border-zinc-900/15 flex items-center justify-center text-zinc-900 font-bold text-base sm:text-lg shadow-2xs shrink-0">
                                 {stock.ticker.replace('.JK', '').slice(0, 4)}
                             </div>
 
                             <div className="min-w-0 flex-1">
                                 <div className="flex items-center gap-1.5 flex-wrap">
-                                    <SheetTitle className="text-lg font-extrabold font-mono tracking-tight text-zinc-900 dark:text-white">
+                                    <SheetTitle className="text-lg font-extrabold font-mono tracking-tight text-zinc-900">
                                         {stock.ticker.replace('.JK', '')}
                                     </SheetTitle>
 
@@ -627,8 +639,8 @@ export function StockAnalysisSheet({
                                         variant="outline"
                                         className={`text-[9px] py-0 px-1.5 font-semibold rounded-full ${
                                             stock.bursa === 'NYSE'
-                                                ? 'border-purple-500/30 text-purple-600 dark:text-purple-400 bg-purple-500/5'
-                                                : 'border-blue-500/30 text-blue-600 dark:text-blue-400 bg-blue-500/5'
+                                                ? 'border-purple-500/30 text-purple-600 bg-purple-500/5'
+                                                : 'border-blue-500/30 text-blue-600 bg-blue-500/5'
                                         }`}
                                     >
                                         {stock.bursa || 'IDX'}
@@ -637,14 +649,14 @@ export function StockAnalysisSheet({
                                     {stock.sector && (
                                         <Badge
                                             variant="outline"
-                                            className="text-[9px] py-0 px-1.5 font-medium border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 truncate max-w-[110px]"
+                                            className="text-[9px] py-0 px-1.5 font-medium border-zinc-200 text-zinc-600 truncate max-w-[110px]"
                                         >
                                             {stock.sector}
                                         </Badge>
                                     )}
                                 </div>
 
-                                <SheetDescription className="text-xs text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
+                                <SheetDescription className="text-xs text-zinc-500 truncate mt-0.5">
                                     {stock.name || stock.ticker}
                                 </SheetDescription>
                             </div>
@@ -653,14 +665,14 @@ export function StockAnalysisSheet({
                         {/* Kanan: Ringkasan Harga */}
                         {lastPrice > 0 && (
                             <div className="text-right shrink-0">
-                                <div className="text-sm font-extrabold font-mono text-zinc-900 dark:text-white leading-tight">
+                                <div className="text-sm font-extrabold font-mono text-zinc-900 leading-tight">
                                     {stock.bursa === 'NYSE' ? `${lastPrice.toFixed(2)}` : `${formatRupiah(lastPrice)}`}
                                 </div>
                                 {changeVal !== null && changeVal !== undefined && (
                                     <span
                                         className={`inline-flex items-center text-[10px] font-mono font-bold px-1.5 rounded-full ${changeVal >= 0
-                                                ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40'
-                                                : 'text-rose-600 bg-rose-50 dark:bg-rose-950/40'
+                                                ? 'text-emerald-600 bg-emerald-50'
+                                                : 'text-rose-600 bg-rose-50'
                                             }`}
                                     >
                                         {changeVal >= 0 ? `▲ +${changeVal.toFixed(2)}%` : `▼ ${changeVal.toFixed(2)}%`}
@@ -678,8 +690,8 @@ export function StockAnalysisSheet({
                     className="flex-1 overflow-y-auto px-4 py-3 space-y-3.5 overscroll-contain"
                 >
                     {/* 3A. HORISON ANALISIS CEPAT (Horizontal Scroll Pill) */}
-                    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900/60 p-3 space-y-2">
-                        <div className="flex items-center justify-between text-xs font-bold text-zinc-900 dark:text-white">
+                    <div className="rounded-2xl border border-zinc-200/80 bg-zinc-50/70 p-3 space-y-2">
+                        <div className="flex items-center justify-between text-xs font-bold text-zinc-900">
                             <span className="flex items-center gap-1.5">
                                 <ChartNetwork className="size-3.5 text-emerald-600 shrink-0" />
                                 <span>Horison Analisis</span>
@@ -687,7 +699,7 @@ export function StockAnalysisSheet({
                         </div>
 
                         {/* Preset Horizontal Scroll Row */}
-                        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
                             {(['1D', '5D', '1M', '3M', '6M', '1Y', '3Y', '5Y', 'all'] as const).map((preset) => (
                                 <button
                                     key={preset}
@@ -695,7 +707,7 @@ export function StockAnalysisSheet({
                                     onClick={() => handlePreset(preset)}
                                     className={`h-7 px-3 rounded-full text-xs font-mono font-medium shrink-0 transition-all active:scale-95 ${activePreset === preset
                                             ? 'bg-emerald-600 text-white font-bold shadow-xs'
-                                            : 'bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:border-emerald-500/40'
+                                            : 'bg-white border border-zinc-200/80 text-zinc-700 hover:border-emerald-500/40'
                                         }`}
                                 >
                                     {preset === 'all' ? 'All' : preset}
@@ -705,34 +717,34 @@ export function StockAnalysisSheet({
                     </div>
 
                     {/* 3B. RENTANG TANGGAL KUSTOM */}
-                    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900/60 p-3 space-y-2.5">
-                        <span className="text-xs font-bold flex items-center gap-1.5 text-zinc-900 dark:text-white">
+                    <div className="rounded-2xl border border-zinc-200/80 bg-zinc-50/70 p-3 space-y-2.5">
+                        <span className="text-xs font-bold flex items-center gap-1.5 text-zinc-900">
                             <Calendar className="size-3.5 text-emerald-600 shrink-0" />
                             <span>Rentang Waktu</span>
                         </span>
 
                         <div className="grid grid-cols-3 gap-2 items-end">
                             <div className="space-y-1">
-                                <Label className="text-[10px] text-zinc-500">Mulai</Label>
+                                <Label className="text-[10px] text-zinc-500 font-medium">Mulai</Label>
                                 <Input
                                     type="date"
                                     value={startDate}
                                     min={minAllowedDate}
                                     max={endDate || maxAllowedDate}
                                     onChange={handleStartDateChange}
-                                    className="h-8 text-xs font-mono bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-lg px-1.5 w-full"
+                                    className="h-8 text-xs font-mono bg-white border-zinc-200 text-zinc-900 rounded-lg px-1.5 w-full focus-visible:ring-emerald-500/30"
                                 />
                             </div>
 
                             <div className="space-y-1">
-                                <Label className="text-[10px] text-zinc-500">Selesai</Label>
+                                <Label className="text-[10px] text-zinc-500 font-medium">Selesai</Label>
                                 <Input
                                     type="date"
                                     value={endDate}
                                     min={startDate || minAllowedDate}
                                     max={maxAllowedDate}
                                     onChange={handleEndDateChange}
-                                    className="h-8 text-xs font-mono bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-lg px-1.5 w-full"
+                                    className="h-8 text-xs font-mono bg-white border-zinc-200 text-zinc-900 rounded-lg px-1.5 w-full focus-visible:ring-emerald-500/30"
                                 />
                             </div>
 
@@ -741,7 +753,7 @@ export function StockAnalysisSheet({
                                 size="sm"
                                 variant="secondary"
                                 onClick={handleApplyDateRange}
-                                className="w-full h-8 text-xs font-semibold gap-1 px-1 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 flex items-center justify-center shadow-2xs"
+                                className="w-full h-8 text-xs font-semibold gap-1 px-1 rounded-lg bg-white border border-zinc-200 text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 flex items-center justify-center shadow-2xs"
                             >
                                 <RefreshCw className={`size-3 shrink-0 ${isLoading && !activePreset ? 'animate-spin' : ''}`} />
                                 <span className="truncate">Terapkan</span>
@@ -751,8 +763,8 @@ export function StockAnalysisSheet({
 
                     {/* Warning Rentang Singkat (< 30 hari bursa) */}
                     {isShortTimeframe && (
-                        <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-[11px] flex items-center gap-2">
-                            <ShieldAlert className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                        <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 text-[11px] flex items-center gap-2">
+                            <ShieldAlert className="size-4 shrink-0 text-amber-600" />
                             <span>
                                 <strong>Rentang Singkat:</strong> Data &lt; 30 hari ({metrics.data_points} hari bursa). Rujukan utama pergerakan adalah <strong>Return Periode</strong>.
                             </span>
@@ -767,15 +779,15 @@ export function StockAnalysisSheet({
                         </div>
                     ) : (
                         <div className="space-y-3">
-                            <Card className="border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-2xl shadow-xs overflow-hidden">
-                                <div className="px-3 py-2 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-                                    <span className="text-xs font-bold flex items-center gap-1.5 text-zinc-900 dark:text-white">
+                            <Card className="border border-zinc-200/80 bg-white rounded-2xl shadow-xs overflow-hidden">
+                                <div className="px-3 py-2 border-b border-zinc-100 flex items-center justify-between">
+                                    <span className="text-xs font-bold flex items-center gap-1.5 text-zinc-900">
                                         <ChartArea className="size-3.5 text-emerald-600" />
                                         <span>Grafik Harga Penutupan</span>
                                     </span>
                                     <Badge
                                         variant="outline"
-                                        className="text-[9px] py-0 px-1.5 font-mono text-zinc-500 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700"
+                                        className="text-[9px] py-0 px-1.5 font-mono text-zinc-500 bg-zinc-50 border-zinc-200"
                                     >
                                         <Clock className="size-2.5 mr-1 text-emerald-600" />
                                         {metrics.data_points} Hari Bursa
@@ -796,16 +808,16 @@ export function StockAnalysisSheet({
                                                             <stop offset="95%" stopColor="#059669" stopOpacity={0.0} />
                                                         </linearGradient>
                                                     </defs>
-                                                    <CartesianGrid strokeDasharray="3 3" opacity={0.12} />
+                                                    <CartesianGrid strokeDasharray="3 3" opacity={0.12} stroke="#a1a1aa" />
                                                     <XAxis
                                                         dataKey="date"
-                                                        tick={{ fontSize: 9, fill: 'currentColor', opacity: 0.5 }}
+                                                        tick={{ fontSize: 9, fill: '#71717a' }}
                                                         tickLine={false}
                                                         minTickGap={20}
                                                         tickFormatter={formatDate}
                                                     />
                                                     <YAxis
-                                                        tick={{ fontSize: 9, fill: 'currentColor', opacity: 0.5 }}
+                                                        tick={{ fontSize: 9, fill: '#71717a' }}
                                                         domain={['auto', 'auto']}
                                                         tickLine={false}
                                                         width={45}
@@ -816,11 +828,11 @@ export function StockAnalysisSheet({
                                                             if (active && payload && payload.length) {
                                                                 const d = payload[0].payload;
                                                                 return (
-                                                                    <div className="rounded-lg border border-zinc-200 bg-white/95 dark:bg-zinc-900/95 p-2 shadow-md text-xs space-y-0.5">
+                                                                    <div className="rounded-lg border border-zinc-200 bg-white/95 p-2 shadow-md text-xs space-y-0.5">
                                                                         <div className="font-mono text-zinc-400 text-[9px]">
                                                                             {formatDate(d.date)}
                                                                         </div>
-                                                                        <div className="font-bold text-zinc-900 dark:text-white text-[11px]">
+                                                                        <div className="font-bold text-zinc-900 text-[11px]">
                                                                             Rp {formatRupiah(d.close_price)}
                                                                         </div>
                                                                         <div
@@ -883,8 +895,8 @@ export function StockAnalysisSheet({
                                 })()}
 
                                 {/* 2. Rentang Harga */}
-                                <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2.5 flex flex-col justify-between shadow-2xs">
-                                    <div className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
+                                <div className="rounded-2xl border border-zinc-200/80 bg-white p-2.5 flex flex-col justify-between shadow-2xs">
+                                    <div className="text-[11px] font-bold text-zinc-700 flex items-center gap-1">
                                         <Clock className="size-3 text-zinc-600" />
                                         <span>Rentang Harga</span>
                                     </div>
@@ -914,7 +926,7 @@ export function StockAnalysisSheet({
                                         >
                                             <div
                                                 className={`text-[11px] font-bold flex items-center gap-1 ${
-                                                    isExpPos ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'
+                                                    isExpPos ? 'text-emerald-700' : 'text-rose-700'
                                                 }`}
                                             >
                                                 {isExpPos ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
@@ -922,7 +934,7 @@ export function StockAnalysisSheet({
                                             </div>
                                             <div
                                                 className={`text-lg font-extrabold font-mono my-1 ${
-                                                    isExpPos ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+                                                    isExpPos ? 'text-emerald-600' : 'text-rose-600'
                                                 }`}
                                             >
                                                 {(metrics.expected_return ?? 0) > 0 ? `+${metrics.expected_return}%` : `${metrics.expected_return ?? 0}%`}
@@ -936,13 +948,13 @@ export function StockAnalysisSheet({
                                 <div className="rounded-2xl border border-blue-500/25 bg-blue-500/10 p-2.5 flex flex-col justify-between shadow-2xs">
                                     <div className="text-[11px] font-bold text-blue-700 flex items-center gap-1">
                                         <Activity className="size-3 text-blue-600" />
-                                                <span>Volatilitas</span>
-                                            </div>
-                                    <div className="text-lg font-extrabold font-mono my-1 text-blue-900 dark:text-blue-100">
-                                                {metrics.volatility}%
-                                            </div>
-                                            <p className="text-[9px] text-zinc-500 leading-tight">Risiko fluktuasi tahunan</p>
-                                        </div>
+                                        <span>Volatilitas</span>
+                                    </div>
+                                    <div className="text-lg font-extrabold font-mono my-1 text-blue-600">
+                                        {metrics.volatility}%
+                                    </div>
+                                    <p className="text-[9px] text-zinc-500 leading-tight">Risiko fluktuasi tahunan</p>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -950,7 +962,7 @@ export function StockAnalysisSheet({
 
                 {/* 4. STICKY BOTTOM ACTION CTA */}
                 <div
-                    className="p-3.5 border-t border-zinc-100 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md shrink-0"
+                    className="p-3.5 border-t border-zinc-100 bg-white/95 backdrop-blur-md shrink-0"
                     style={{
                         paddingBottom: 'calc(14px + env(safe-area-inset-bottom, 0px))',
                     }}

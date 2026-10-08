@@ -59,7 +59,16 @@ class DeviceViewResolver
             }
 
             if ($view === 'settings/profile') {
-                $mobileView = 'user/mobile/profile/index';
+                $mobileView = 'user/mobile/profile/edit';
+                $mobileFilePath = resource_path("js/pages/{$mobileView}.tsx");
+
+                if (file_exists($mobileFilePath)) {
+                    return $mobileView;
+                }
+            }
+
+            if ($view === 'settings/password') {
+                $mobileView = 'user/mobile/profile/password';
                 $mobileFilePath = resource_path("js/pages/{$mobileView}.tsx");
 
                 if (file_exists($mobileFilePath)) {

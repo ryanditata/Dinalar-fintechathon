@@ -33,9 +33,9 @@ export function FloatingBottomNav() {
         },
         {
             name: 'Profile',
-            href: '/settings/profile',
+            href: '/user/profile',
             icon: UserRound,
-            isActive: (url) => url.startsWith('/settings'),
+            isActive: (url) => url.startsWith('/user/profile') || url.startsWith('/settings'),
         },
     ];
 
