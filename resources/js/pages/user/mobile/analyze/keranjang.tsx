@@ -1,4 +1,4 @@
-import StockAnalysisModal, { type AnalyzedStockPayload } from '@/components/StockAnalysisModal';
+import StockAnalysisSheet, { type AnalyzedStockPayload } from '@/pages/user/mobile/components/StockAnalysisSheet';
 import { AllocationProgressBar } from '@/pages/user/mobile/components/AllocationProgressBar';
 import { FloatingBottomNav } from '@/pages/user/mobile/components/FloatingBottomNav';
 import { MobileAppLayout } from '@/pages/user/mobile/layouts/MobileAppLayout';
@@ -605,9 +605,9 @@ export default function MobileKeranjangPage({
                 </div>
             </div>
 
-            {/* Modal Edit Parameter Per Saham */}
+            {/* Bottom Page Sheet Edit Parameter Per Saham */}
             {editingStock && (
-                <StockAnalysisModal
+                <StockAnalysisSheet
                     stock={editingStock}
                     isOpen={isEditModalOpen}
                     onClose={() => {

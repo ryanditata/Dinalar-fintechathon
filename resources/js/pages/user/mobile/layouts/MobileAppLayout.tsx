@@ -1,4 +1,5 @@
 import { Toaster } from '@/components/ui/sonner';
+import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { FloatingBottomNav } from '@/pages/user/mobile/components/FloatingBottomNav';
 import { MobileHeaderSpinner } from '@/pages/user/mobile/components/MobileHeaderSpinner';
 import { Head } from '@inertiajs/react';
@@ -15,6 +16,8 @@ export function MobileAppLayout({
     title,
     hideBottomNav = false,
 }: MobileAppLayoutProps) {
+    const { pullDistance, isRefreshing, isTracking } = usePullToRefresh();
+
     React.useEffect(() => {
         document.body.classList.add('mobile-app-mode');
         return () => {
@@ -35,13 +38,17 @@ export function MobileAppLayout({
                 }}
             >
                 {/* Floating Top Loading Spinner (Melayang di Atas seperti FloatingBottomNav) */}
-                <MobileHeaderSpinner />
+                <MobileHeaderSpinner pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
-                {/* Konten Halaman (Scrollable di bawah Nav Melayang) */}
+                {/* Konten Halaman (Scrollable di bawah Nav Melayang, bergeser saat ditarik ke bawah) */}
                 <main
                     className={`flex-1 w-full flex flex-col ${
                         hideBottomNav ? 'pb-8' : 'pb-28'
                     }`}
+                    style={{
+                        transform: pullDistance > 0 ? `translateY(${pullDistance * 0.65}px)` : undefined,
+                        transition: isTracking ? 'none' : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                    }}
                 >
                     {children}
                 </main>

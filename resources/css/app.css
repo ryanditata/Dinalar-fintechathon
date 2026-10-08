@@ -219,6 +219,10 @@
    Sembunyikan progress bar horizontal bawaan browser di mode mobile apps.
    Digantikan oleh spinner loading di header aplikasi mobile.
    ========================================================================== */
+body.mobile-app-mode {
+    overscroll-behavior-y: contain;
+}
+
 body.mobile-app-mode #nprogress .bar,
 body.mobile-app-mode #nprogress .peg,
 body:has([data-mobile-app]) #nprogress .bar,

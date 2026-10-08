@@ -1,5 +1,5 @@
 import SparklineChart from '@/components/SparklineChart';
-import StockAnalysisModal, { type AnalyzedStockPayload } from '@/components/StockAnalysisModal';
+import StockAnalysisSheet, { type AnalyzedStockPayload } from '@/pages/user/mobile/components/StockAnalysisSheet';
 import { AllocationProgressBar } from '@/pages/user/mobile/components/AllocationProgressBar';
 import { FloatingBottomNav } from '@/pages/user/mobile/components/FloatingBottomNav';
 import { MobileHeader } from '@/pages/user/mobile/components/MobileHeader';
@@ -323,8 +323,8 @@ export default function MobileStockIndex({
                 </section>
             </div>
 
-            {/* Modal Dialog Analisis & Tambah ke Keranjang */}
-            <StockAnalysisModal
+            {/* Bottom Page Sheet Analisis & Tambah ke Keranjang */}
+            <StockAnalysisSheet
                 stock={selectedStockForModal}
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

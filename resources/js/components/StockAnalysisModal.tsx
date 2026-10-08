@@ -379,8 +379,8 @@ export default function StockAnalysisModal({
                                         variant="outline"
                                         className={`text-[10px] sm:text-[11px] py-0.5 px-2 font-semibold rounded-full ${
                                             stock.bursa === 'NYSE'
-                                                ? 'border-purple-500/40 text-purple-600 dark:text-purple-400 bg-purple-500/10'
-                                                : 'border-blue-500/40 text-blue-600 dark:text-blue-400 bg-blue-500/10'
+                                                ? 'border-purple-500/30 text-purple-600 dark:text-purple-400 bg-purple-500/5'
+                                                : 'border-blue-500/30 text-blue-600 dark:text-blue-400 bg-blue-500/5'
                                         }`}
                                     >
                                         {stock.bursa || 'IDX'}
