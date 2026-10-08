@@ -275,7 +275,7 @@ export default function MobileKeranjangPage({
     };
 
     return (
-        <MobileAppLayout title="Keranjang Saham | Dinalar Mobile">
+        <MobileAppLayout>
             {/* Top Bar (Back button, Title, Clear Basket) */}
             <header className="px-4 pt-3 pb-2 flex items-center justify-between">
                 <div className="flex items-center gap-3">

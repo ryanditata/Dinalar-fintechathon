@@ -156,18 +156,13 @@ export default function MobileStockIndex({
     const earlierStocks = stockList.slice(3);
 
     return (
-        <MobileAppLayout title="Pasar Saham | Dinalar Mobile">
+        <MobileAppLayout>
             {/* 1. Header (Avatar 40 & Keranjang Saham) */}
             <MobileHeader />
 
             <div className="space-y-3 pt-1">
                 {/* 1. Section Container Putih: Transaksi / Daftar Saham (Section 6.9 in desain.md) */}
                 <section className="mx-1 rounded-[24px] bg-white p-4 border border-zinc-200 shadow-xs space-y-3.5">
-                    <div className="flex items-center justify-between">
-                        <h3 className="text-[18px] font-semibold text-zinc-900 tracking-tight">
-                            Daftar Saham
-                        </h3>
-                    </div>
 
                     {/* Search Bar */}
                     <form onSubmit={handleSearchSubmit} className="relative w-full">

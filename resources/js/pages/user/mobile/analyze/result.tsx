@@ -184,7 +184,7 @@ export default function MobileResultPage({
     };
 
     return (
-        <MobileAppLayout title="Analytics Portofolio | Dinalar Mobile">
+        <MobileAppLayout>
             {/* Top Bar (Section 6.2 in desain.md) */}
             <header className="px-4 pt-3 pb-2 flex items-center justify-between">
                 <div className="flex items-center gap-3">

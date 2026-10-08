@@ -58,7 +58,7 @@ export default function MobileProfilePage({ mustVerifyEmail, status }: ProfilePr
     };
 
     return (
-        <MobileAppLayout title="Profil Akun | Dinalar Mobile">
+        <MobileAppLayout>
             {/* Top Bar */}
             <header className="px-4 pt-3 pb-2 flex items-center justify-between">
                 <div className="flex items-center gap-3">

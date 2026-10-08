@@ -89,7 +89,7 @@ export default function MobileDashboard({
     const heroRefCode = latest_portfolio?.reference_code || 'DNL-PORT-01';
 
     return (
-        <MobileAppLayout title="Beranda | Dinalar Mobile">
+        <MobileAppLayout>
             {/* 1. Header (Avatar 40 & Keranjang Saham) */}
             <MobileHeader />
 
@@ -112,7 +112,7 @@ export default function MobileDashboard({
                 {/* 4. Container Putih Besar (Section 6.5 & 7.1) */}
                 <section className="mx-1 rounded-[24px] bg-white p-4 border border-zinc-200 shadow-xs">
                     <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-[18px] font-semibold text-emerald-600 tracking-tight">
+                        <h3 className="text-base font-semibold text-emerald-600 tracking-tight">
                             Bursa Pilihan
                         </h3>
                         <Link
@@ -199,7 +199,7 @@ export default function MobileDashboard({
                 {recent_optimizations.length > 0 && (
                     <section className="mx-1 rounded-[24px] bg-white p-4 border border-zinc-200 shadow-xs">
                         <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-[18px] font-semibold text-emerald-600 tracking-tight">
+                        <h3 className="text-base font-semibold text-emerald-600 tracking-tight">
                             Riwayat Portofolio
                         </h3>
                         <Link
