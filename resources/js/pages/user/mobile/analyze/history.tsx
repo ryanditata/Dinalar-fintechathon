@@ -327,7 +327,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
             {/* Modal Edit Judul */}
             {editingItem && (
                 <div
-                    className="fixed inset-0 z-100 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
+                    className="fixed inset-0 z-100 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
                     onClick={() => !isUpdating && setEditingItem(null)}
                 >
                     <div
@@ -399,7 +399,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
             {/* Modal Konfirmasi Hapus */}
             {deletingItem && (
                 <div
-                    className="fixed inset-0 z-100 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
+                    className="fixed inset-0 z-100 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
                     onClick={() => !isDeleting && setDeletingItem(null)}
                 >
                     <div

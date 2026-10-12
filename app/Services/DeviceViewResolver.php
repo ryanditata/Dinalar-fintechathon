@@ -58,6 +58,15 @@ class DeviceViewResolver
                 }
             }
 
+            if (str_starts_with($view, 'auth/')) {
+                $mobileView = 'user/mobile/auth/' . substr($view, 5);
+                $mobileFilePath = resource_path("js/pages/{$mobileView}.tsx");
+
+                if (file_exists($mobileFilePath)) {
+                    return $mobileView;
+                }
+            }
+
             if ($view === 'settings/profile') {
                 $mobileView = 'user/mobile/profile/edit';
                 $mobileFilePath = resource_path("js/pages/{$mobileView}.tsx");

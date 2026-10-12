@@ -1027,7 +1027,7 @@ export default function MobileKeranjangPage({
             {/* Modal Dialog Konfirmasi Kosongkan Keranjang */}
             {isClearModalOpen && (
                 <div
-                    className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
+                    className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
                     onClick={() => !isProcessingBasket && setIsClearModalOpen(false)}
                 >
                     <div
