@@ -2,10 +2,11 @@ import SparklineChart from '@/components/SparklineChart';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Deferred, Head, Link, router, usePage } from '@inertiajs/react';
 import {
     Activity,
     ArrowRight,
@@ -293,7 +294,29 @@ export default function UserDashboard({
                         </div>
                     </div>
 
-                    {activeStockList.length === 0 ? (
+                    <Deferred
+                        data={['popular_stocks', 'top_gainers', 'top_losers']}
+                        fallback={
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {[1, 2, 3, 4, 5, 6].map((i) => (
+                                    <Card key={i} className="border border-border/70 p-4 space-y-3">
+                                        <div className="flex items-start justify-between">
+                                            <div className="space-y-1.5">
+                                                <Skeleton className="h-5 w-20 rounded-md" />
+                                                <Skeleton className="h-3 w-32 rounded-md" />
+                                            </div>
+                                            <Skeleton className="h-5 w-16 rounded-md" />
+                                        </div>
+                                        <div className="flex items-center justify-between pt-1">
+                                            <Skeleton className="h-6 w-24 rounded-md" />
+                                            <Skeleton className="h-7 w-20 rounded-md" />
+                                        </div>
+                                    </Card>
+                                ))}
+                            </div>
+                        }
+                    >
+                        {activeStockList.length === 0 ? (
                         <Card className="border border-border/70 p-8 text-center">
                             <p className="text-xs text-muted-foreground">Belum ada data saham populer tersimpan saat ini.</p>
                             <Button asChild size="sm" variant="outline" className="mt-3 text-xs">
@@ -377,6 +400,7 @@ export default function UserDashboard({
                             })}
                         </div>
                     )}
+                    </Deferred>
                 </div>
 
                 {/* 3. OVERVIEW & QUICK METRICS */}

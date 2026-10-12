@@ -509,13 +509,13 @@ class PortfolioController extends Controller
      */
     public function history(Request $request)
     {
-        $history = PortfolioOptimization::where('user_id', Auth::id())
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
-
+        $userId = Auth::id();
         return Inertia::render(DeviceViewResolver::resolve('user/analyze/history', $request), [
-            'history' => $history,
+            'history' => Inertia::defer(function () use ($userId) {
+                return PortfolioOptimization::where('user_id', $userId)
+                    ->latest()
+                    ->get();
+            }),
         ]);
     }
 

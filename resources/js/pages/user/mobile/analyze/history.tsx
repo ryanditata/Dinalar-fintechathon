@@ -1,8 +1,9 @@
 import { FloatingBottomNav } from '@/pages/user/mobile/components/FloatingBottomNav';
+import { HistoryListSkeleton } from '@/pages/user/mobile/components/MobileSkeletons';
 import { MobileHeader } from '@/pages/user/mobile/components/MobileHeader';
 import { MobileAppLayout } from '@/pages/user/mobile/layouts/MobileAppLayout';
 import { type PaginatedData } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Deferred, Head, Link, router } from '@inertiajs/react';
 import {
     Clock,
     Edit2,
@@ -36,11 +37,15 @@ interface HistoryItem {
 }
 
 interface HistoryProps {
-    history: PaginatedData<HistoryItem> | { data: HistoryItem[] };
+    history?: HistoryItem[] | PaginatedData<HistoryItem> | { data: HistoryItem[] };
 }
 
 export default function MobileHistoryPage({ history }: HistoryProps) {
-    const list = 'data' in history ? history.data : [];
+    const list: HistoryItem[] = Array.isArray(history)
+        ? history
+        : (history && typeof history === 'object' && 'data' in history && Array.isArray(history.data)
+            ? history.data
+            : []);
 
     // Edit Modal State
     const [editingItem, setEditingItem] = useState<HistoryItem | null>(null);
@@ -167,8 +172,9 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                         </div>
                     </div>
 
-                    {/* Daftar Riwayat Portofolio */}
-                    <div className="space-y-2.5 pt-1">
+                    {/* Daftar Riwayat Portofolio dengan Deferred Loading */}
+                    <Deferred data="history" fallback={<HistoryListSkeleton count={4} />}>
+                        <div className="space-y-2.5 pt-1">
                         {list.length > 0 ? (
                             list.map((item) => {
                                 const profile =
@@ -312,12 +318,13 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                             </div>
                         )}
                     </div>
-                </section>
+                </Deferred>
+            </section>
             </div>
 
             {/* Modal Edit Judul */}
             {editingItem && (
-                <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-100 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
                     <div className="w-full max-w-sm rounded-2xl bg-white p-5 border border-zinc-200 shadow-xl space-y-4">
                         <div>
                             <h3 className="text-base font-bold text-zinc-900">
@@ -362,7 +369,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
 
             {/* Modal Konfirmasi Hapus */}
             {deletingItem && (
-                <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-100 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
                     <div className="w-full max-w-sm rounded-2xl bg-white p-5 border border-zinc-200 shadow-xl space-y-3">
                         <h3 className="text-base font-bold text-zinc-900">
                             Hapus Riwayat Portofolio?

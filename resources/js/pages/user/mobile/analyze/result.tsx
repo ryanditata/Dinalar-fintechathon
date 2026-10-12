@@ -847,7 +847,7 @@ export default function MobileResultPage({
                 <section className="mx-1 rounded-[24px] bg-white p-4 border border-zinc-200 shadow-xs space-y-3">
                     <div className="flex items-center justify-between">
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary ring-1 ring-inset ring-primary/20 backdrop-blur-xs">
-                            <Sparkles className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                            <Sparkles className="h-5 w-5 text-emerald-600" />
                             Hasil Optimasi Portofolio
                         </span>
                     </div>
@@ -1198,8 +1198,8 @@ export default function MobileResultPage({
                                 Kurva Pareto Efficient Frontier
                             </p>
 
-                            <div className="h-64 w-full select-none -ml-2">
-                                <ResponsiveContainer width="100%" height="100%">
+                            <div className="h-64 w-full select-none -ml-2 min-w-0">
+                                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                     <ScatterChart
                                         margin={{ top: 15, right: 15, bottom: 20, left: 0 }}
                                         onMouseMove={(e: any) => {
@@ -1386,8 +1386,8 @@ export default function MobileResultPage({
                                 Komposisi alokasi bobot saham untuk profil <strong className="text-zinc-800">{getProfileLabel(selectedProfile)}</strong>:
                             </p>
 
-                            <div className="h-44 w-full select-none">
-                                <ResponsiveContainer width="100%" height="100%">
+                            <div className="h-44 w-full select-none min-w-0">
+                                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                     <PieChart>
                                         <Pie
                                             data={donutData}
@@ -1654,7 +1654,7 @@ export default function MobileResultPage({
             {isShareModalOpen && (
                 <div
                     ref={shareOverlayRef}
-                    className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-xs flex items-end justify-center p-0 animate-in fade-in duration-200 select-none"
+                    className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-xs flex items-end justify-center p-0 animate-in fade-in duration-200 select-none"
                     onClick={() => !isExporting && !isGeneratingShare && setIsShareModalOpen(false)}
                 >
                     <div

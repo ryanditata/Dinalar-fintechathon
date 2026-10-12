@@ -907,8 +907,8 @@ export default function OptimizationResultPage({
                         </CardHeader>
 
                         <CardContent className="p-4 flex-1">
-                            <div className="h-64 sm:h-80 md:h-[380px] w-full">
-                                <ResponsiveContainer width="100%" height="100%">
+                            <div className="h-64 sm:h-80 md:h-[380px] w-full min-w-0">
+                                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                     <ScatterChart
                                         margin={{ top: 20, right: 20, bottom: 20, left: 10 }}
                                         onMouseMove={(e: any) => {
@@ -1130,8 +1130,8 @@ export default function OptimizationResultPage({
                         </CardHeader>
 
                         <CardContent className="p-4 space-y-3 flex-1 flex flex-col justify-between">
-                            <div className="h-48 w-full">
-                                <ResponsiveContainer width="100%" height="100%">
+                            <div className="h-48 w-full min-w-0">
+                                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                     <PieChart>
                                         <Pie
                                             data={

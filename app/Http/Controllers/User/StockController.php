@@ -8,127 +8,21 @@ use App\Models\Stock;
 use App\Models\StockPrice;
 use App\Services\DeviceViewResolver;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class StockController extends Controller
 {
     /**
      * Display a listing of stocks for users from database without pagination.
-     * Optimized for high concurrency, minimal memory footprint, and fast querying.
+     * Uses Inertia::defer for instant mobile/desktop page transition with skeleton loading.
      */
     public function index(Request $request)
     {
-        $query = Stock::query()
-            ->with(['latestPrice'])
-            ->withCount('prices')
-            ->where('is_active', true);
-
-        if ($request->filled('search')) {
-            $search = trim($request->search);
-            $query->where(function ($q) use ($search) {
-                $q->where('ticker', 'like', '%' . $search . '%')
-                  ->orWhere('name', 'like', '%' . $search . '%');
-            });
-        }
-
-        if ($request->filled('bursa') && $request->bursa !== 'all') {
-            $query->where('bursa', $request->bursa);
-        }
-
-        if ($request->filled('sector') && $request->sector !== 'all') {
-            $query->where('sector', $request->sector);
-        }
-
-        $stocks = $query->orderBy('ticker', 'asc')->get();
-        $stockIds = $stocks->pluck('id')->toArray();
-
-        // 1. Dapatkan batas tanggal global
+        // 1. Dapatkan batas tanggal global & metadata ringan (dijalankan cepat)
         $minDate = StockPrice::min('date');
         $maxDate = StockPrice::max('date');
 
-        // 2. Optimasi Memory: Hanya ambil harga penutupan rentang 45 hari terakhir untuk sparkline & kalkulasi change
-        // Mencegah memory exhaustion akibat memuat ratusan ribu baris data historis ke RAM PHP
-        $recentPricesByStock = collect();
-        if ($maxDate && !empty($stockIds)) {
-            $maxDateStr = is_string($maxDate) ? substr($maxDate, 0, 10) : $maxDate->format('Y-m-d');
-            $cutoffDate = date('Y-m-d', strtotime($maxDateStr . ' -45 days'));
-
-            $recentPricesByStock = StockPrice::whereIn('stock_id', $stockIds)
-                ->where('date', '>=', $cutoffDate)
-                ->orderBy('date', 'desc')
-                ->get(['stock_id', 'date', 'close_price'])
-                ->groupBy('stock_id');
-        }
-
-        // 3. Hitung frekuensi analisis tiap kode saham dari tabel portfolio_optimizations
-        $tickerAnalysisCounts = [];
-        $allTickerArrays = PortfolioOptimization::pluck('tickers');
-        foreach ($allTickerArrays as $tickerArray) {
-            if (is_array($tickerArray)) {
-                foreach ($tickerArray as $rawTicker) {
-                    $clean = str_replace('.JK', '', strtoupper(trim($rawTicker)));
-                    $tickerAnalysisCounts[$clean] = ($tickerAnalysisCounts[$clean] ?? 0) + 1;
-                    $tickerAnalysisCounts[$rawTicker] = ($tickerAnalysisCounts[$rawTicker] ?? 0) + 1;
-                }
-            }
-        }
-
-        // 4. Transformasi atribut saham sesuai kontrak frontend
-        $stocks->transform(function ($stock) use ($recentPricesByStock, $tickerAnalysisCounts) {
-            $prices = $recentPricesByStock->get($stock->id, collect());
-
-            // Fallback jika saham tertentu tidak memiliki transaksi dalam 45 hari terakhir
-            if ($prices->isEmpty() && $stock->prices_count > 0) {
-                $prices = StockPrice::where('stock_id', $stock->id)
-                    ->orderBy('date', 'desc')
-                    ->take(7)
-                    ->get(['stock_id', 'date', 'close_price']);
-            }
-
-            $latest = $prices->first() ?? $stock->latestPrice;
-            $previous = $prices->skip(1)->first();
-
-            $change = null;
-            $changePercent = null;
-
-            if ($latest && $previous && (float) $previous->close_price > 0) {
-                $latestClose = (float) $latest->close_price;
-                $prevClose = (float) $previous->close_price;
-                $change = $latestClose - $prevClose;
-                $changePercent = (($latestClose - $prevClose) / $prevClose) * 100;
-            } elseif ($latest) {
-                $change = 0;
-                $changePercent = 0;
-            }
-
-            $cleanTicker = str_replace('.JK', '', strtoupper(trim($stock->ticker)));
-            $stock->analysis_count = $tickerAnalysisCounts[$cleanTicker] ?? $tickerAnalysisCounts[$stock->ticker] ?? 0;
-            $stock->change = $change !== null ? round($change, 2) : null;
-            $stock->change_percent = $changePercent !== null ? round($changePercent, 2) : null;
-            $stock->previous_price = $previous ? (float) $previous->close_price : null;
-            
-            // 7 data penutupan terakhir secara kronologis (kiri ke kanan / terlama ke terbaru) untuk sparkline
-            $stock->recent_prices = $prices->take(7)
-                ->pluck('close_price')
-                ->reverse()
-                ->values()
-                ->map(fn($p) => (float) $p)
-                ->toArray();
-
-            return $stock;
-        });
-
-        // 5. Dynamic Sorting: Prioritaskan saham yang paling sering dianalisis (analysis_count DESC), lalu performa change_percent DESC
-        $stocks = $stocks->sort(function ($a, $b) {
-            $countA = $a->analysis_count ?? 0;
-            $countB = $b->analysis_count ?? 0;
-            if ($countA !== $countB) {
-                return $countB <=> $countA;
-            }
-            return ($b->change_percent ?? 0) <=> ($a->change_percent ?? 0);
-        })->values();
-
-        // 6. Bursa yang tersedia
         $bursaList = Stock::where('is_active', true)
             ->whereNotNull('bursa')
             ->where('bursa', '!=', '')
@@ -138,8 +32,122 @@ class StockController extends Controller
             ->values()
             ->toArray();
 
+        $totalCount = Stock::where('is_active', true)->count();
+
+        // 2. Closure untuk memuat dan mengkalkulasi daftar saham secara asynchronous (Deferred)
+        $resolveStocks = function () use ($request, $maxDate) {
+            $hasFilter = $request->filled('search') ||
+                ($request->filled('bursa') && $request->bursa !== 'all') ||
+                ($request->filled('sector') && $request->sector !== 'all');
+
+            // Ambil katalog dasar dari cache jika tanpa filter pencarian spesifik
+            $cacheKey = 'user_stock_catalog_dataset';
+            $stocks = Cache::remember($hasFilter ? 'user_stock_raw_all' : $cacheKey, 120, function () use ($maxDate) {
+                $allStocks = Stock::query()
+                    ->with(['latestPrice'])
+                    ->withCount('prices')
+                    ->where('is_active', true)
+                    ->orderBy('ticker', 'asc')
+                    ->get();
+
+                $stockIds = $allStocks->pluck('id')->toArray();
+
+                $recentPricesByStock = collect();
+                if ($maxDate && !empty($stockIds)) {
+                    $maxDateStr = is_string($maxDate) ? substr($maxDate, 0, 10) : $maxDate->format('Y-m-d');
+                    $cutoffDate = date('Y-m-d', strtotime($maxDateStr . ' -45 days'));
+
+                    $recentPricesByStock = StockPrice::whereIn('stock_id', $stockIds)
+                        ->where('date', '>=', $cutoffDate)
+                        ->orderBy('date', 'desc')
+                        ->get(['stock_id', 'date', 'close_price'])
+                        ->groupBy('stock_id');
+                }
+
+                $tickerAnalysisCounts = [];
+                $allTickerArrays = PortfolioOptimization::pluck('tickers');
+                foreach ($allTickerArrays as $tickerArray) {
+                    if (is_array($tickerArray)) {
+                        foreach ($tickerArray as $rawTicker) {
+                            $clean = str_replace('.JK', '', strtoupper(trim($rawTicker)));
+                            $tickerAnalysisCounts[$clean] = ($tickerAnalysisCounts[$clean] ?? 0) + 1;
+                            $tickerAnalysisCounts[$rawTicker] = ($tickerAnalysisCounts[$rawTicker] ?? 0) + 1;
+                        }
+                    }
+                }
+
+                $allStocks->transform(function ($stock) use ($recentPricesByStock, $tickerAnalysisCounts) {
+                    $prices = $recentPricesByStock->get($stock->id, collect());
+                    if ($prices->isEmpty() && $stock->prices_count > 0) {
+                        $prices = StockPrice::where('stock_id', $stock->id)
+                            ->orderBy('date', 'desc')
+                            ->take(7)
+                            ->get(['stock_id', 'date', 'close_price']);
+                    }
+
+                    $latest = $prices->first() ?? $stock->latestPrice;
+                    $previous = $prices->skip(1)->first();
+
+                    $change = null;
+                    $changePercent = null;
+
+                    if ($latest && $previous && (float) $previous->close_price > 0) {
+                        $latestClose = (float) $latest->close_price;
+                        $prevClose = (float) $previous->close_price;
+                        $change = $latestClose - $prevClose;
+                        $changePercent = (($latestClose - $prevClose) / $prevClose) * 100;
+                    } elseif ($latest) {
+                        $change = 0;
+                        $changePercent = 0;
+                    }
+
+                    $cleanTicker = str_replace('.JK', '', strtoupper(trim($stock->ticker)));
+                    $stock->analysis_count = $tickerAnalysisCounts[$cleanTicker] ?? $tickerAnalysisCounts[$stock->ticker] ?? 0;
+                    $stock->change = $change !== null ? round($change, 2) : null;
+                    $stock->change_percent = $changePercent !== null ? round($changePercent, 2) : null;
+                    $stock->previous_price = $previous ? (float) $previous->close_price : null;
+
+                    $stock->recent_prices = $prices->take(7)
+                        ->pluck('close_price')
+                        ->reverse()
+                        ->values()
+                        ->map(fn($p) => (float) $p)
+                        ->toArray();
+
+                    return $stock;
+                });
+
+                return $allStocks->sort(function ($a, $b) {
+                    $countA = $a->analysis_count ?? 0;
+                    $countB = $b->analysis_count ?? 0;
+                    if ($countA !== $countB) {
+                        return $countB <=> $countA;
+                    }
+                    return ($b->change_percent ?? 0) <=> ($a->change_percent ?? 0);
+                })->values();
+            });
+
+            // Filter in-memory jika user menggunakan filter pencarian/bursa/sektor
+            if ($hasFilter) {
+                $filtered = clone $stocks;
+                if ($request->filled('search')) {
+                    $search = trim(strtolower($request->search));
+                    $filtered = $filtered->filter(fn($s) => str_contains(strtolower($s->ticker), $search) || str_contains(strtolower($s->name), $search));
+                }
+                if ($request->filled('bursa') && $request->bursa !== 'all') {
+                    $filtered = $filtered->where('bursa', $request->bursa);
+                }
+                if ($request->filled('sector') && $request->sector !== 'all') {
+                    $filtered = $filtered->where('sector', $request->sector);
+                }
+                return $filtered->values();
+            }
+
+            return $stocks;
+        };
+
         return Inertia::render(DeviceViewResolver::resolve('user/saham/index', $request), [
-            'stocks' => $stocks,
+            'stocks' => Inertia::defer($resolveStocks),
             'filters' => [
                 'search' => $request->search ?? '',
                 'bursa' => $request->bursa ?? 'all',
@@ -147,7 +155,7 @@ class StockController extends Controller
             ],
             'bursa_list' => $bursaList,
             'availableSectors' => \App\Http\Controllers\Admin\StockController::SECTORS,
-            'total_count' => Stock::where('is_active', true)->count(),
+            'total_count' => $totalCount,
             'timeframe_limits' => [
                 'min_date' => $minDate ? (is_string($minDate) ? substr($minDate, 0, 10) : $minDate->format('Y-m-d')) : null,
                 'max_date' => $maxDate ? (is_string($maxDate) ? substr($maxDate, 0, 10) : $maxDate->format('Y-m-d')) : null,

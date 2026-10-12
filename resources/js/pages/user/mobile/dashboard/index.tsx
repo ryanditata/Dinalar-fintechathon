@@ -1,3 +1,4 @@
+import { DashboardStockCardsSkeleton } from '@/pages/user/mobile/components/MobileSkeletons';
 import { FloatingBottomNav } from '@/pages/user/mobile/components/FloatingBottomNav';
 import { MobileHeader } from '@/pages/user/mobile/components/MobileHeader';
 import { QuickActionTiles } from '@/pages/user/mobile/components/QuickActionTiles';
@@ -5,7 +6,7 @@ import { StockItemCard } from '@/pages/user/mobile/components/StockItemCard';
 import { WalletLeatherHero } from '@/pages/user/mobile/components/WalletLeatherHero';
 import { MobileAppLayout } from '@/pages/user/mobile/layouts/MobileAppLayout';
 import { type SharedData } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Deferred, Head, Link, router, usePage } from '@inertiajs/react';
 import { ChevronRight, Sparkles, TrendingUp, Zap } from 'lucide-react';
 import React, { useState } from 'react';
 
@@ -77,10 +78,10 @@ export default function MobileDashboard({
 
     const displayedStocks =
         activeTab === 'popular'
-            ? popular_stocks.slice(0, 5)
+            ? (popular_stocks || []).slice(0, 5)
             : activeTab === 'gainers'
-                ? top_gainers.slice(0, 5)
-                : top_losers.slice(0, 5);
+                ? (top_gainers || []).slice(0, 5)
+                : (top_losers || []).slice(0, 5);
 
     const heroAmount = latest_portfolio
         ? latest_portfolio.initial_capital
@@ -157,39 +158,44 @@ export default function MobileDashboard({
                         </button>
                     </div>
 
-                    {/* List Saham (StockItemCard) */}
-                    <div className="space-y-2">
-                        {displayedStocks.length > 0 ? (
-                            displayedStocks.map((stock) => (
-                                <StockItemCard
-                                    key={stock.id}
-                                    ticker={stock.ticker}
-                                    name={stock.name}
-                                    bursa={stock.bursa || 'IDX'}
-                                    price={stock.latest_price?.close_price}
-                                    change={stock.change}
-                                    changePercent={stock.change_percent}
-                                    recentPrices={stock.recent_prices}
-                                    analysisCount={stock.analysis_count}
-                                    actionLabel="Analisis"
-                                    onActionClick={() => {
-                                        router.get('/user/saham', {
-                                            search: stock.ticker.replace('.JK', ''),
-                                        });
-                                    }}
-                                    onClick={() => {
-                                        router.get('/user/saham', {
-                                            search: stock.ticker.replace('.JK', ''),
-                                        });
-                                    }}
-                                />
-                            ))
-                        ) : (
-                            <div className="py-8 text-center text-xs text-zinc-500">
-                                Belum ada data pergerakan saham.
-                            </div>
-                        )}
-                    </div>
+                    {/* List Saham (StockItemCard) dengan Deferred Loading */}
+                    <Deferred
+                        data={['popular_stocks', 'top_gainers', 'top_losers']}
+                        fallback={<DashboardStockCardsSkeleton count={5} />}
+                    >
+                        <div className="space-y-2">
+                            {displayedStocks.length > 0 ? (
+                                displayedStocks.map((stock) => (
+                                    <StockItemCard
+                                        key={stock.id}
+                                        ticker={stock.ticker}
+                                        name={stock.name}
+                                        bursa={stock.bursa || 'IDX'}
+                                        price={stock.latest_price?.close_price}
+                                        change={stock.change}
+                                        changePercent={stock.change_percent}
+                                        recentPrices={stock.recent_prices}
+                                        analysisCount={stock.analysis_count}
+                                        actionLabel="Analisis"
+                                        onActionClick={() => {
+                                            router.get('/user/saham', {
+                                                search: stock.ticker.replace('.JK', ''),
+                                            });
+                                        }}
+                                        onClick={() => {
+                                            router.get('/user/saham', {
+                                                search: stock.ticker.replace('.JK', ''),
+                                            });
+                                        }}
+                                    />
+                                ))
+                            ) : (
+                                <div className="py-8 text-center text-xs text-zinc-500">
+                                    Belum ada data pergerakan saham.
+                                </div>
+                            )}
+                        </div>
+                    </Deferred>
                 </section>
 
                 {/* 5. Riwayat Terakhir Card (Jika Ada Portofolio Tersimpan) */}

@@ -3,6 +3,7 @@ import SparklineChart from '@/components/SparklineChart';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -13,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type PaginatedData, type SharedData, type Stock } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Deferred, Head, Link, router, usePage } from '@inertiajs/react';
 import {
     Check,
     LineChart,
@@ -54,7 +55,7 @@ const SECTORS = [
 ];
 
 interface Props {
-    stocks: Stock[] | PaginatedData<Stock>;
+    stocks?: Stock[] | PaginatedData<Stock>;
     filters?: {
         search?: string;
         bursa?: string;
@@ -434,7 +435,29 @@ export default function UserStockIndex({
                 </div>
 
                 {/* 3. CARD GRID AREA */}
-                {stockList.length === 0 ? (
+                <Deferred
+                    data="stocks"
+                    fallback={
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {[1, 2, 3, 4, 5, 6].map((i) => (
+                                <Card key={i} className="p-4 border border-border/70 space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <div className="space-y-1.5">
+                                            <Skeleton className="h-5 w-20 rounded-md" />
+                                            <Skeleton className="h-3 w-32 rounded-md" />
+                                        </div>
+                                        <Skeleton className="h-6 w-12 rounded-full" />
+                                    </div>
+                                    <div className="flex items-center justify-between pt-2">
+                                        <Skeleton className="h-6 w-24 rounded-md" />
+                                        <Skeleton className="h-8 w-16 rounded-md" />
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    }
+                >
+                    {stockList.length === 0 ? (
                     <div className="rounded-2xl border border-dashed border-border/80 bg-card p-12 text-center flex flex-col items-center justify-center">
                         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground mb-3">
                             <Search className="h-6 w-6" />
@@ -565,6 +588,7 @@ export default function UserStockIndex({
                         })}
                     </div>
                 )}
+                </Deferred>
             </div>
 
             {/* 4. MODAL DIALOG ANALISIS & PEMILIHAN SAHAM */}

@@ -494,8 +494,8 @@ export default function StockDetailModal({
                                         <p className="text-xs">Memuat data harga saham...</p>
                                     </div>
                                 ) : filteredChartData.length > 0 ? (
-                                    <div className="h-[240px] w-full pt-2">
-                                        <ResponsiveContainer width="100%" height="100%">
+                                    <div className="h-[240px] w-full pt-2 min-w-0">
+                                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                             <AreaChart
                                                 data={filteredChartData}
                                                 margin={{ top: 10, right: 10, left: 0, bottom: 0 }}

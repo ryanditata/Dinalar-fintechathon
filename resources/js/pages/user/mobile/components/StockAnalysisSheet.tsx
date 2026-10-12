@@ -582,6 +582,7 @@ export function StockAnalysisSheet({
             <SheetContent
                 ref={sheetRef}
                 side="bottom"
+                overlayClassName="bg-black/40 backdrop-blur-xs"
                 className="w-full max-w-[430px] mx-auto rounded-t-[28px] max-h-[92vh] flex flex-col p-0 border-t border-zinc-200/90 bg-white text-zinc-900 shadow-2xl overflow-hidden focus:outline-hidden z-50 [&>button.opacity-70]:hidden [&>button:last-child]:hidden will-change-transform"
                 style={{
                     colorScheme: 'light',
@@ -795,9 +796,9 @@ export function StockAnalysisSheet({
                                 </div>
 
                                 <CardContent className="p-2">
-                                    <div className="h-44 w-full">
+                                    <div className="h-44 w-full min-w-0">
                                         {historicalPrices.length > 0 ? (
-                                            <ResponsiveContainer width="100%" height="100%">
+                                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                                 <AreaChart
                                                     data={historicalPrices}
                                                     margin={{ top: 8, right: 8, left: -10, bottom: 0 }}

@@ -14,8 +14,8 @@ interface Props {
 
 const AnalyticsChart: React.FC<Props> = ({ data }) => {
   return (
-    <div className="w-full h-100">
-      <ResponsiveContainer width="100%" height="100%">
+    <div className="w-full h-100 min-w-0">
+      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
         <AreaChart data={data}>
           <XAxis dataKey="month" />
           <YAxis allowDecimals={false} />

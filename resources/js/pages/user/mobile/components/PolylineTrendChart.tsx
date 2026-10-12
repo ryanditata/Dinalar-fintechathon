@@ -50,9 +50,9 @@ export function PolylineTrendChart({
     const displayEnd = endDateLabel || lastPoint?.date || '';
 
     return (
-        <div className="w-full select-none">
-            <div style={{ width: '100%', height }}>
-                <ResponsiveContainer width="100%" height="100%">
+        <div className="w-full select-none min-w-0">
+            <div style={{ width: '100%', height }} className="min-w-0">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                     <AreaChart
                         data={data}
                         margin={{ top: 10, right: 10, left: 10, bottom: 0 }}

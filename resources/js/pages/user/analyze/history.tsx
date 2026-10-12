@@ -18,10 +18,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type PaginatedData } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Deferred, Head, Link, router } from '@inertiajs/react';
 import {
     Activity,
     AlertCircle,
@@ -68,11 +69,15 @@ interface HistoryItem {
 }
 
 interface HistoryProps {
-    history: PaginatedData<HistoryItem> | { data: HistoryItem[] };
+    history?: HistoryItem[] | PaginatedData<HistoryItem> | { data: HistoryItem[] };
 }
 
 export default function OptimizationHistoryPage({ history }: HistoryProps) {
-    const list = 'data' in history ? history.data : [];
+    const list: HistoryItem[] = Array.isArray(history)
+        ? history
+        : (history && typeof history === 'object' && 'data' in history && Array.isArray(history.data)
+            ? history.data
+            : []);
 
     // Edit Modal State
     const [editingItem, setEditingItem] = useState<HistoryItem | null>(null);
@@ -152,7 +157,7 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
             (sum, item) => sum + (Array.isArray(item.tickers) ? item.tickers.length : 0),
             0
         );
-        const avgTickers = totalPortfolios > 0 ? (totalTickersCount / totalPortfolios).toFixed(1) : '0';
+        const avgTickers = list.length > 0 ? (totalTickersCount / list.length).toFixed(1) : '0';
         const avgRiskFree = list.length > 0 ? Number(list[0].risk_free_rate || 6.0) : 6.0;
 
         return {
@@ -221,9 +226,11 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                             </div>
                             <div className="min-w-0 flex-1">
                                 <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Total Portofolio</span>
-                                <span className="text-xs sm:text-base font-extrabold font-mono text-foreground truncate block">
-                                    {stats.totalPortfolios} <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">Portofolio</span>
-                                </span>
+                                <Deferred data="history" fallback={<Skeleton className="h-5 w-20 my-0.5 rounded-sm" />}>
+                                    <span className="text-xs sm:text-base font-extrabold font-mono text-foreground truncate block">
+                                        {stats.totalPortfolios} <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">Portofolio</span>
+                                    </span>
+                                </Deferred>
                             </div>
                         </div>
                     </Card>
@@ -235,9 +242,11 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                             </div>
                             <div className="min-w-0 flex-1">
                                 <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Akumulasi Modal</span>
-                                <span className="text-xs sm:text-base font-extrabold font-mono text-foreground block truncate" title={formatRupiah(stats.totalCapital)}>
-                                    {formatRupiah(stats.totalCapital)}
-                                </span>
+                                <Deferred data="history" fallback={<Skeleton className="h-5 w-24 my-0.5 rounded-sm" />}>
+                                    <span className="text-xs sm:text-base font-extrabold font-mono text-foreground block truncate" title={formatRupiah(stats.totalCapital)}>
+                                        {formatRupiah(stats.totalCapital)}
+                                    </span>
+                                </Deferred>
                             </div>
                         </div>
                     </Card>
@@ -249,9 +258,11 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                             </div>
                             <div className="min-w-0 flex-1">
                                 <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Rata-rata Emiten</span>
-                                <span className="text-xs sm:text-base font-extrabold font-mono text-foreground truncate block">
-                                    {stats.avgTickers} <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">Saham</span>
-                                </span>
+                                <Deferred data="history" fallback={<Skeleton className="h-5 w-16 my-0.5 rounded-sm" />}>
+                                    <span className="text-xs sm:text-base font-extrabold font-mono text-foreground truncate block">
+                                        {stats.avgTickers} <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">Saham</span>
+                                    </span>
+                                </Deferred>
                             </div>
                         </div>
                     </Card>
@@ -263,9 +274,11 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                             </div>
                             <div className="min-w-0 flex-1">
                                 <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Risk-Free Rate (Rf)</span>
-                                <span className="text-xs sm:text-base font-extrabold font-mono text-foreground truncate block">
-                                    {stats.avgRiskFree}% <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">SBN/BI</span>
-                                </span>
+                                <Deferred data="history" fallback={<Skeleton className="h-5 w-16 my-0.5 rounded-sm" />}>
+                                    <span className="text-xs sm:text-base font-extrabold font-mono text-foreground truncate block">
+                                        {stats.avgRiskFree}% <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">SBN/BI</span>
+                                    </span>
+                                </Deferred>
                             </div>
                         </div>
                     </Card>
@@ -283,143 +296,164 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                     </CardHeader>
 
                     <CardContent className="p-0">
-                        {list.length === 0 ? (
-                            <div className="p-12 text-center flex flex-col items-center justify-center">
-                                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground mb-3">
-                                    <History className="h-7 w-7" />
+                        <Deferred
+                            data="history"
+                            fallback={
+                                <div className="p-4 space-y-3">
+                                    {[1, 2, 3, 4, 5].map((i) => (
+                                        <div key={i} className="flex items-center justify-between p-3 border-b border-border/40 gap-4">
+                                            <div className="space-y-1.5 flex-1">
+                                                <Skeleton className="h-4 w-28 rounded-md" />
+                                                <Skeleton className="h-3 w-44 rounded-md" />
+                                            </div>
+                                            <div className="space-y-1.5 w-32 hidden sm:block">
+                                                <Skeleton className="h-4 w-20 rounded-md ml-auto" />
+                                                <Skeleton className="h-3 w-14 rounded-md ml-auto" />
+                                            </div>
+                                            <Skeleton className="h-8 w-8 rounded-md shrink-0" />
+                                        </div>
+                                    ))}
                                 </div>
-                                <h3 className="text-sm font-bold text-foreground">Belum Ada Riwayat Portofolio</h3>
-                                <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                                    Anda belum menjalankan optimasi portofolio. Silakan pilih minimal 2 saham dari menu Eksplorasi Saham.
-                                </p>
-                                <Button asChild size="sm" className="mt-4 gap-1.5 text-xs cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white">
-                                    <Link href="/user/analyze/keranjang">
-                                        <TrendingUp className="h-3.5 w-3.5" />
-                                        <span>Mulai Analisis Saham</span>
-                                    </Link>
-                                </Button>
-                            </div>
-                        ) : (
-                            <div className="overflow-x-auto w-full">
-                                <Table className="min-w-[680px]">
-                                    <TableHeader className="bg-muted/30">
-                                        <TableRow className="hover:bg-transparent border-b border-border/50">
-                                            <TableHead className="text-xs font-bold w-44 py-3.5 px-4">Kode Referensi</TableHead>
-                                            <TableHead className="text-xs font-bold py-3.5 px-4">Judul & Emiten Saham</TableHead>
-                                            <TableHead className="text-xs font-bold text-right py-3.5 px-4">Modal Investasi</TableHead>
-                                            <TableHead className="text-xs font-bold text-right w-16 py-3.5 px-4">Aksi</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {list.map((item) => {
-                                            const refCode = item.reference_code || `DNL${item.user_id}-${item.id}`;
-                                            const tickersList = Array.isArray(item.tickers)
-                                                ? item.tickers.map((t) => t.replace('.JK', ''))
-                                                : [];
+                            }
+                        >
+                            {list.length === 0 ? (
+                                <div className="p-12 text-center flex flex-col items-center justify-center">
+                                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground mb-3">
+                                        <History className="h-7 w-7" />
+                                    </div>
+                                    <h3 className="text-sm font-bold text-foreground">Belum Ada Riwayat Portofolio</h3>
+                                    <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+                                        Anda belum menjalankan optimasi portofolio. Silakan pilih minimal 2 saham dari menu Eksplorasi Saham.
+                                    </p>
+                                    <Button asChild size="sm" className="mt-4 gap-1.5 text-xs cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white">
+                                        <Link href="/user/analyze/keranjang">
+                                            <TrendingUp className="h-3.5 w-3.5" />
+                                            <span>Mulai Analisis Saham</span>
+                                        </Link>
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="overflow-x-auto w-full">
+                                    <Table className="min-w-[680px]">
+                                        <TableHeader className="bg-muted/30">
+                                            <TableRow className="hover:bg-transparent border-b border-border/50">
+                                                <TableHead className="text-xs font-bold w-44 py-3.5 px-4">Kode Referensi</TableHead>
+                                                <TableHead className="text-xs font-bold py-3.5 px-4">Judul & Emiten Saham</TableHead>
+                                                <TableHead className="text-xs font-bold text-right py-3.5 px-4">Modal Investasi</TableHead>
+                                                <TableHead className="text-xs font-bold text-right w-16 py-3.5 px-4">Aksi</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {list.map((item) => {
+                                                const refCode = item.reference_code || `DNL${item.user_id}-${item.id}`;
+                                                const tickersList = Array.isArray(item.tickers)
+                                                    ? item.tickers.map((t) => t.replace('.JK', ''))
+                                                    : [];
 
-                                            return (
-                                                <TableRow
-                                                    key={item.id}
-                                                    onClick={() => router.visit(`/user/analyze/result/${item.id}`)}
-                                                    className="group cursor-pointer hover:bg-muted/40 active:scale-[0.999] transition-all border-b border-border/40"
-                                                >
-                                                    {/* Kolom 1: Kode Referensi (TradingView Badge Tag) */}
-                                                    <TableCell className="py-4 px-4 align-top">
-                                                        <div className="space-y-1">
-                                                            <span className="inline-flex items-center gap-1.5 font-mono font-extrabold text-xs px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 shadow-2xs">
-                                                                <Tag className="h-3 w-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                                                                {refCode}
-                                                            </span>
-                                                            <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-1">
-                                                                <Clock className="h-3 w-3 text-muted-foreground/70 shrink-0" />
-                                                                <span>{formatDate(item.created_at)}</span>
-                                                            </div>
-                                                        </div>
-                                                    </TableCell>
-
-                                                    {/* Kolom 2: Judul & Stock Pill Badges (Yahoo Finance / Stockbit Style) */}
-                                                    <TableCell className="py-4 px-4 align-top space-y-2">
-                                                        <div className="flex items-center gap-1.5 group/title">
-                                                            <span className="font-semibold text-xs text-foreground group-hover:text-primary transition-colors leading-snug">
-                                                                {item.title}
-                                                            </span>
-                                                            <button
-                                                                type="button"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    openEditModal(item);
-                                                                }}
-                                                                className="opacity-0 group-hover:opacity-100 p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer"
-                                                                title="Edit Judul"
-                                                            >
-                                                                <Edit className="h-3 w-3" />
-                                                            </button>
-                                                        </div>
-                                                        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                                                            {tickersList.map((t, idx) => (
-                                                                <span
-                                                                    key={idx}
-                                                                    className="inline-flex items-center text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-muted/60 text-foreground hover:text-emerald-700 border border-border/50 hover:bg-emerald-500/15 hover:border-emerald-500/30 transition-colors"
-                                                                >
-                                                                    {t}
+                                                return (
+                                                    <TableRow
+                                                        key={item.id}
+                                                        onClick={() => router.visit(`/user/analyze/result/${item.id}`)}
+                                                        className="group cursor-pointer hover:bg-muted/40 active:scale-[0.999] transition-all border-b border-border/40"
+                                                    >
+                                                        {/* Kolom 1: Kode Referensi (TradingView Badge Tag) */}
+                                                        <TableCell className="py-4 px-4 align-top">
+                                                            <div className="space-y-1">
+                                                                <span className="inline-flex items-center gap-1.5 font-mono font-extrabold text-xs px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 shadow-2xs">
+                                                                    <Tag className="h-3 w-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                                                                    {refCode}
                                                                 </span>
-                                                            ))}
-                                                        </div>
-                                                    </TableCell>
+                                                                <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-1">
+                                                                    <Clock className="h-3 w-3 text-muted-foreground/70 shrink-0" />
+                                                                    <span>{formatDate(item.created_at)}</span>
+                                                                </div>
+                                                            </div>
+                                                        </TableCell>
 
-                                                    {/* Kolom 3: Modal Investasi */}
-                                                    <TableCell className="py-4 px-4 align-top text-right whitespace-nowrap">
-                                                        <span className="font-mono font-extrabold text-sm text-foreground block">
-                                                            {formatRupiah(item.initial_capital)}
-                                                        </span>
-                                                        <span className="text-[10px] text-muted-foreground block font-sans">
-                                                            Rf: {item.risk_free_rate || 6.0}%
-                                                        </span>
-                                                    </TableCell>
-
-                                                    {/* Kolom 4: Action Dropdown Menu (Style Admin Saham) */}
-                                                    <TableCell className="py-4 px-4 align-middle text-right" onClick={(e) => e.stopPropagation()}>
-                                                        <DropdownMenu>
-                                                            <DropdownMenuTrigger asChild>
-                                                                <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
-                                                                    <span className="sr-only">Menu aksi</span>
-                                                                    <MoreHorizontal className="h-4 w-4" />
-                                                                </Button>
-                                                            </DropdownMenuTrigger>
-                                                            <DropdownMenuContent align="end">
-                                                                <DropdownMenuItem
-                                                                    onClick={() => router.visit(`/user/analyze/result/${item.id}`)}
-                                                                    className="cursor-pointer"
+                                                        {/* Kolom 2: Judul & Stock Pill Badges (Yahoo Finance / Stockbit Style) */}
+                                                        <TableCell className="py-4 px-4 align-top space-y-2">
+                                                            <div className="flex items-center gap-1.5 group/title">
+                                                                <span className="font-semibold text-xs text-foreground group-hover:text-primary transition-colors leading-snug">
+                                                                    {item.title}
+                                                                </span>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        openEditModal(item);
+                                                                    }}
+                                                                    className="opacity-0 group-hover:opacity-100 p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                                                                    title="Edit Judul"
                                                                 >
-                                                                    <TrendingUp className="mr-2 h-4 w-4" />
-                                                                    <span>Detail Analisis</span>
-                                                                </DropdownMenuItem>
+                                                                    <Edit className="h-3 w-3" />
+                                                                </button>
+                                                            </div>
+                                                            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                                                                {tickersList.map((t, idx) => (
+                                                                    <span
+                                                                        key={idx}
+                                                                        className="inline-flex items-center text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-muted/60 text-foreground hover:text-emerald-700 border border-border/50 hover:bg-emerald-500/15 hover:border-emerald-500/30 transition-colors"
+                                                                    >
+                                                                        {t}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        </TableCell>
 
-                                                                <DropdownMenuItem
-                                                                    onClick={() => openEditModal(item)}
-                                                                    className="cursor-pointer"
-                                                                >
-                                                                    <Edit className="mr-2 h-4 w-4" />
-                                                                    <span>Edit Judul</span>
-                                                                </DropdownMenuItem>
+                                                        {/* Kolom 3: Modal Investasi */}
+                                                        <TableCell className="py-4 px-4 align-top text-right whitespace-nowrap">
+                                                            <span className="font-mono font-extrabold text-sm text-foreground block">
+                                                                {formatRupiah(item.initial_capital)}
+                                                            </span>
+                                                            <span className="text-[10px] text-muted-foreground block font-sans">
+                                                                Rf: {item.risk_free_rate || 6.0}%
+                                                            </span>
+                                                        </TableCell>
 
-                                                                <DropdownMenuItem
-                                                                    onClick={() => openDeleteModal(item)}
-                                                                    className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950 cursor-pointer"
-                                                                >
-                                                                    <Trash className="mr-2 h-4 w-4" />
-                                                                    <span>Hapus Portofolio</span>
-                                                                </DropdownMenuItem>
-                                                            </DropdownMenuContent>
-                                                        </DropdownMenu>
-                                                    </TableCell>
-                                                </TableRow>
-                                            );
-                                        })}
-                                    </TableBody>
-                                </Table>
-                            </div>
-                        )}
+                                                        {/* Kolom 4: Action Dropdown Menu (Style Admin Saham) */}
+                                                        <TableCell className="py-4 px-4 align-middle text-right" onClick={(e) => e.stopPropagation()}>
+                                                            <DropdownMenu>
+                                                                <DropdownMenuTrigger asChild>
+                                                                    <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
+                                                                        <span className="sr-only">Menu aksi</span>
+                                                                        <MoreHorizontal className="h-4 w-4" />
+                                                                    </Button>
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent align="end">
+                                                                    <DropdownMenuItem
+                                                                        onClick={() => router.visit(`/user/analyze/result/${item.id}`)}
+                                                                        className="cursor-pointer"
+                                                                    >
+                                                                        <TrendingUp className="mr-2 h-4 w-4" />
+                                                                        <span>Detail Analisis</span>
+                                                                    </DropdownMenuItem>
+
+                                                                    <DropdownMenuItem
+                                                                        onClick={() => openEditModal(item)}
+                                                                        className="cursor-pointer"
+                                                                    >
+                                                                        <Edit className="mr-2 h-4 w-4" />
+                                                                        <span>Edit Judul</span>
+                                                                    </DropdownMenuItem>
+
+                                                                    <DropdownMenuItem
+                                                                        onClick={() => openDeleteModal(item)}
+                                                                        className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950 cursor-pointer"
+                                                                    >
+                                                                        <Trash className="mr-2 h-4 w-4" />
+                                                                        <span>Hapus Portofolio</span>
+                                                                    </DropdownMenuItem>
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            )}
+                        </Deferred>
                     </CardContent>
                 </Card>
             </div>

@@ -3,16 +3,17 @@ import StockAnalysisSheet, { type AnalyzedStockPayload } from '@/pages/user/mobi
 import { AllocationProgressBar } from '@/pages/user/mobile/components/AllocationProgressBar';
 import { FloatingBottomNav } from '@/pages/user/mobile/components/FloatingBottomNav';
 import { MobileHeader } from '@/pages/user/mobile/components/MobileHeader';
-import { StockExploreCard } from '@/pages/user/mobile/components/StockExploreCard';
 import { MobileAppLayout } from '@/pages/user/mobile/layouts/MobileAppLayout';
+import { StockCardsSkeleton } from '@/pages/user/mobile/components/MobileSkeletons';
+import { StockExploreCard } from '@/pages/user/mobile/components/StockExploreCard';
 import { type PaginatedData, type SharedData, type Stock } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Deferred, Head, Link, router, usePage } from '@inertiajs/react';
 import { Eye, EyeOff, Search, ShoppingBag, SlidersHorizontal, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 interface Props {
-    stocks: Stock[] | PaginatedData<Stock>;
+    stocks?: Stock[] | PaginatedData<Stock>;
     filters?: {
         search?: string;
         bursa?: string;
@@ -238,79 +239,82 @@ export default function MobileStockIndex({
                         </div>
                     )}
 
-                    {/* Group Header "Hari Ini" dengan garis horizontal Hijau (Section 6.9) */}
-                    {todayStocks.length > 0 && (
-                        <div className="space-y-2 pt-1">
-                            <div className="flex items-center gap-2.5">
-                                <span className="text-[12px] font-semibold text-emerald-600 whitespace-nowrap">
-                                    Hari Ini
-                                </span>
+                    {/* Deferred Stock List: Tampilkan Skeleton saat pertama kali pindah page */}
+                    <Deferred data="stocks" fallback={<StockCardsSkeleton count={6} />}>
+                        {/* Group Header "Hari Ini" dengan garis horizontal Hijau (Section 6.9) */}
+                        {todayStocks.length > 0 && (
+                            <div className="space-y-2 pt-1">
+                                <div className="flex items-center gap-2.5">
+                                    <span className="text-[12px] font-semibold text-emerald-600 whitespace-nowrap">
+                                        Hari Ini
+                                    </span>
+                                </div>
+
+                                <div className="space-y-2">
+                                    {todayStocks.map((stock) => {
+                                        const isAdded =
+                                            basketStocks.includes(stock.ticker) ||
+                                            basketStocks.includes(stock.ticker.replace('.JK', ''));
+
+                                        return (
+                                            <StockExploreCard
+                                                key={stock.id}
+                                                ticker={stock.ticker}
+                                                name={stock.name}
+                                                bursa={stock.bursa || 'IDX'}
+                                                price={stock.latest_price?.close_price}
+                                                changePercent={stock.change_percent}
+                                                recentPrices={stock.recent_prices}
+                                                isAdded={isAdded}
+                                                onActionClick={() => handleOpenModal(stock)}
+                                                onClick={() => handleOpenModal(stock)}
+                                            />
+                                        );
+                                    })}
+                                </div>
                             </div>
+                        )}
 
-                            <div className="space-y-2">
-                                {todayStocks.map((stock) => {
-                                    const isAdded =
-                                        basketStocks.includes(stock.ticker) ||
-                                        basketStocks.includes(stock.ticker.replace('.JK', ''));
+                        {/* Group Header "Bursa Terkini" dengan garis horizontal Abu-Abu (Section 6.9) */}
+                        {earlierStocks.length > 0 && (
+                            <div className="space-y-2 pt-2">
+                                <div className="flex items-center gap-2.5">
+                                    <span className="text-[12px] font-medium text-zinc-500 whitespace-nowrap">
+                                        Emiten Lainnya
+                                    </span>
+                                </div>
 
-                                    return (
-                                        <StockExploreCard
-                                            key={stock.id}
-                                            ticker={stock.ticker}
-                                            name={stock.name}
-                                            bursa={stock.bursa || 'IDX'}
-                                            price={stock.latest_price?.close_price}
-                                            changePercent={stock.change_percent}
-                                            recentPrices={stock.recent_prices}
-                                            isAdded={isAdded}
-                                            onActionClick={() => handleOpenModal(stock)}
-                                            onClick={() => handleOpenModal(stock)}
-                                        />
-                                    );
-                                })}
+                                <div className="space-y-2">
+                                    {earlierStocks.map((stock) => {
+                                        const isAdded =
+                                            basketStocks.includes(stock.ticker) ||
+                                            basketStocks.includes(stock.ticker.replace('.JK', ''));
+
+                                        return (
+                                            <StockExploreCard
+                                                key={stock.id}
+                                                ticker={stock.ticker}
+                                                name={stock.name}
+                                                bursa={stock.bursa || 'IDX'}
+                                                price={stock.latest_price?.close_price}
+                                                changePercent={stock.change_percent}
+                                                recentPrices={stock.recent_prices}
+                                                isAdded={isAdded}
+                                                onActionClick={() => handleOpenModal(stock)}
+                                                onClick={() => handleOpenModal(stock)}
+                                            />
+                                        );
+                                    })}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {/* Group Header "Bursa Terkini" dengan garis horizontal Abu-Abu (Section 6.9) */}
-                    {earlierStocks.length > 0 && (
-                        <div className="space-y-2 pt-2">
-                            <div className="flex items-center gap-2.5">
-                                <span className="text-[12px] font-medium text-zinc-500 whitespace-nowrap">
-                                    Emiten Lainnya
-                                </span>
+                        {stockList.length === 0 && (
+                            <div className="py-12 text-center text-xs text-zinc-500">
+                                Tidak ada saham yang sesuai dengan filter pencarian.
                             </div>
-
-                            <div className="space-y-2">
-                                {earlierStocks.map((stock) => {
-                                    const isAdded =
-                                        basketStocks.includes(stock.ticker) ||
-                                        basketStocks.includes(stock.ticker.replace('.JK', ''));
-
-                                    return (
-                                        <StockExploreCard
-                                            key={stock.id}
-                                            ticker={stock.ticker}
-                                            name={stock.name}
-                                            bursa={stock.bursa || 'IDX'}
-                                            price={stock.latest_price?.close_price}
-                                            changePercent={stock.change_percent}
-                                            recentPrices={stock.recent_prices}
-                                            isAdded={isAdded}
-                                            onActionClick={() => handleOpenModal(stock)}
-                                            onClick={() => handleOpenModal(stock)}
-                                        />
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
-
-                    {stockList.length === 0 && (
-                        <div className="py-12 text-center text-xs text-zinc-500">
-                            Tidak ada saham yang sesuai dengan filter pencarian.
-                        </div>
-                    )}
+                        )}
+                    </Deferred>
                 </section>
             </div>
 

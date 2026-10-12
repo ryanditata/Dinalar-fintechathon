@@ -559,9 +559,9 @@ export default function StockAnalysisModal({
                                     </Badge>
                                 </div>
                                 <CardContent className="p-3">
-                                    <div className="h-48 sm:h-52 w-full">
+                                    <div className="h-48 sm:h-52 w-full min-w-0">
                                         {historicalPrices.length > 0 ? (
-                                            <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={100}>
+                                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                                 <AreaChart
                                                     data={historicalPrices}
                                                     margin={{ top: 10, right: 10, left: 0, bottom: 0 }}

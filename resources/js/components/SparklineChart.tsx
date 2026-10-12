@@ -54,8 +54,8 @@ export const SparklineChart: React.FC<SparklineChartProps> = ({
     const gradientColor = customGradient || (isPositive ? '#10b981' : '#ef4444');
 
     return (
-        <div className={`relative block ${className}`} style={{ minWidth: '60px', minHeight: '28px' }}>
-            <ResponsiveContainer width="100%" height="100%" minWidth={60} minHeight={28}>
+        <div className={`relative block min-w-0 ${className}`} style={{ minHeight: '28px' }}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                 <AreaChart
                     data={data}
                     margin={{ top: 4, right: 4, left: 4, bottom: 4 }}
