@@ -258,7 +258,7 @@ export default function UserStockIndex({
                         {/* Running Ticker (Marquee) */}
                         {stockList.length > 0 && (
                             <div className="flex-1 overflow-hidden flex items-center relative mask-image-linear-edges">
-                                <div className="flex animate-marquee whitespace-nowrap py-0.5">
+                                <div className="flex animate-marquee whitespace-nowrap py-0.5" style={{ animationDuration: '100s' }}>
                                     {[...stockList, ...stockList].map((item, idx) => {
                                         const change = item.change_percent;
                                         const isUp = change !== null && change !== undefined && change > 0;
