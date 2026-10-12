@@ -27,9 +27,9 @@ interface HistoryItem {
     risk_free_rate: number;
     tickers: string[];
     best_portfolios?: {
-        sharpe?: { return?: number; risk?: number; sharpe?: number; expected_return?: number; volatility?: number; sharpe_ratio?: number; [key: string]: any };
-        max_sharpe?: { return?: number; risk?: number; sharpe?: number; expected_return?: number; volatility?: number; sharpe_ratio?: number; [key: string]: any };
-        min_variance?: { return?: number; risk?: number; sharpe?: number; expected_return?: number; volatility?: number; sharpe_ratio?: number; [key: string]: any };
+        sharpe?: { return?: number; risk?: number; sharpe?: number; expected_return?: number; volatility?: number; sharpe_ratio?: number;[key: string]: any };
+        max_sharpe?: { return?: number; risk?: number; sharpe?: number; expected_return?: number; volatility?: number; sharpe_ratio?: number;[key: string]: any };
+        min_variance?: { return?: number; risk?: number; sharpe?: number; expected_return?: number; volatility?: number; sharpe_ratio?: number;[key: string]: any };
         [key: string]: any;
     };
     created_at: string;
@@ -230,11 +230,10 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                                     <span className="inline-flex items-center gap-1">
                                                         <span className="text-zinc-400">Return</span>
                                                         <span
-                                                            className={`font-mono font-bold ${
-                                                                isPositiveReturn
+                                                            className={`font-mono font-bold ${isPositiveReturn
                                                                     ? 'text-emerald-600'
                                                                     : 'text-rose-600'
-                                                            }`}
+                                                                }`}
                                                         >
                                                             {formatMetricReturn(retVal)}
                                                         </span>

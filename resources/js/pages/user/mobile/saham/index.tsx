@@ -145,10 +145,10 @@ export default function MobileStockIndex({
 
     const isCurrentStockInBasket = selectedStockForModal
         ? basketStocks.some(
-              (t) =>
-                  t === selectedStockForModal.ticker ||
-                  t === selectedStockForModal.ticker.replace('.JK', '')
-          )
+            (t) =>
+                t === selectedStockForModal.ticker ||
+                t === selectedStockForModal.ticker.replace('.JK', '')
+        )
         : false;
 
     // Split stocks for Group Header "Hari Ini" (first 3) & "Bursa Terkini" (the rest)
@@ -190,22 +190,20 @@ export default function MobileStockIndex({
                         <button
                             type="button"
                             onClick={() => handleBursaFilter('all')}
-                            className={`flex-1 py-1.5 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${
-                                selectedBursa === 'all'
+                            className={`flex-1 py-1.5 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${selectedBursa === 'all'
                                     ? 'bg-white text-zinc-900 font-semibold shadow-xs'
                                     : 'text-zinc-500 hover:text-zinc-900'
-                            }`}
+                                }`}
                         >
                             Semua
                         </button>
                         <button
                             type="button"
                             onClick={() => handleBursaFilter('IDX')}
-                            className={`flex-1 py-1.5 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${
-                                selectedBursa === 'IDX'
+                            className={`flex-1 py-1.5 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${selectedBursa === 'IDX'
                                     ? 'bg-white text-zinc-900 font-semibold shadow-xs'
                                     : 'text-zinc-500 hover:text-zinc-900'
-                            }`}
+                                }`}
                         >
                             IDX
                         </button>
@@ -217,11 +215,10 @@ export default function MobileStockIndex({
                             <button
                                 type="button"
                                 onClick={() => handleSectorFilter('all')}
-                                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap border transition-all cursor-pointer ${
-                                    selectedSector === 'all'
+                                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap border transition-all cursor-pointer ${selectedSector === 'all'
                                         ? 'bg-emerald-600 text-white border-emerald-600'
                                         : 'bg-white text-zinc-500 border-zinc-200 hover:border-emerald-500'
-                                }`}
+                                    }`}
                             >
                                 Semua Sektor
                             </button>
@@ -230,11 +227,10 @@ export default function MobileStockIndex({
                                     key={sector}
                                     type="button"
                                     onClick={() => handleSectorFilter(sector)}
-                                    className={`px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap border transition-all cursor-pointer ${
-                                        selectedSector === sector
+                                    className={`px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap border transition-all cursor-pointer ${selectedSector === sector
                                             ? 'bg-emerald-600 text-white border-emerald-600'
                                             : 'bg-white text-zinc-500 border-zinc-200 hover:border-emerald-500'
-                                    }`}
+                                        }`}
                                 >
                                     {sector}
                                 </button>

@@ -26,7 +26,7 @@ import {
     X,
     Zap,
 } from 'lucide-react';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     Cell,
     Pie,
@@ -230,6 +230,229 @@ export default function MobileResultPage({
     const singleCardRef = useRef<HTMLDivElement>(null);
     const compareCardRef = useRef<HTMLDivElement>(null);
     const { isExporting, exportAsImage, sharePortfolio, shareToWhatsAppText } = useExportShare();
+
+    // Drag-to-close Bottom Sheet state and refs (like StockAnalysisSheet)
+    const shareSheetRef = useRef<HTMLDivElement | null>(null);
+    const shareOverlayRef = useRef<HTMLDivElement | null>(null);
+    const shareScrollBodyRef = useRef<HTMLDivElement | null>(null);
+    const shareDragStartY = useRef(0);
+    const shareDragStartX = useRef(0);
+    const shareDragStartTime = useRef(0);
+    const shareCurrentDragY = useRef(0);
+    const shareIsDragging = useRef(false);
+    const shareCanDrag = useRef(false);
+    const shareCanDragFromBody = useRef(false);
+
+    const finishShareDrag = useCallback((deltaY: number) => {
+        shareIsDragging.current = false;
+        shareCanDrag.current = false;
+        shareCanDragFromBody.current = false;
+
+        const sheetEl = shareSheetRef.current;
+        const overlay = shareOverlayRef.current;
+        const timeElapsed = Date.now() - shareDragStartTime.current;
+        const velocity = deltaY / Math.max(1, timeElapsed);
+        const shouldDismiss = deltaY > 80 || (deltaY > 30 && velocity > 0.4);
+
+        if (shouldDismiss && sheetEl) {
+            sheetEl.style.transition = 'transform 200ms cubic-bezier(0.32, 0.72, 0, 1)';
+            sheetEl.style.transform = 'translate3d(0, 100%, 0)';
+            if (overlay) {
+                overlay.style.transition = 'opacity 200ms ease-out';
+                overlay.style.opacity = '0';
+            }
+            setTimeout(() => {
+                setIsShareModalOpen(false);
+                if (sheetEl) {
+                    sheetEl.style.transition = '';
+                    sheetEl.style.transform = '';
+                }
+                if (overlay) {
+                    overlay.style.transition = '';
+                    overlay.style.opacity = '';
+                }
+            }, 200);
+        } else if (sheetEl) {
+            sheetEl.style.transition = 'transform 220ms cubic-bezier(0.16, 1, 0.3, 1)';
+            sheetEl.style.transform = 'translate3d(0, 0, 0)';
+            if (overlay) {
+                overlay.style.transition = 'opacity 220ms ease-out';
+                overlay.style.opacity = '';
+            }
+            setTimeout(() => {
+                if (sheetEl) {
+                    sheetEl.style.transition = '';
+                    sheetEl.style.transform = '';
+                }
+                if (overlay) {
+                    overlay.style.transition = '';
+                }
+            }, 220);
+        }
+    }, []);
+
+    const handleShareMouseDown = useCallback((e: React.MouseEvent) => {
+        if (e.button !== 0) return;
+        const target = e.target as HTMLElement | null;
+        if (target?.closest('button, input, select, textarea, a, [role="button"]')) {
+            if (!target.closest('[data-drag-handle="true"]')) return;
+        }
+
+        shareDragStartY.current = e.clientY;
+        shareDragStartX.current = e.clientX;
+        shareDragStartTime.current = Date.now();
+        shareCurrentDragY.current = 0;
+        shareIsDragging.current = true;
+
+        const onMouseMove = (moveEvent: MouseEvent) => {
+            if (!shareIsDragging.current) return;
+            const deltaY = Math.max(0, moveEvent.clientY - shareDragStartY.current);
+            shareCurrentDragY.current = deltaY;
+            const sheetEl = shareSheetRef.current;
+            if (sheetEl) {
+                sheetEl.style.transition = 'none';
+                sheetEl.style.transform = `translate3d(0, ${deltaY}px, 0)`;
+            }
+            const overlay = shareOverlayRef.current;
+            if (overlay && sheetEl) {
+                const sheetHeight = sheetEl.offsetHeight || 500;
+                const progress = Math.min(1, deltaY / sheetHeight);
+                overlay.style.opacity = `${Math.max(0, 1 - progress * 0.8)}`;
+            }
+        };
+
+        const onMouseUp = () => {
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', onMouseUp);
+            finishShareDrag(shareCurrentDragY.current);
+        };
+
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+    }, [finishShareDrag]);
+
+    useEffect(() => {
+        if (!isShareModalOpen) return;
+
+        let cleanupListeners: (() => void) | null = null;
+
+        const attach = () => {
+            const sheetEl = shareSheetRef.current;
+            if (!sheetEl) return;
+
+            sheetEl.style.transition = '';
+            sheetEl.style.transform = '';
+
+            const onTouchStart = (e: TouchEvent) => {
+                if (e.touches.length !== 1) return;
+                const touch = e.touches[0];
+                shareDragStartY.current = touch.clientY;
+                shareDragStartX.current = touch.clientX;
+                shareCurrentDragY.current = 0;
+                shareDragStartTime.current = Date.now();
+                shareIsDragging.current = false;
+
+                const target = e.target as HTMLElement | null;
+                const isHandle = !!target?.closest('[data-drag-handle="true"]');
+                const isHeader = !!target?.closest('[data-drag-header="true"]');
+
+                if (isHandle || isHeader) {
+                    shareCanDrag.current = true;
+                    shareCanDragFromBody.current = false;
+                } else {
+                    const isScrollBody = !!target?.closest('[data-scroll-body="true"]');
+                    if (isScrollBody) {
+                        const scrollTop = shareScrollBodyRef.current?.scrollTop ?? 0;
+                        shareCanDrag.current = scrollTop <= 2;
+                        shareCanDragFromBody.current = scrollTop <= 2;
+                    } else {
+                        shareCanDrag.current = false;
+                        shareCanDragFromBody.current = false;
+                    }
+                }
+            };
+
+            const onTouchMove = (e: TouchEvent) => {
+                if (!shareCanDrag.current || e.touches.length !== 1) return;
+                const touch = e.touches[0];
+                const deltaX = Math.abs(touch.clientX - shareDragStartX.current);
+                const deltaY = touch.clientY - shareDragStartY.current;
+
+                if (!shareIsDragging.current && deltaX > Math.abs(deltaY) && deltaX > 6) {
+                    shareCanDrag.current = false;
+                    return;
+                }
+
+                if (shareCanDragFromBody.current) {
+                    const scrollTop = shareScrollBodyRef.current?.scrollTop ?? 0;
+                    if (scrollTop > 2) {
+                        shareCanDrag.current = false;
+                        shareIsDragging.current = false;
+                        return;
+                    }
+                }
+
+                if (!shareIsDragging.current && deltaY > 8) {
+                    shareIsDragging.current = true;
+                }
+
+                if (shareIsDragging.current) {
+                    if (e.cancelable) {
+                        e.preventDefault();
+                    }
+                    const clampedDeltaY = Math.max(0, deltaY);
+                    shareCurrentDragY.current = clampedDeltaY;
+                    sheetEl.style.transition = 'none';
+                    sheetEl.style.transform = `translate3d(0, ${clampedDeltaY}px, 0)`;
+
+                    const overlay = shareOverlayRef.current;
+                    if (overlay) {
+                        const sheetHeight = sheetEl.offsetHeight || 500;
+                        const progress = Math.min(1, clampedDeltaY / sheetHeight);
+                        overlay.style.opacity = `${Math.max(0, 1 - progress * 0.8)}`;
+                    }
+                }
+            };
+
+            const onTouchEnd = () => {
+                if (!shareIsDragging.current) {
+                    shareCanDrag.current = false;
+                    shareCanDragFromBody.current = false;
+                    return;
+                }
+                finishShareDrag(shareCurrentDragY.current);
+            };
+
+            sheetEl.addEventListener('touchstart', onTouchStart, { passive: true });
+            sheetEl.addEventListener('touchmove', onTouchMove, { passive: false });
+            sheetEl.addEventListener('touchend', onTouchEnd, { passive: true });
+            sheetEl.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+            cleanupListeners = () => {
+                sheetEl.removeEventListener('touchstart', onTouchStart);
+                sheetEl.removeEventListener('touchmove', onTouchMove);
+                sheetEl.removeEventListener('touchend', onTouchEnd);
+                sheetEl.removeEventListener('touchcancel', onTouchEnd);
+            };
+        };
+
+        const frameId = requestAnimationFrame(attach);
+
+        return () => {
+            cancelAnimationFrame(frameId);
+            cleanupListeners?.();
+            const sheetEl = shareSheetRef.current;
+            if (sheetEl) {
+                sheetEl.style.transition = '';
+                sheetEl.style.transform = '';
+            }
+            const overlay = shareOverlayRef.current;
+            if (overlay) {
+                overlay.style.transition = '';
+                overlay.style.opacity = '';
+            }
+        };
+    }, [isShareModalOpen, finishShareDrag]);
 
     const handleExportPNG = async (profileOverride?: 'min_variance' | 'sharpe' | 'max_return' | 'sortino') => {
         const targetProf = profileOverride || selectedProfile;
@@ -565,13 +788,20 @@ export default function MobileResultPage({
 
             {/* Top Bar Header */}
             <header className="px-4 pt-3 pb-2 flex items-center justify-between select-none">
-                <Link
-                    href={isPublic ? '/' : '/user/analyze/history'}
-                    className="size-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center text-zinc-900 shadow-xs active:scale-95 transition-transform"
-                    aria-label="Kembali"
+                <button
+                    type="button"
+                    onClick={() => {
+                        if (typeof window !== 'undefined' && window.history.length > 1) {
+                            window.history.back();
+                        } else {
+                            window.location.href = isPublic ? '/' : '/user/analyze/history';
+                        }
+                    }}
+                    className="size-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center text-zinc-900 shadow-xs active:scale-95 transition-transform cursor-pointer"
+                    aria-label="Kembali ke halaman sebelumnya"
                 >
                     <ArrowLeft className="size-5 stroke-[2]" />
-                </Link>
+                </button>
 
                 <div className="text-center flex-1 min-w-0 px-2">
                     <h1 className="text-[18px] font-semibold text-zinc-900 tracking-tight text-center flex-1">
@@ -1423,21 +1653,34 @@ export default function MobileResultPage({
             {/* Bottom Export & Share Action Sheet Modal */}
             {isShareModalOpen && (
                 <div
+                    ref={shareOverlayRef}
                     className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-xs flex items-end justify-center p-0 animate-in fade-in duration-200 select-none"
                     onClick={() => !isExporting && !isGeneratingShare && setIsShareModalOpen(false)}
                 >
                     <div
-                        className="w-full max-w-[430px] rounded-t-[32px] bg-white p-5 pt-3 border-t border-zinc-200 shadow-2xl space-y-3.5 animate-in slide-in-from-bottom-5 duration-200 max-h-[88vh] flex flex-col"
+                        ref={shareSheetRef}
+                        className="w-full max-w-[430px] rounded-t-[32px] bg-white p-5 pt-3 border-t border-zinc-200 shadow-2xl space-y-3.5 animate-in slide-in-from-bottom-5 duration-200 max-h-[88vh] flex flex-col will-change-transform"
                         style={{
                             paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
                         }}
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Drag Handle Indicator */}
-                        <div className="w-10 h-1 bg-zinc-300 rounded-full mx-auto shrink-0 mb-0.5" />
+                        <div
+                            data-drag-handle="true"
+                            onMouseDown={handleShareMouseDown}
+                            className="w-full pt-1 pb-1.5 flex items-center justify-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0"
+                            title="Geser ke bawah untuk menutup"
+                        >
+                            <div className="w-10 h-1.5 bg-zinc-300 rounded-full transition-transform active:scale-105" />
+                        </div>
 
                         {/* Header Modal */}
-                        <div className="flex items-center justify-between border-b border-zinc-100 py-2.5 shrink-0 ">
+                        <div
+                            data-drag-header="true"
+                            onMouseDown={handleShareMouseDown}
+                            className="flex items-center justify-between border-b border-zinc-100 py-2.5 shrink-0 cursor-grab active:cursor-grabbing select-none"
+                        >
                             <div className="flex items-center gap-2">
                                 <Share2 className="size-4 text-emerald-600" />
                                 <h3 className="text-sm font-bold text-zinc-900">
@@ -1446,8 +1689,12 @@ export default function MobileResultPage({
                             </div>
                         </div>
 
-                        {/* List Opsi Export (Scrollable & Fully Clear of Bottom Nav) */}
-                        <div className="space-y-2 overflow-y-auto pr-0.5 no-scrollbar flex-1 pb-1">
+                        {/* List Opsi Export (Scrollable & Fully Clear of Bottom Nav & Pull-to-Close) */}
+                        <div
+                            data-scroll-body="true"
+                            ref={shareScrollBodyRef}
+                            className="space-y-2 overflow-y-auto pr-0.5 no-scrollbar flex-1 pb-1"
+                        >
                             {/* 1. Bagikan via Native Share Sheet */}
                             <button
                                 type="button"

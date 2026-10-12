@@ -79,8 +79,8 @@ export default function MobileDashboard({
         activeTab === 'popular'
             ? popular_stocks.slice(0, 5)
             : activeTab === 'gainers'
-            ? top_gainers.slice(0, 5)
-            : top_losers.slice(0, 5);
+                ? top_gainers.slice(0, 5)
+                : top_losers.slice(0, 5);
 
     const heroAmount = latest_portfolio
         ? latest_portfolio.initial_capital
@@ -119,7 +119,7 @@ export default function MobileDashboard({
                             href="/user/saham"
                             className="text-[12px] font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-0.5"
                         >
-                            <ChevronRight/>
+                            <ChevronRight />
                         </Link>
                     </div>
 
@@ -128,33 +128,30 @@ export default function MobileDashboard({
                         <button
                             type="button"
                             onClick={() => setActiveTab('popular')}
-                            className={`flex-1 py-1.5 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${
-                                activeTab === 'popular'
+                            className={`flex-1 py-1.5 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${activeTab === 'popular'
                                     ? 'bg-white text-zinc-900 font-semibold shadow-xs'
                                     : 'text-zinc-500 hover:text-zinc-900'
-                            }`}
+                                }`}
                         >
                             Populer
                         </button>
                         <button
                             type="button"
                             onClick={() => setActiveTab('gainers')}
-                            className={`flex-1 py-1.5 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${
-                                activeTab === 'gainers'
+                            className={`flex-1 py-1.5 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${activeTab === 'gainers'
                                     ? 'bg-white text-zinc-900 font-semibold shadow-xs'
                                     : 'text-zinc-500 hover:text-zinc-900'
-                            }`}
+                                }`}
                         >
                             Top Gainers
                         </button>
                         <button
                             type="button"
                             onClick={() => setActiveTab('losers')}
-                            className={`flex-1 py-1.5 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${
-                                activeTab === 'losers'
+                            className={`flex-1 py-1.5 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${activeTab === 'losers'
                                     ? 'bg-white text-zinc-900 font-semibold shadow-xs'
                                     : 'text-zinc-500 hover:text-zinc-900'
-                            }`}
+                                }`}
                         >
                             Top Losers
                         </button>
@@ -199,16 +196,16 @@ export default function MobileDashboard({
                 {recent_optimizations.length > 0 && (
                     <section className="mx-1 rounded-[24px] bg-white p-4 border border-zinc-200 shadow-xs">
                         <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-base font-semibold text-emerald-600 tracking-tight">
-                            Riwayat Portofolio
-                        </h3>
-                        <Link
-                            href="/user/analyze/history"
-                            className="text-[12px] font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-0.5"
-                        >
-                            <ChevronRight/>
-                        </Link>
-                    </div>
+                            <h3 className="text-base font-semibold text-emerald-600 tracking-tight">
+                                Riwayat Portofolio
+                            </h3>
+                            <Link
+                                href="/user/analyze/history"
+                                className="text-[12px] font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-0.5"
+                            >
+                                <ChevronRight />
+                            </Link>
+                        </div>
 
                         <div className="space-y-2">
                             {recent_optimizations.slice(0, 3).map((item) => (

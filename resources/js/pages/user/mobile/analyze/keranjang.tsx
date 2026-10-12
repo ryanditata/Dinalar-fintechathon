@@ -499,13 +499,20 @@ export default function MobileKeranjangPage({
 
             {/* Top Bar */}
             <header className="px-4 pt-3 pb-2 flex items-center justify-between select-none">
-                <Link
-                    href="/user/saham"
-                    className="size-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center text-zinc-900 shadow-xs active:scale-95 transition-transform"
-                    aria-label="Kembali ke katalog saham"
+                <button
+                    type="button"
+                    onClick={() => {
+                        if (typeof window !== 'undefined' && window.history.length > 1) {
+                            window.history.back();
+                        } else {
+                            window.location.href = '/user/saham';
+                        }
+                    }}
+                    className="size-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center text-zinc-900 shadow-xs active:scale-95 transition-transform cursor-pointer"
+                    aria-label="Kembali ke halaman sebelumnya"
                 >
                     <ArrowLeft className="size-5 stroke-[2]" />
-                </Link>
+                </button>
                 <h1 className="text-[18px] font-semibold text-zinc-900 tracking-tight text-center flex-1">
                     Keranjang
                 </h1>

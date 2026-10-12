@@ -1,4 +1,3 @@
-import { useInertiaLoading } from '@/hooks/useInertiaLoading';
 import { Loader2 } from 'lucide-react';
 import React from 'react';
 
@@ -11,15 +10,14 @@ interface MobileHeaderSpinnerProps {
 /**
  * Komponen spinner loading melayang di bagian atas untuk mode mobile apps.
  * Posisi fixed melayang (seperti FloatingBottomNav di bagian bawah).
- * Mendukung navigasi Inertia dan gesture Pull-to-Refresh.
+ * Hanya aktif saat gesture Pull-to-Refresh (reload halaman), bukan saat navigasi/pindah halaman.
  */
 export function MobileHeaderSpinner({
     className = '',
     pullDistance = 0,
     isRefreshing = false,
 }: MobileHeaderSpinnerProps) {
-    const isNavigating = useInertiaLoading();
-    const isVisible = isNavigating || isRefreshing || pullDistance > 8;
+    const isVisible = isRefreshing || pullDistance > 8;
 
     if (!isVisible) return null;
 
@@ -38,23 +36,23 @@ export function MobileHeaderSpinner({
         >
             <div
                 className={`flex items-center justify-center size-11 rounded-full pointer-events-auto transition-all ${
-                    isRefreshing || isNavigating
+                    isRefreshing
                         ? 'animate-in fade-in zoom-in-90 slide-in-from-top-2 duration-200'
                         : ''
                 } ${className}`}
                 style={{
-                    transform: `translateY(${translateY}px) scale(${isRefreshing || isNavigating ? 1 : 0.7 + progress * 0.3})`,
-                    opacity: isRefreshing || isNavigating ? 1 : Math.max(progress, 0.4),
+                    transform: `translateY(${translateY}px) scale(${isRefreshing ? 1 : 0.7 + progress * 0.3})`,
+                    opacity: isRefreshing ? 1 : Math.max(progress, 0.4),
                 }}
                 role="status"
                 aria-label="Memuat..."
             >
                 <Loader2
                     className={`size-6 text-emerald-600 dark:text-emerald-400 stroke-[2.2] ${
-                        isRefreshing || isNavigating ? 'animate-spin' : ''
+                        isRefreshing ? 'animate-spin' : ''
                     }`}
                     style={{
-                        transform: !isRefreshing && !isNavigating ? `rotate(${rotation}deg)` : undefined,
+                        transform: !isRefreshing ? `rotate(${rotation}deg)` : undefined,
                     }}
                 />
             </div>

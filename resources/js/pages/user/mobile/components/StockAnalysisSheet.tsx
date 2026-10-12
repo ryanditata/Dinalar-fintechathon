@@ -962,10 +962,7 @@ export function StockAnalysisSheet({
 
                 {/* 4. STICKY BOTTOM ACTION CTA */}
                 <div
-                    className="p-3.5 border-t border-zinc-100 bg-white/95 backdrop-blur-md shrink-0"
-                    style={{
-                        paddingBottom: 'calc(14px + env(safe-area-inset-bottom, 0px))',
-                    }}
+                    className="px-4 pt-3.5 pb-7 border-t border-zinc-100 bg-white/95 backdrop-blur-md shrink-0"
                 >
                     <button
                         type="button"
