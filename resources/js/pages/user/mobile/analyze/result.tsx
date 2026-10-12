@@ -634,7 +634,7 @@ export default function MobileResultPage({
             `• Total Modal: *${formatRupiah(totalNominal)}* (100.00%)\n` +
             `• Total Estimasi: *${totalLots.toLocaleString('id-ID')} Lot*\n\n` +
             `Analisis otomatis dengan Algoritma NSGA-II & Markowitz Frontier.\n` +
-            `🌐 Dinalar AI Platform`;
+            `🌐 Kunjungi: https://dinalar.my.id`;
 
         shareToWhatsAppText(text);
     };
@@ -833,7 +833,7 @@ export default function MobileResultPage({
             {isPublic && (
                 <div className="bg-emerald-500/10 border-b border-emerald-500/20 px-3 py-2 text-center text-[11px] text-emerald-800 flex items-center justify-center gap-1.5">
                     <Sparkles className="size-3.5 text-emerald-600 shrink-0" />
-                    <span>Hasil optimasi kuantitatif Dinalar AI.</span>
+                    <span>Hasil optimasi portofolio Dinalar AI.</span>
                     <Link href="/register" className="font-bold underline text-emerald-700">
                         Buat Portofolio Anda
                     </Link>
@@ -846,7 +846,7 @@ export default function MobileResultPage({
                 {/* 1. Hero Overview Section */}
                 <section className="mx-1 rounded-[24px] bg-white p-4 border border-zinc-200 shadow-xs space-y-3">
                     <div className="flex items-center justify-between">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary ring-1 ring-inset ring-primary/20 backdrop-blur-xs">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-900/10 px-3 py-1 text-xs font-semibold text-black ring-1 ring-inset ring-gray-900/20 backdrop-blur-xs">
                             <Sparkles className="h-5 w-5 text-emerald-600" />
                             Hasil Optimasi Portofolio
                         </span>
@@ -1695,34 +1695,14 @@ export default function MobileResultPage({
                             ref={shareScrollBodyRef}
                             className="space-y-2 overflow-y-auto pr-0.5 no-scrollbar flex-1 pb-1"
                         >
-                            {/* 1. Bagikan via Native Share Sheet */}
-                            <button
-                                type="button"
-                                disabled={isExporting || isGeneratingShare}
-                                onClick={() => handleShareNative()}
-                                className="w-full p-3 rounded-2xl bg-zinc-50 hover:bg-emerald-50/60 border border-zinc-200 hover:border-emerald-300 flex items-center gap-3 transition-all cursor-pointer text-left active:scale-[0.98]"
-                            >
-                                <div className="size-9.5 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
-                                    <Share2 className="size-4.5" />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <span className="text-xs font-bold text-zinc-900 block">
-                                        Bagikan Langsung (Aplikasi / Medsos)
-                                    </span>
-                                    <span className="text-[10px] text-zinc-400 block truncate">
-                                        Kirim kartu ke Instagram, WhatsApp, dll.
-                                    </span>
-                                </div>
-                            </button>
-
-                            {/* 2. Simpan Gambar PNG */}
+                            {/* 1. Simpan Gambar PNG */}
                             <button
                                 type="button"
                                 disabled={isExporting || isGeneratingShare}
                                 onClick={() => handleExportPNG()}
-                                className="w-full p-3 rounded-2xl bg-zinc-50 hover:bg-blue-50/60 border border-zinc-200 hover:border-blue-300 flex items-center gap-3 transition-all cursor-pointer text-left active:scale-[0.98]"
+                                className="w-full p-3 rounded-2xl bg-zinc-50 hover:bg-emerald-50/60 border border-zinc-200 hover:border-emerald-300 flex items-center gap-3 transition-all cursor-pointer text-left active:scale-[0.98]"
                             >
-                                <div className="size-9.5 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0">
+                                <div className="size-9.5 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
                                     <ImageIcon className="size-4.5" />
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -1740,14 +1720,14 @@ export default function MobileResultPage({
                                 type="button"
                                 disabled={isExporting || isGeneratingShare}
                                 onClick={() => handleExportPDF()}
-                                className="w-full p-3 rounded-2xl bg-zinc-50 hover:bg-rose-50/60 border border-zinc-200 hover:border-rose-300 flex items-center gap-3 transition-all cursor-pointer text-left active:scale-[0.98]"
+                                className="w-full p-3 rounded-2xl bg-zinc-50 hover:bg-emerald-50/60 border border-zinc-200 hover:border-emerald-300 flex items-center gap-3 transition-all cursor-pointer text-left active:scale-[0.98]"
                             >
-                                <div className="size-9.5 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0">
+                                <div className="size-9.5 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
                                     <FileText className="size-4.5" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <span className="text-xs font-bold text-zinc-900 block">
-                                        Unduh Laporan Resmi (PDF)
+                                        Unduh Laporan (PDF)
                                     </span>
                                     <span className="text-[10px] text-zinc-400 block truncate">
                                         Laporan komprehensif Markowitz & NSGA-II
@@ -1760,9 +1740,9 @@ export default function MobileResultPage({
                                 type="button"
                                 disabled={isExporting || isGeneratingShare}
                                 onClick={() => handleExportCompare()}
-                                className="w-full p-3 rounded-2xl bg-zinc-50 hover:bg-amber-50/60 border border-zinc-200 hover:border-amber-300 flex items-center gap-3 transition-all cursor-pointer text-left active:scale-[0.98]"
+                                className="w-full p-3 rounded-2xl bg-zinc-50 hover:bg-emerald-50/60 border border-zinc-200 hover:border-emerald-300 flex items-center gap-3 transition-all cursor-pointer text-left active:scale-[0.98]"
                             >
-                                <div className="size-9.5 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
+                                <div className="size-9.5 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
                                     <Layers className="size-4.5" />
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -1780,9 +1760,9 @@ export default function MobileResultPage({
                                 type="button"
                                 disabled={isExporting || isGeneratingShare}
                                 onClick={() => handleGeneratePublicLink()}
-                                className="w-full p-3 rounded-2xl bg-zinc-50 hover:bg-indigo-50/60 border border-zinc-200 hover:border-indigo-300 flex items-center gap-3 transition-all cursor-pointer text-left active:scale-[0.98]"
+                                className="w-full p-3 rounded-2xl bg-zinc-50 hover:bg-emerald-50/60 border border-zinc-200 hover:border-emerald-300 flex items-center gap-3 transition-all cursor-pointer text-left active:scale-[0.98]"
                             >
-                                <div className="size-9.5 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center shrink-0">
+                                <div className="size-9.5 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
                                     {isGeneratingShare ? (
                                         <Loader2 className="size-4.5 animate-spin" />
                                     ) : (
@@ -1790,7 +1770,7 @@ export default function MobileResultPage({
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <span className="text-xs font-bold text-zinc-900 block">
+                                    <span className="text-xs font-bold text-emerald-600 block">
                                         Salin Tautan Publik
                                     </span>
                                     <span className="text-[10px] text-zinc-400 block truncate">

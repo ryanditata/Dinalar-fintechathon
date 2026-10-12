@@ -15,6 +15,8 @@ import {
     Trash,
     TrendingUp,
     ChevronRight,
+    AlertCircle,
+    X,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
@@ -324,16 +326,35 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
 
             {/* Modal Edit Judul */}
             {editingItem && (
-                <div className="fixed inset-0 z-100 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="w-full max-w-sm rounded-2xl bg-white p-5 border border-zinc-200 shadow-xl space-y-4">
-                        <div>
-                            <h3 className="text-base font-bold text-zinc-900">
-                                Ubah Judul Portofolio
-                            </h3>
-                            <p className="text-xs text-zinc-500 mt-0.5">
-                                Sesuaikan nama untuk memudahkan pencarian di kemudian hari.
-                            </p>
+                <div
+                    className="fixed inset-0 z-100 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
+                    onClick={() => !isUpdating && setEditingItem(null)}
+                >
+                    <div
+                        className="w-full max-w-sm rounded-3xl bg-white p-5 border border-zinc-200 shadow-2xl space-y-4 animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Header Modal */}
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-zinc-900 font-semibold text-sm">
+                                <Edit2 className="size-5 text-emerald-600" />
+                                <span>Ubah Judul Portofolio</span>
+                            </div>
+                            <button
+                                type="button"
+                                disabled={isUpdating}
+                                onClick={() => setEditingItem(null)}
+                                className="size-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-zinc-900 flex items-center justify-center transition-colors cursor-pointer"
+                                aria-label="Tutup Dialog"
+                            >
+                                <X className="size-4" />
+                            </button>
                         </div>
+
+                        {/* Description */}
+                        <p className="text-xs text-zinc-600 leading-relaxed">
+                            Sesuaikan nama portofolio untuk memudahkan pencarian di kemudian hari.
+                        </p>
 
                         <form onSubmit={handleSaveEdit} className="space-y-4">
                             <input
@@ -341,25 +362,33 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                 value={editTitle}
                                 onChange={(e) => setEditTitle(e.target.value)}
                                 placeholder="Nama portofolio..."
-                                className="w-full h-11 px-3.5 rounded-xl bg-zinc-100 border border-zinc-200 text-sm text-zinc-900 focus:outline-none focus:border-emerald-500"
+                                className="w-full h-11 px-3.5 rounded-xl bg-zinc-50 border border-zinc-200 text-sm text-zinc-900 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                                 autoFocus
                             />
 
-                            <div className="flex items-center justify-end gap-2 pt-1">
+                            {/* Action Buttons */}
+                            <div className="flex items-center gap-2 pt-1">
                                 <button
                                     type="button"
+                                    disabled={isUpdating}
                                     onClick={() => setEditingItem(null)}
-                                    className="px-4 py-2 rounded-full text-xs font-semibold text-zinc-500 hover:bg-zinc-100"
+                                    className="flex-1 h-11 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-semibold text-xs transition-all active:scale-95 cursor-pointer"
                                 >
                                     Batal
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isUpdating}
-                                    className="px-4 py-2 rounded-full bg-emerald-600 text-white text-xs font-semibold shadow-xs hover:bg-emerald-700 flex items-center gap-1.5"
+                                    className="flex-1 h-11 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm shadow-emerald-900/10 cursor-pointer"
                                 >
-                                    {isUpdating && <Loader2 className="size-3 animate-spin" />}
-                                    Simpan
+                                    {isUpdating ? (
+                                        <>
+                                            <Loader2 className="size-4 animate-spin" />
+                                            <span>Menyimpan</span>
+                                        </>
+                                    ) : (
+                                        <span>Simpan</span>
+                                    )}
                                 </button>
                             </div>
                         </form>
@@ -369,35 +398,64 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
 
             {/* Modal Konfirmasi Hapus */}
             {deletingItem && (
-                <div className="fixed inset-0 z-100 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="w-full max-w-sm rounded-2xl bg-white p-5 border border-zinc-200 shadow-xl space-y-3">
-                        <h3 className="text-base font-bold text-zinc-900">
-                            Hapus Riwayat Portofolio?
-                        </h3>
-                        <p className="text-xs text-zinc-500 leading-relaxed">
+                <div
+                    className="fixed inset-0 z-100 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
+                    onClick={() => !isDeleting && setDeletingItem(null)}
+                >
+                    <div
+                        className="w-full max-w-sm rounded-3xl bg-white p-5 border border-zinc-200 shadow-2xl space-y-4 animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Header Modal */}
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-rose-600 font-semibold text-sm">
+                                <AlertCircle className="size-5" />
+                                <span>Hapus Riwayat Portofolio</span>
+                            </div>
+                            <button
+                                type="button"
+                                disabled={isDeleting}
+                                onClick={() => setDeletingItem(null)}
+                                className="size-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-zinc-900 flex items-center justify-center transition-colors cursor-pointer"
+                                aria-label="Tutup Dialog"
+                            >
+                                <X className="size-4" />
+                            </button>
+                        </div>
+
+                        {/* Description */}
+                        <p className="text-xs text-zinc-600 leading-relaxed">
                             Apakah Anda yakin ingin menghapus portofolio{' '}
                             <span className="font-semibold text-zinc-900">
                                 "{deletingItem.title}"
                             </span>
-                            ? Data ini tidak dapat dikembalikan.
+                            ? Seluruh data riwayat analisis ini tidak dapat dikembalikan.
                         </p>
 
-                        <div className="flex items-center justify-end gap-2 pt-2">
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2 pt-1">
                             <button
                                 type="button"
+                                disabled={isDeleting}
                                 onClick={() => setDeletingItem(null)}
-                                className="px-4 py-2 rounded-full text-xs font-semibold text-zinc-500 hover:bg-zinc-100"
+                                className="flex-1 h-11 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-semibold text-xs transition-all active:scale-95 cursor-pointer"
                             >
                                 Batal
                             </button>
                             <button
                                 type="button"
-                                onClick={handleConfirmDelete}
                                 disabled={isDeleting}
-                                className="px-4 py-2 rounded-full bg-rose-600 text-white text-xs font-semibold shadow-xs hover:bg-rose-700 flex items-center gap-1.5"
+                                onClick={handleConfirmDelete}
+                                className="flex-1 h-11 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm shadow-rose-900/10 cursor-pointer"
                             >
-                                {isDeleting && <Loader2 className="size-3 animate-spin" />}
-                                Ya, Hapus
+                                {isDeleting ? (
+                                    <>
+                                        <Loader2 className="size-4 animate-spin" />
+                                        <span>Menghapus</span>
+                                    </>
+                                ) : (
+                                    <span>Ya, Hapus</span>
+                                )}
                             </button>
                         </div>
                     </div>
