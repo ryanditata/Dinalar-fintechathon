@@ -82,7 +82,7 @@ export default function MobileProfilePage() {
                     >
                         <div className="flex items-center gap-3">
                             <div className="size-9 rounded-xl bg-zinc-100 flex items-center justify-center text-zinc-900">
-                                <User2 className="size-4 stroke-[1.8]" />
+                                <User2 className="size-4 stroke-[1.8] text-emerald-600" />
                             </div>
                             <div>
                                 <span className="text-[14px] font-medium text-zinc-900 block">
@@ -102,7 +102,7 @@ export default function MobileProfilePage() {
                     >
                         <div className="flex items-center gap-3">
                             <div className="size-9 rounded-xl bg-zinc-100 flex items-center justify-center text-zinc-900">
-                                <KeyRound className="size-4 stroke-[1.8]" />
+                                <KeyRound className="size-4 stroke-[1.8] text-emerald-600" />
                             </div>
                             <div>
                                 <span className="text-[14px] font-medium text-zinc-900 block">
@@ -123,7 +123,7 @@ export default function MobileProfilePage() {
                     >
                         <div className="flex items-center gap-3">
                             <div className="size-9 rounded-xl bg-zinc-100 flex items-center justify-center text-zinc-900">
-                                <Info className="size-4 stroke-[1.8]" />
+                                <Info className="size-4 stroke-[1.8] text-emerald-600" />
                             </div>
                             <div>
                                 <span className="text-[14px] font-medium text-zinc-900 block">

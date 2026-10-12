@@ -584,7 +584,7 @@ class PortfolioController extends Controller
             $stocksMap[str_replace('.JK', '', $s->ticker)] = $s;
         }
 
-        return Inertia::render('user/analyze/result', [
+        return Inertia::render(DeviceViewResolver::resolve('user/analyze/result', $request), [
             'optimization' => $optimization,
             'stocks' => $stocksMap,
             'history' => [],

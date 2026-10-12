@@ -126,7 +126,7 @@ export default function MobileProfileEditPage({
                 {/* 2. Form Pembaruan Profil */}
                 <section className="rounded-[24px] bg-white p-4.5 border border-zinc-200 shadow-xs space-y-4">
                     <div className="flex items-center gap-2 pb-1 border-b border-zinc-100">
-                        <UserRoundCheck  className="size-4 text-emerald-600" />
+                        <User2 className="size-4 text-emerald-600" />
                         <h3 className="text-[15px] font-semibold text-zinc-900">
                             Update Account
                         </h3>
