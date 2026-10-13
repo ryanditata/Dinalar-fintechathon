@@ -1,4 +1,5 @@
 import SparklineChart from '@/components/SparklineChart';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { Check, Plus } from 'lucide-react';
 import React from 'react';
 
@@ -26,6 +27,7 @@ export function StockExploreCard({
     onActionClick,
     onClick,
 }: StockExploreCardProps) {
+    const { t } = useTranslation();
     const cleanTicker = ticker.replace('.JK', '');
     const numPrice = typeof price === 'number' ? price : Number(price) || 0;
 
@@ -134,8 +136,8 @@ export function StockExploreCard({
                                 ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
                                 : 'border border-zinc-200 bg-zinc-50 text-zinc-700 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-500/50'
                         }`}
-                        title={isAdded ? 'Sudah di Keranjang (Buka Analisis)' : 'Analisis & Tambah ke Keranjang'}
-                        aria-label={isAdded ? `Sudah di Keranjang ${cleanTicker}` : `Analisis dan Tambah ${cleanTicker}`}
+                        title={isAdded ? t('saham.in_basket_title') : t('saham.analyze_add_title')}
+                        aria-label={isAdded ? t('saham.in_basket_aria', { ticker: cleanTicker }) : t('saham.analyze_add_aria', { ticker: cleanTicker })}
                     >
                         {isAdded ? (
                             <Check className="size-4 stroke-[2.5]" />

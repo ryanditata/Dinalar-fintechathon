@@ -27,6 +27,7 @@ import {
     X,
 } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from '@/i18n/LanguageContext';
 import {
     Area,
     AreaChart,
@@ -92,6 +93,8 @@ export function StockAnalysisSheet({
     timeframeLimits,
     initialTimeframe,
 }: StockAnalysisSheetProps) {
+    const { t, language } = useTranslation();
+
     if (!stock) return null;
 
     const minAllowedDate = timeframeLimits?.min_date
@@ -275,7 +278,8 @@ export function StockAnalysisSheet({
 
     const formatRupiah = (val: number | string | null | undefined) => {
         if (val === null || val === undefined || isNaN(Number(val))) return '-';
-        return `${Number(val).toLocaleString('id-ID')}`;
+        const localeStr = language === 'en' ? 'en-US' : 'id-ID';
+        return `${Number(val).toLocaleString(localeStr)}`;
     };
 
     const formatDate = (dateStr?: string) => {
@@ -283,17 +287,18 @@ export function StockAnalysisSheet({
         try {
             const cleanDateStr = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr.split(' ')[0];
             const parts = cleanDateStr.split('-');
+            const localeStr = language === 'en' ? 'en-US' : 'id-ID';
             if (parts.length === 3) {
                 const year = parseInt(parts[0], 10);
                 const month = parseInt(parts[1], 10) - 1;
                 const day = parseInt(parts[2], 10);
-                return new Date(year, month, day).toLocaleDateString('id-ID', {
+                return new Date(year, month, day).toLocaleDateString(localeStr, {
                     day: 'numeric',
                     month: 'short',
                     year: 'numeric',
                 });
             }
-            return new Date(dateStr).toLocaleDateString('id-ID', {
+            return new Date(dateStr).toLocaleDateString(localeStr, {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric',
@@ -471,7 +476,7 @@ export function StockAnalysisSheet({
                 isDragging.current = false;
 
                 const target = e.target as HTMLElement | null;
-                if (target?.closest('button[aria-label="Tutup"]')) {
+                if (target?.closest('button[aria-label="Tutup"], button[aria-label="Close"]')) {
                     canDrag.current = false;
                     return;
                 }
@@ -612,7 +617,7 @@ export function StockAnalysisSheet({
                     data-drag-handle="true"
                     onMouseDown={handleMouseDown}
                     className="w-full pt-3 flex items-center justify-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0"
-                    title="Geser ke bawah untuk menutup"
+                    title={t('analysis.drag_to_close')}
                 >
                     <div className="w-10 h-1.5 bg-zinc-300 rounded-full transition-transform active:scale-105" />
                 </div>
@@ -695,7 +700,7 @@ export function StockAnalysisSheet({
                         <div className="flex items-center justify-between text-xs font-bold text-zinc-900">
                             <span className="flex items-center gap-1.5">
                                 <ChartNetwork className="size-3.5 text-emerald-600 shrink-0" />
-                                <span>Horison Analisis</span>
+                                <span>{t('analysis.horizon_title')}</span>
                             </span>
                         </div>
 
@@ -711,7 +716,7 @@ export function StockAnalysisSheet({
                                             : 'bg-white border border-zinc-200/80 text-zinc-700 hover:border-emerald-500/40'
                                         }`}
                                 >
-                                    {preset === 'all' ? 'All' : preset}
+                                    {preset === 'all' ? t('analysis.all') : preset}
                                 </button>
                             ))}
                         </div>
@@ -721,12 +726,12 @@ export function StockAnalysisSheet({
                     <div className="rounded-2xl border border-zinc-200/80 bg-zinc-50/70 p-3 space-y-2.5">
                         <span className="text-xs font-bold flex items-center gap-1.5 text-zinc-900">
                             <Calendar className="size-3.5 text-emerald-600 shrink-0" />
-                            <span>Rentang Waktu</span>
+                            <span>{t('analysis.time_range')}</span>
                         </span>
 
                         <div className="grid grid-cols-3 gap-2 items-end">
                             <div className="space-y-1">
-                                <Label className="text-[10px] text-zinc-500 font-medium">Mulai</Label>
+                                <Label className="text-[10px] text-zinc-500 font-medium">{t('analysis.start_date')}</Label>
                                 <Input
                                     type="date"
                                     value={startDate}
@@ -738,7 +743,7 @@ export function StockAnalysisSheet({
                             </div>
 
                             <div className="space-y-1">
-                                <Label className="text-[10px] text-zinc-500 font-medium">Selesai</Label>
+                                <Label className="text-[10px] text-zinc-500 font-medium">{t('analysis.end_date')}</Label>
                                 <Input
                                     type="date"
                                     value={endDate}
@@ -757,7 +762,7 @@ export function StockAnalysisSheet({
                                 className="w-full h-8 text-xs font-semibold gap-1 px-1 rounded-lg bg-white border border-zinc-200 text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 flex items-center justify-center shadow-2xs"
                             >
                                 <RefreshCw className={`size-3 shrink-0 ${isLoading && !activePreset ? 'animate-spin' : ''}`} />
-                                <span className="truncate">Terapkan</span>
+                                <span className="truncate">{t('analysis.apply')}</span>
                             </Button>
                         </div>
                     </div>
@@ -767,7 +772,8 @@ export function StockAnalysisSheet({
                         <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 text-[11px] flex items-center gap-2">
                             <ShieldAlert className="size-4 shrink-0 text-amber-600" />
                             <span>
-                                <strong>Rentang Singkat:</strong> Data &lt; 30 hari ({metrics.data_points} hari bursa). Rujukan utama pergerakan adalah <strong>Return Periode</strong>.
+                                <strong>{t('analysis.short_range_warning')}</strong> {t('analysis.short_range_desc', { days: metrics.data_points })}{' '}
+                                <strong>{t('analysis.short_range_metric_ref')}</strong>.
                             </span>
                         </div>
                     )}
@@ -776,7 +782,7 @@ export function StockAnalysisSheet({
                     {isLoading ? (
                         <div className="h-44 flex flex-col items-center justify-center gap-2 text-zinc-500">
                             <Loader2 className="size-6 animate-spin text-emerald-600" />
-                            <span className="text-xs">Menghitung return historis &amp; volatilitas...</span>
+                            <span className="text-xs">{t('analysis.calculating')}</span>
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -784,14 +790,14 @@ export function StockAnalysisSheet({
                                 <div className="px-3 py-2 border-b border-zinc-100 flex items-center justify-between">
                                     <span className="text-xs font-bold flex items-center gap-1.5 text-zinc-900">
                                         <ChartArea className="size-3.5 text-emerald-600" />
-                                        <span>Grafik Harga Penutupan</span>
+                                        <span>{t('analysis.closing_price_chart')}</span>
                                     </span>
                                     <Badge
                                         variant="outline"
                                         className="text-[9px] py-0 px-1.5 font-mono text-zinc-500 bg-zinc-50 border-zinc-200"
                                     >
                                         <Clock className="size-2.5 mr-1 text-emerald-600" />
-                                        {metrics.data_points} Hari Bursa
+                                        {metrics.data_points} {t('analysis.trading_days')}
                                     </Badge>
                                 </div>
 
@@ -822,7 +828,7 @@ export function StockAnalysisSheet({
                                                         domain={['auto', 'auto']}
                                                         tickLine={false}
                                                         width={45}
-                                                        tickFormatter={(v) => v.toLocaleString('id-ID')}
+                                                        tickFormatter={(v) => v.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}
                                                     />
                                                     <Tooltip
                                                         content={({ active, payload }) => {
@@ -834,7 +840,7 @@ export function StockAnalysisSheet({
                                                                             {formatDate(d.date)}
                                                                         </div>
                                                                         <div className="font-bold text-zinc-900 text-[11px]">
-                                                                            Rp {formatRupiah(d.close_price)}
+                                                                            {stock.bursa === 'NYSE' ? `$${formatRupiah(d.close_price)}` : `Rp ${formatRupiah(d.close_price)}`}
                                                                         </div>
                                                                         <div
                                                                             className={`font-mono text-[10px] font-semibold ${d.daily_return >= 0 ? 'text-emerald-600' : 'text-rose-600'
@@ -860,7 +866,7 @@ export function StockAnalysisSheet({
                                             </ResponsiveContainer>
                                         ) : (
                                             <div className="h-full flex items-center justify-center text-xs text-zinc-400">
-                                                Tidak ada data harga pada rentang ini.
+                                                {t('analysis.no_price_data')}
                                             </div>
                                         )}
                                     </div>
@@ -882,14 +888,14 @@ export function StockAnalysisSheet({
                                             <div className="flex items-center justify-between text-[11px] font-bold">
                                                 <span className={`flex items-center gap-1 ${isPos ? 'text-emerald-700' : 'text-rose-700'}`}>
                                                     {isPos ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
-                                                    <span>Return Periode</span>
+                                                    <span>{t('analysis.period_return')}</span>
                                                 </span>
                                             </div>
                                             <div className={`text-lg font-extrabold font-mono my-1 ${isPos ? 'text-emerald-600' : 'text-rose-600'}`}>
                                                 {(metrics.period_return ?? 0) > 0 ? `+${metrics.period_return}%` : `${metrics.period_return ?? 0}%`}
                                             </div>
                                             <p className="text-[9px] text-zinc-500 leading-tight">
-                                                Perubahan selama {metrics.horizon_data_points ?? metrics.data_points} hari bursa
+                                                {t('analysis.period_return_desc', { count: metrics.horizon_data_points ?? metrics.data_points })}
                                             </p>
                                         </div>
                                     );
@@ -899,19 +905,19 @@ export function StockAnalysisSheet({
                                 <div className="rounded-2xl border border-zinc-200/80 bg-white p-2.5 flex flex-col justify-between shadow-2xs">
                                     <div className="text-[11px] font-bold text-zinc-700 flex items-center gap-1">
                                         <Clock className="size-3 text-zinc-600" />
-                                        <span>Rentang Harga</span>
+                                        <span>{t('analysis.price_range')}</span>
                                     </div>
                                     <div className="my-1 space-y-0.5 font-mono text-[10px]">
                                         <div className="flex justify-between items-center">
-                                            <span className="text-zinc-400">Low:</span>
+                                            <span className="text-zinc-400">{t('analysis.low')}</span>
                                             <span className="text-rose-600 font-bold">{formatRupiah(metrics.min_price)}</span>
                                         </div>
                                         <div className="flex justify-between items-center">
-                                            <span className="text-zinc-400">High:</span>
+                                            <span className="text-zinc-400">{t('analysis.high')}</span>
                                             <span className="text-emerald-600 font-bold">{formatRupiah(metrics.max_price)}</span>
                                         </div>
                                     </div>
-                                    <p className="text-[9px] text-zinc-400 leading-tight">Harga terendah & tertinggi</p>
+                                    <p className="text-[9px] text-zinc-400 leading-tight">{t('analysis.price_range_desc')}</p>
                                 </div>
 
                                 {/* 3. Expected Return */}
@@ -931,7 +937,7 @@ export function StockAnalysisSheet({
                                                 }`}
                                             >
                                                 {isExpPos ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
-                                                <span>Expected Return</span>
+                                                <span>{t('analysis.expected_return')}</span>
                                             </div>
                                             <div
                                                 className={`text-lg font-extrabold font-mono my-1 ${
@@ -940,7 +946,7 @@ export function StockAnalysisSheet({
                                             >
                                                 {(metrics.expected_return ?? 0) > 0 ? `+${metrics.expected_return}%` : `${metrics.expected_return ?? 0}%`}
                                             </div>
-                                            <p className="text-[9px] text-zinc-500 leading-tight">Proyeksi tahunan model</p>
+                                            <p className="text-[9px] text-zinc-500 leading-tight">{t('analysis.expected_return_desc')}</p>
                                         </div>
                                     );
                                 })()}
@@ -949,12 +955,12 @@ export function StockAnalysisSheet({
                                 <div className="rounded-2xl border border-blue-500/25 bg-blue-500/10 p-2.5 flex flex-col justify-between shadow-2xs">
                                     <div className="text-[11px] font-bold text-blue-700 flex items-center gap-1">
                                         <Activity className="size-3 text-blue-600" />
-                                        <span>Volatilitas</span>
+                                        <span>{t('analysis.volatility')}</span>
                                     </div>
                                     <div className="text-lg font-extrabold font-mono my-1 text-blue-600">
                                         {metrics.volatility}%
                                     </div>
-                                    <p className="text-[9px] text-zinc-500 leading-tight">Risiko fluktuasi tahunan</p>
+                                    <p className="text-[9px] text-zinc-500 leading-tight">{t('analysis.volatility_desc')}</p>
                                 </div>
                             </div>
                         </div>
@@ -973,12 +979,12 @@ export function StockAnalysisSheet({
                         {isAlreadyInBasket ? (
                             <>
                                 <Check className="size-6 stroke-[2.5]" />
-                                <span>Perbarui</span>
+                                <span>{t('analysis.update')}</span>
                             </>
                         ) : (
                             <>
                                 <ShoppingBag className="size-6 stroke-[2]" />
-                                <span>Tambahkan</span>
+                                <span>{t('analysis.add')}</span>
                             </>
                         )}
                     </button>

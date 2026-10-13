@@ -6,6 +6,7 @@ import { MobileHeader } from '@/pages/user/mobile/components/MobileHeader';
 import { MobileAppLayout } from '@/pages/user/mobile/layouts/MobileAppLayout';
 import { StockCardsSkeleton } from '@/pages/user/mobile/components/MobileSkeletons';
 import { StockExploreCard } from '@/pages/user/mobile/components/StockExploreCard';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { type PaginatedData, type SharedData, type Stock } from '@/types';
 import { Deferred, Head, Link, router, usePage } from '@inertiajs/react';
 import { Eye, EyeOff, Search, ShoppingBag, SlidersHorizontal, X } from 'lucide-react';
@@ -36,6 +37,7 @@ export default function MobileStockIndex({
     total_count,
     timeframe_limits,
 }: Props) {
+    const { t } = useTranslation();
     const pageProps = usePage<SharedData>().props;
     const serverBasketTickers = (pageProps.basket_tickers as string[]) || [];
 
@@ -136,19 +138,19 @@ export default function MobileStockIndex({
             preserveScroll: true,
             preserveState: true,
             onSuccess: () => {
-                toast.success(`Saham ${clean} berhasil ditambahkan ke keranjang!`);
+                toast.success(t('saham.added_to_basket_toast', { ticker: clean }));
             },
             onError: () => {
-                toast.error(`Gagal menyimpan saham ${clean} ke keranjang.`);
+                toast.error(t('saham.add_to_basket_error', { ticker: clean }));
             },
         });
     };
 
     const isCurrentStockInBasket = selectedStockForModal
         ? basketStocks.some(
-            (t) =>
-                t === selectedStockForModal.ticker ||
-                t === selectedStockForModal.ticker.replace('.JK', '')
+            (tTicker) =>
+                tTicker === selectedStockForModal.ticker ||
+                tTicker === selectedStockForModal.ticker.replace('.JK', '')
         )
         : false;
 
@@ -158,6 +160,8 @@ export default function MobileStockIndex({
 
     return (
         <MobileAppLayout>
+            <Head title={t('saham.title')} />
+
             {/* 1. Header (Avatar 40 & Keranjang Saham) */}
             <MobileHeader />
 
@@ -172,7 +176,7 @@ export default function MobileStockIndex({
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Cari ticker atau nama saham..."
+                            placeholder={t('saham.search_placeholder')}
                             className="w-full h-11 pl-10 pr-9 rounded-xl bg-zinc-100 border border-zinc-200 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-emerald-500 transition-all"
                         />
                         {searchQuery && (
@@ -180,6 +184,7 @@ export default function MobileStockIndex({
                                 type="button"
                                 onClick={handleClearSearch}
                                 className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-900"
+                                aria-label={t('saham.clear_search')}
                             >
                                 <X className="size-4" />
                             </button>
@@ -196,7 +201,7 @@ export default function MobileStockIndex({
                                     : 'text-zinc-500 hover:text-zinc-900'
                                 }`}
                         >
-                            Semua
+                            {t('common.all')}
                         </button>
                         <button
                             type="button"
@@ -221,7 +226,7 @@ export default function MobileStockIndex({
                                         : 'bg-white text-zinc-500 border-zinc-200 hover:border-emerald-500'
                                     }`}
                             >
-                                Semua Sektor
+                                {t('saham.filter_all_sectors')}
                             </button>
                             {availableSectors.map((sector) => (
                                 <button
@@ -246,7 +251,7 @@ export default function MobileStockIndex({
                             <div className="space-y-2 pt-1">
                                 <div className="flex items-center gap-2.5">
                                     <span className="text-[12px] font-semibold text-emerald-600 whitespace-nowrap">
-                                        Hari Ini
+                                        {t('saham.today')}
                                     </span>
                                 </div>
 
@@ -280,7 +285,7 @@ export default function MobileStockIndex({
                             <div className="space-y-2 pt-2">
                                 <div className="flex items-center gap-2.5">
                                     <span className="text-[12px] font-medium text-zinc-500 whitespace-nowrap">
-                                        Emiten Lainnya
+                                        {t('saham.other_stocks')}
                                     </span>
                                 </div>
 
@@ -311,7 +316,7 @@ export default function MobileStockIndex({
 
                         {stockList.length === 0 && (
                             <div className="py-12 text-center text-xs text-zinc-500">
-                                Tidak ada saham yang sesuai dengan filter pencarian.
+                                {t('saham.no_stocks_found')}
                             </div>
                         )}
                     </Deferred>
