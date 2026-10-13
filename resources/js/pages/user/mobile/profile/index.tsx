@@ -1,3 +1,5 @@
+import { LanguageToggle } from '@/components/LanguageToggle';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { FloatingBottomNav } from '@/pages/user/mobile/components/FloatingBottomNav';
 import { MobileAppLayout } from '@/pages/user/mobile/layouts/MobileAppLayout';
 import { type SharedData } from '@/types';
@@ -6,6 +8,7 @@ import {
     ArrowLeft,
     BadgeCheck,
     ChevronRight,
+    Globe,
     Info,
     KeyRound,
     LogOut,
@@ -16,6 +19,7 @@ import {
 import React, { useState } from 'react';
 
 export default function MobileProfilePage() {
+    const { t } = useTranslation();
     const pageProps = usePage<SharedData>().props;
     const { auth } = pageProps;
     const user = auth.user;
@@ -28,7 +32,7 @@ export default function MobileProfilePage() {
 
     return (
         <MobileAppLayout>
-            <Head title="Profile" />
+            <Head title={t('nav.profile')} />
 
             {/* Top Bar */}
             <header className="px-4 pt-3 pb-2 flex items-center justify-between select-none">
@@ -42,12 +46,12 @@ export default function MobileProfilePage() {
                         }
                     }}
                     className="size-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center text-zinc-900 shadow-xs active:scale-95 transition-transform cursor-pointer"
-                    aria-label="Kembali ke halaman sebelumnya"
+                    aria-label={t('common.back')}
                 >
                     <ArrowLeft className="size-5 stroke-[2]" />
                 </button>
                 <h1 className="text-[18px] font-semibold text-zinc-900 tracking-tight text-center flex-1">
-                    Profile
+                    {t('nav.profile')}
                 </h1>
                 <div className="size-10" aria-hidden="true" />
             </header>
@@ -93,10 +97,10 @@ export default function MobileProfilePage() {
                             </div>
                             <div>
                                 <span className="text-[14px] font-medium text-zinc-900 block">
-                                    Account
+                                    {t('profile.account')}
                                 </span>
                                 <span className="text-[11px] text-zinc-500">
-                                    Account information
+                                    {t('profile.account_desc')}
                                 </span>
                             </div>
                         </div>
@@ -113,15 +117,33 @@ export default function MobileProfilePage() {
                             </div>
                             <div>
                                 <span className="text-[14px] font-medium text-zinc-900 block">
-                                    Password
+                                    {t('profile.change_password')}
                                 </span>
                                 <span className="text-[11px] text-zinc-500">
-                                    Account security
+                                    {t('profile.password_desc')}
                                 </span>
                             </div>
                         </div>
                         <ChevronRight className="size-4 text-zinc-500" />
                     </Link>
+
+                    {/* Tombol Fitur Bahasa */}
+                    <div className="flex items-center justify-between p-3 hover:bg-zinc-50 rounded-xl transition-colors">
+                        <div className="flex items-center gap-3">
+                            <div className="size-9 rounded-xl bg-zinc-100 flex items-center justify-center text-zinc-900">
+                                <Globe className="size-4 stroke-[1.8] text-emerald-600" />
+                            </div>
+                            <div>
+                                <span className="text-[14px] font-medium text-zinc-900 block">
+                                    {t('profile.language')}
+                                </span>
+                                <span className="text-[11px] text-zinc-500">
+                                    {t('profile.language_desc')}
+                                </span>
+                            </div>
+                        </div>
+                        <LanguageToggle />
+                    </div>
 
                     <button
                         type="button"
@@ -134,10 +156,10 @@ export default function MobileProfilePage() {
                             </div>
                             <div>
                                 <span className="text-[14px] font-medium text-zinc-900 block">
-                                    About Dinalar
+                                    {t('profile.about_title')}
                                 </span>
                                 <span className="text-[11px] text-zinc-500">
-                                    Versi aplikasi 1.0.0
+                                    {t('profile.about_desc')}
                                 </span>
                             </div>
                         </div>
@@ -152,7 +174,7 @@ export default function MobileProfilePage() {
                             className="w-full h-12 rounded-full bg-rose-50 border border-rose-200 text-rose-700 font-semibold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer"
                         >
                             <LogOut className="size-4 stroke-[2]" />
-                            <span>Logout</span>
+                            <span>{t('nav.logout')}</span>
                         </button>
                     </div>
                 </section>
@@ -184,7 +206,7 @@ export default function MobileProfilePage() {
                                 type="button"
                                 onClick={() => setIsAboutModalOpen(false)}
                                 className="size-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-zinc-900 flex items-center justify-center transition-colors cursor-pointer"
-                                aria-label="Tutup Modal"
+                                aria-label={t('common.close')}
                             >
                                 <X className="size-4" />
                             </button>
@@ -193,10 +215,10 @@ export default function MobileProfilePage() {
                         {/* Title & Description */}
                         <div className="space-y-1.5 pt-1">
                             <h3 className="text-base font-bold text-zinc-900 tracking-tight">
-                                Tentang Dinalar
+                                {t('profile.about_title')}
                             </h3>
                             <p className="text-xs text-zinc-600 leading-relaxed">
-                                Dinalar adalah platform optimasi portofolio saham berbasis Artificial Intelligence. Maksimalkan return dan kendalikan risiko saham pilihan Anda.
+                                {t('profile.about_modal_text')}
                             </p>
                         </div>
 
@@ -206,7 +228,7 @@ export default function MobileProfilePage() {
                             onClick={() => setIsAboutModalOpen(false)}
                             className="w-full h-11 rounded-full bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-semibold text-xs transition-all shadow-xs cursor-pointer"
                         >
-                            Tutup
+                            {t('common.close')}
                         </button>
                     </div>
                 </div>

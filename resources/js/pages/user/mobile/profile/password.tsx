@@ -1,4 +1,6 @@
 import InputError from '@/components/input-error';
+import { LanguageToggle } from '@/components/LanguageToggle';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { MobileAppLayout } from '@/pages/user/mobile/layouts/MobileAppLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import {
@@ -15,6 +17,7 @@ import React, { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 export default function MobilePasswordPage() {
+    const { t } = useTranslation();
     const currentPasswordInput = useRef<HTMLInputElement>(null);
     const passwordInput = useRef<HTMLInputElement>(null);
 
@@ -42,7 +45,7 @@ export default function MobilePasswordPage() {
             preserveScroll: true,
             onSuccess: () => {
                 reset();
-                toast.success('Kata sandi berhasil diperbarui.');
+                toast.success(t('profile.password_success'));
             },
             onError: (err) => {
                 if (err.current_password) {
@@ -50,7 +53,7 @@ export default function MobilePasswordPage() {
                 } else if (err.password) {
                     passwordInput.current?.focus();
                 }
-                toast.error('Gagal memperbarui kata sandi. Periksa kembali isian Anda.');
+                toast.error(t('profile.password_error'));
             },
         });
     };
@@ -60,7 +63,7 @@ export default function MobilePasswordPage() {
 
     return (
         <MobileAppLayout hideBottomNav>
-            <Head title="Ganti Kata Sandi" />
+            <Head title={t('profile.change_password')} />
 
             {/* Top Navigation Bar */}
             <header className="px-4 pt-3 pb-2 flex items-center justify-between select-none">
@@ -74,12 +77,12 @@ export default function MobilePasswordPage() {
                         }
                     }}
                     className="size-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center text-zinc-900 shadow-xs active:scale-95 transition-transform cursor-pointer"
-                    aria-label="Kembali ke halaman sebelumnya"
+                    aria-label={t('common.back')}
                 >
                     <ArrowLeft className="size-5 stroke-[2]" />
                 </button>
                 <h1 className="text-[18px] font-semibold text-zinc-900 tracking-tight text-center flex-1">
-                    Password
+                    {t('profile.password_title')}
                 </h1>
                 <div className="size-10" aria-hidden="true" />
             </header>
@@ -91,7 +94,7 @@ export default function MobilePasswordPage() {
                     <div className="flex items-center gap-2 pb-1 border-b border-zinc-100">
                         <KeyRound className="size-4 text-emerald-600" />
                         <h3 className="text-[15px] font-semibold text-zinc-900">
-                            Update Password
+                            {t('profile.update_password')}
                         </h3>
                     </div>
 
@@ -102,7 +105,7 @@ export default function MobilePasswordPage() {
                                 htmlFor="current_password"
                                 className="text-[12px] font-medium text-zinc-600 block"
                             >
-                                Kata Sandi Saat Ini
+                                {t('profile.current_password')}
                             </label>
                             <div className="relative">
                                 <input
@@ -111,7 +114,7 @@ export default function MobilePasswordPage() {
                                     type={showCurrentPassword ? 'text' : 'password'}
                                     value={data.current_password}
                                     onChange={(e) => setData('current_password', e.target.value)}
-                                    placeholder="Masukkan kata sandi saat ini"
+                                    placeholder={t('profile.current_password_placeholder')}
                                     autoComplete="current-password"
                                     className="w-full h-11 px-3.5 pr-11 rounded-xl bg-zinc-100 border border-zinc-200 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all font-sans"
                                     required
@@ -120,7 +123,7 @@ export default function MobilePasswordPage() {
                                     type="button"
                                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 size-7 flex items-center justify-center text-zinc-400 hover:text-zinc-700 active:scale-95 transition-all"
-                                    aria-label={showCurrentPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                                    aria-label={showCurrentPassword ? t('profile.hide_password') : t('profile.show_password')}
                                 >
                                     {showCurrentPassword ? (
                                         <EyeOff className="size-4" />
@@ -138,7 +141,7 @@ export default function MobilePasswordPage() {
                                 htmlFor="password"
                                 className="text-[12px] font-medium text-zinc-600 block"
                             >
-                                Kata Sandi Baru
+                                {t('profile.new_password')}
                             </label>
                             <div className="relative">
                                 <input
@@ -147,7 +150,7 @@ export default function MobilePasswordPage() {
                                     type={showNewPassword ? 'text' : 'password'}
                                     value={data.password}
                                     onChange={(e) => setData('password', e.target.value)}
-                                    placeholder="Minimal 8 karakter"
+                                    placeholder={t('profile.new_password_placeholder')}
                                     autoComplete="new-password"
                                     className="w-full h-11 px-3.5 pr-11 rounded-xl bg-zinc-100 border border-zinc-200 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all font-sans"
                                     required
@@ -156,7 +159,7 @@ export default function MobilePasswordPage() {
                                     type="button"
                                     onClick={() => setShowNewPassword(!showNewPassword)}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 size-7 flex items-center justify-center text-zinc-400 hover:text-zinc-700 active:scale-95 transition-all"
-                                    aria-label={showNewPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                                    aria-label={showNewPassword ? t('profile.hide_password') : t('profile.show_password')}
                                 >
                                     {showNewPassword ? (
                                         <EyeOff className="size-4" />
@@ -184,7 +187,7 @@ export default function MobilePasswordPage() {
                                             hasMinLength ? 'text-emerald-700 font-medium' : 'text-zinc-500'
                                         }`}
                                     >
-                                        Minimal 8 karakter
+                                        {t('profile.min_8_chars')}
                                     </span>
                                 </div>
                             )}
@@ -196,7 +199,7 @@ export default function MobilePasswordPage() {
                                 htmlFor="password_confirmation"
                                 className="text-[12px] font-medium text-zinc-600 block"
                             >
-                                Konfirmasi Kata Sandi Baru
+                                {t('profile.confirm_new_password')}
                             </label>
                             <div className="relative">
                                 <input
@@ -204,7 +207,7 @@ export default function MobilePasswordPage() {
                                     type={showConfirmPassword ? 'text' : 'password'}
                                     value={data.password_confirmation}
                                     onChange={(e) => setData('password_confirmation', e.target.value)}
-                                    placeholder="Ulangi kata sandi baru"
+                                    placeholder={t('profile.confirm_password_placeholder')}
                                     autoComplete="new-password"
                                     className="w-full h-11 px-3.5 pr-11 rounded-xl bg-zinc-100 border border-zinc-200 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all font-sans"
                                     required
@@ -213,7 +216,7 @@ export default function MobilePasswordPage() {
                                     type="button"
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 size-7 flex items-center justify-center text-zinc-400 hover:text-zinc-700 active:scale-95 transition-all"
-                                    aria-label={showConfirmPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                                    aria-label={showConfirmPassword ? t('profile.hide_password') : t('profile.show_password')}
                                 >
                                     {showConfirmPassword ? (
                                         <EyeOff className="size-4" />
@@ -243,7 +246,7 @@ export default function MobilePasswordPage() {
                                                 : 'text-rose-600 font-medium'
                                         }`}
                                     >
-                                        {isMatched ? 'Kata sandi cocok' : 'Kata sandi belum cocok'}
+                                        {isMatched ? t('profile.password_match') : t('profile.password_mismatch')}
                                     </span>
                                 </div>
                             )}
@@ -262,7 +265,7 @@ export default function MobilePasswordPage() {
                                     </>
                                 ) : (
                                     <>
-                                        <span>Update</span>
+                                        <span>{t('profile.update_password_btn')}</span>
                                     </>
                                 )}
                             </button>

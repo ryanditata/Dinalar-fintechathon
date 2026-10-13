@@ -1,4 +1,6 @@
 import InputError from '@/components/input-error';
+import { LanguageToggle } from '@/components/LanguageToggle';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { MobileAppLayout } from '@/pages/user/mobile/layouts/MobileAppLayout';
 import { type SharedData } from '@/types';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
@@ -25,6 +27,7 @@ export default function MobileProfileEditPage({
     mustVerifyEmail,
     status,
 }: ProfileEditProps) {
+    const { t } = useTranslation();
     const pageProps = usePage<SharedData>().props;
     const { auth } = pageProps;
     const user = auth.user;
@@ -63,10 +66,10 @@ export default function MobileProfileEditPage({
         patch(route('profile.update'), {
             preserveScroll: true,
             onSuccess: () => {
-                toast.success('Informasi profil berhasil diperbarui.');
+                toast.success(t('profile.update_success'));
             },
             onError: () => {
-                toast.error('Gagal memperbarui profil. Periksa kembali isian Anda.');
+                toast.error(t('profile.update_error'));
             },
         });
     };
@@ -77,7 +80,7 @@ export default function MobileProfileEditPage({
             preserveScroll: true,
             onSuccess: () => {
                 setIsDeleteModalOpen(false);
-                toast.success('Akun Anda telah berhasil dihapus.');
+                toast.success(t('profile.delete_success'));
             },
             onError: () => {
                 deletePasswordInput.current?.focus();
@@ -104,7 +107,7 @@ export default function MobileProfileEditPage({
 
     return (
         <MobileAppLayout hideBottomNav>
-            <Head title="Informasi Profil" />
+            <Head title={t('profile.edit_profile')} />
 
             {/* Top Navigation Bar */}
             <header className="px-4 pt-3 pb-2 flex items-center justify-between select-none">
@@ -118,12 +121,12 @@ export default function MobileProfileEditPage({
                         }
                     }}
                     className="size-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center text-zinc-900 shadow-xs active:scale-95 transition-transform cursor-pointer"
-                    aria-label="Kembali ke halaman sebelumnya"
+                    aria-label={t('common.back')}
                 >
                     <ArrowLeft className="size-5 stroke-[2]" />
                 </button>
                 <h1 className="text-[18px] font-semibold text-zinc-900 tracking-tight text-center flex-1">
-                    Account
+                    {t('profile.account')}
                 </h1>
                 <div className="size-10" aria-hidden="true" />
             </header>
@@ -135,7 +138,7 @@ export default function MobileProfileEditPage({
                     <div className="flex items-center gap-2 pb-1 border-b border-zinc-100">
                         <User2 className="size-4 text-emerald-600" />
                         <h3 className="text-[15px] font-semibold text-zinc-900">
-                            Update Account
+                            {t('profile.update_account')}
                         </h3>
                     </div>
 
@@ -146,14 +149,14 @@ export default function MobileProfileEditPage({
                                 htmlFor="name"
                                 className="text-[12px] font-medium text-zinc-600 block"
                             >
-                                Full Name
+                                {t('profile.full_name')}
                             </label>
                             <input
                                 id="name"
                                 type="text"
                                 value={data.name}
                                 onChange={(e) => setData('name', e.target.value)}
-                                placeholder="Nama lengkap Anda"
+                                placeholder={t('profile.full_name_placeholder')}
                                 autoComplete="name"
                                 className="w-full h-11 px-3.5 rounded-xl bg-zinc-100 border border-zinc-200 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all font-sans"
                                 required
@@ -167,14 +170,14 @@ export default function MobileProfileEditPage({
                                 htmlFor="email"
                                 className="text-[12px] font-medium text-zinc-600 block"
                             >
-                                Email Address
+                                {t('profile.email')}
                             </label>
                             <input
                                 id="email"
                                 type="email"
                                 value={data.email}
                                 onChange={(e) => setData('email', e.target.value)}
-                                placeholder="email@contoh.com"
+                                placeholder={t('profile.email_placeholder')}
                                 autoComplete="username"
                                 className="w-full h-11 px-3.5 rounded-xl bg-zinc-100 border border-zinc-200 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all font-sans"
                                 required
@@ -187,10 +190,10 @@ export default function MobileProfileEditPage({
                             <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200/80 text-amber-800 text-[11px] space-y-1.5">
                                 <div className="flex items-center gap-1.5 font-semibold text-amber-900">
                                     <AlertCircle className="size-3.5 text-amber-600 shrink-0" />
-                                    <span>Email Belum Diverifikasi</span>
+                                    <span>{t('profile.email_unverified')}</span>
                                 </div>
                                 <p className="text-[11px] text-amber-800/90 leading-relaxed">
-                                    Silakan verifikasi email Anda untuk menikmati seluruh fitur Dinalar secara maksimal.
+                                    {t('profile.email_unverified_desc')}
                                 </p>
                                 <Link
                                     href={route('verification.send')}
@@ -198,11 +201,11 @@ export default function MobileProfileEditPage({
                                     as="button"
                                     className="inline-flex items-center gap-1 font-semibold text-emerald-700 underline underline-offset-2 hover:text-emerald-800 text-[11px] cursor-pointer"
                                 >
-                                    Kirim ulang tautan verifikasi
+                                    {t('profile.resend_verification')}
                                 </Link>
                                 {status === 'verification-link-sent' && (
                                     <div className="mt-1 text-[11px] font-medium text-emerald-700">
-                                        Tautan verifikasi baru telah dikirim ke alamat email Anda.
+                                        {t('profile.verification_sent')}
                                     </div>
                                 )}
                             </div>
@@ -221,11 +224,11 @@ export default function MobileProfileEditPage({
                                     </>
                                 ) : recentlySuccessful ? (
                                     <>
-                                        <span>Tersimpan</span>
+                                        <span>{t('common.saved')}</span>
                                     </>
                                 ) : (
                                     <>
-                                        <span>Simpan</span>
+                                        <span>{t('common.save')}</span>
                                     </>
                                 )}
                             </button>
@@ -237,17 +240,17 @@ export default function MobileProfileEditPage({
                 <section className="rounded-[24px] bg-rose-50/60 p-4.5 border border-rose-200/60 shadow-2xs space-y-3">
                     <div className="flex items-center gap-2 text-rose-800 text-[15px] font-semibold">
                         <Trash className="size-4 text-rose-600 shrink-0" />
-                        <span>Delete Account</span>
+                        <span>{t('profile.delete_account')}</span>
                     </div>
                     <p className="text-[11px] text-rose-700 leading-relaxed">
-                        Warning! Please proceed with caution, this cannot be undone.
+                        {t('profile.delete_warning')}
                     </p>
                     <button
                         type="button"
                         onClick={openDeleteModal}
                         className="w-full h-11 rounded-full bg-white border border-rose-300 hover:bg-rose-100 text-rose-700 font-semibold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer shadow-2xs"
                     >
-                        <span>Delete account</span>
+                        <span>{t('profile.delete_account')}</span>
                     </button>
                 </section>
             </div>
@@ -266,14 +269,14 @@ export default function MobileProfileEditPage({
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2 text-rose-600 font-semibold text-sm">
                                 <Trash className="size-4" />
-                                <span>Delete Account</span>
+                                <span>{t('profile.delete_account')}</span>
                             </div>
                             <button
                                 type="button"
                                 disabled={isDeleting}
                                 onClick={closeDeleteModal}
                                 className="size-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-zinc-900 flex items-center justify-center transition-colors cursor-pointer"
-                                aria-label="Tutup Modal"
+                                aria-label={t('common.close')}
                             >
                                 <X className="size-4" />
                             </button>
@@ -281,9 +284,9 @@ export default function MobileProfileEditPage({
 
                         {/* Description & Warning */}
                         <div className="p-3 rounded-2xl bg-rose-50 border border-rose-100 space-y-1">
-                            <p className="text-xs font-semibold text-rose-800">Are you sure you want to delete your account?</p>
+                            <p className="text-xs font-semibold text-rose-800">{t('profile.delete_confirm_title')}</p>
                             <p className="text-[11px] text-rose-700 leading-relaxed">
-                                Once your account is deleted, all of its resources and data will also be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.
+                                {t('profile.delete_confirm_desc')}
                             </p>
                         </div>
 
@@ -291,7 +294,7 @@ export default function MobileProfileEditPage({
                         <form onSubmit={handleDeleteAccount} className="space-y-3">
                             <div className="space-y-1">
                                 <label className="text-[12px] font-medium text-zinc-600 block">
-                                    Masukkan Kata Sandi untuk Konfirmasi
+                                    {t('profile.enter_password_to_confirm')}
                                 </label>
                                 <input
                                     ref={deletePasswordInput}
@@ -301,7 +304,7 @@ export default function MobileProfileEditPage({
                                         setDeleteData('password', e.target.value);
                                         if (deleteErrors.password) clearDeleteErrors('password');
                                     }}
-                                    placeholder="Kata sandi akun Anda"
+                                    placeholder={t('profile.enter_password_placeholder')}
                                     className="w-full h-11 px-3.5 rounded-xl bg-zinc-100 border border-zinc-200 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-rose-500 focus:bg-white transition-all font-sans"
                                     required
                                     autoFocus
@@ -316,7 +319,7 @@ export default function MobileProfileEditPage({
                                     onClick={closeDeleteModal}
                                     className="flex-1 h-11 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-semibold text-xs transition-all active:scale-95 cursor-pointer"
                                 >
-                                    Batal
+                                    {t('common.cancel')}
                                 </button>
                                 <button
                                     type="submit"
@@ -328,7 +331,7 @@ export default function MobileProfileEditPage({
                                             <Loader2 className="size-4 animate-spin" />
                                         </>
                                     ) : (
-                                        <span>Delete Account</span>
+                                        <span>{t('profile.delete_account')}</span>
                                     )}
                                 </button>
                             </div>

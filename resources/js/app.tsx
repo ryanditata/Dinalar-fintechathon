@@ -5,6 +5,8 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
 
+import { LanguageProvider } from './i18n/LanguageContext';
+
 const appName = import.meta.env.VITE_APP_NAME || 'Dinalar';
 
 createInertiaApp({
@@ -13,7 +15,11 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
-        root.render(<App {...props} />);
+        root.render(
+            <LanguageProvider>
+                <App {...props} />
+            </LanguageProvider>
+        );
     },
     progress: {
         color: '#009966',
