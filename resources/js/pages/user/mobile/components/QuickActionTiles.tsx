@@ -1,27 +1,29 @@
+import { useTranslation } from '@/i18n/LanguageContext';
+import { type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
-import { type SharedData } from '@/types';
 
 export function QuickActionTiles() {
+    const { t } = useTranslation();
     const pageProps = usePage<SharedData>().props;
     const basketTickers = (pageProps.basket_tickers as string[]) || [];
     const basketCount = basketTickers.length;
 
     const tiles = [
         {
-            title: 'Eksplorasi Saham',
+            title: t('dashboard.explore_stocks'),
             href: '/user/saham',
             image: '/images/saham.png',
             badge: null,
         },
         {
-            title: 'Riwayat Portofolio',
+            title: t('dashboard.portfolio_history'),
             href: '/user/analyze/history',
             image: '/images/riwayat.png',
             badge: null,
         },
         {
-            title: 'Keranjang Saham',
+            title: t('dashboard.basket_stocks'),
             href: '/user/analyze/keranjang',
             image: '/images/keranjang.png',
             badge: basketCount > 0 ? basketCount : null,
@@ -29,10 +31,10 @@ export function QuickActionTiles() {
     ];
 
     return (
-        <section aria-label="Aksi Cepat" className="mx-3 grid grid-cols-3 gap-2.5">
+        <section aria-label={t('dashboard.quick_actions')} className="mx-3 grid grid-cols-3 gap-2.5">
             {tiles.map((tile) => (
                 <Link
-                    key={tile.title}
+                    key={tile.href}
                     href={tile.href}
                     className="relative flex flex-col items-center justify-center py-2.5 px-1.5 rounded-2xl bg-white/60 backdrop-blur-md border border-white/80 transition-all duration-150 group"
                 >

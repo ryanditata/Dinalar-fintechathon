@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useInitials } from '@/hooks/use-initials';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { ShoppingBag } from 'lucide-react';
@@ -12,6 +13,7 @@ interface MobileHeaderProps {
 export function MobileHeader({
     basketCount: customBasketCount,
 }: MobileHeaderProps = {}) {
+    const { t } = useTranslation();
     const pageProps = usePage<SharedData>().props;
     const { auth } = pageProps;
     const getInitials = useInitials();
@@ -28,7 +30,7 @@ export function MobileHeader({
             <Link
                 href="/settings/profile"
                 className="size-10 rounded-full overflow-hidden shrink-0 active:scale-95 transition-transform"
-                aria-label="Profil Pengguna"
+                aria-label={t('nav.profile')}
             >
                 <Avatar className="size-10 rounded-full">
                     <AvatarImage src={auth?.user?.avatar} alt={auth?.user?.name || 'User'} />
@@ -42,7 +44,7 @@ export function MobileHeader({
             <Link
                 href="/user/analyze/keranjang"
                 className="relative size-10 rounded-full bg-white flex items-center justify-center text-zinc-900 shadow-xs border border-zinc-200 hover:bg-zinc-50 active:scale-95 transition-all"
-                aria-label={`Keranjang Saham (${basketCount} dipilih)`}
+                aria-label={t('dashboard.basket_aria', { count: basketCount })}
             >
                 <ShoppingBag className="size-5 stroke-[1.75]" />
 

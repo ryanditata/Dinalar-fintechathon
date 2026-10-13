@@ -1,3 +1,4 @@
+import { useTranslation } from '@/i18n/LanguageContext';
 import { Eye, EyeOff, ShieldCheck, Sparkles } from 'lucide-react';
 import React, { useState } from 'react';
 
@@ -16,12 +17,15 @@ export function WalletLeatherHero({
     amount = 43093.00,
     cardHolder = 'INVESTOR DINALAR',
     referenceCode = '828749-2847-03',
-    label = 'Modal Portofolio AI',
-    sublabel = 'Kalkulasi Algoritma Markowitz',
+    label,
+    sublabel,
     expectedReturn,
     volatility,
     sharpeRatio,
 }: WalletLeatherHeroProps) {
+    const { t } = useTranslation();
+
+    const displayLabel = label ?? t('dashboard.ai_portfolio_capital');
     const [hideAmount, setHideAmount] = useState<boolean>(() => {
         if (typeof window !== 'undefined') {
             return localStorage.getItem('dinalar_hide_wallet_balance') === 'true';
@@ -74,7 +78,7 @@ export function WalletLeatherHero({
 
     return (
         <section
-            aria-label="Kartu Modal Portofolio"
+            aria-label={t('dashboard.wallet_card_aria')}
             className="relative mx-3 h-[235px] rounded-[28px] bg-emerald-900 shadow-xl shadow-emerald-950/20 overflow-hidden select-none"
         >
             {/* ==============================================================
@@ -89,7 +93,7 @@ export function WalletLeatherHero({
                             <Sparkles className="size-3 text-white" />
                         </div>
                         <span className="text-xs font-bold tracking-tight text-emerald-950 font-sans">
-                            Portofolio
+                            {t('dashboard.portfolio')}
                         </span>
                     </div>
 
@@ -129,14 +133,14 @@ export function WalletLeatherHero({
                     ============================================================== */}
                 <div className="relative z-20 pt-2 flex flex-col gap-1.5 text-white/90">
                     <span className="text-sm font-medium tracking-wide truncate max-w-[340px]">
-                        {label}
+                        {displayLabel}
                     </span>
 
                     {/* 3 Metrik: Return | Volatilitas | Sharpe Ratio */}
                     <div className="grid grid-cols-3 divide-x divide-emerald-400/20 py-1.5 px-1 rounded-xl bg-emerald-950/40 border border-emerald-400/20 backdrop-blur-xs text-center">
                         <div className="px-1">
                             <span className="text-[10px] text-emerald-200/90 font-medium block">
-                                Return
+                                {t('dashboard.return_label')}
                             </span>
                             <span className="text-xs font-bold font-mono text-emerald-100 tabular-nums block mt-0.5">
                                 {formattedReturn}
@@ -144,7 +148,7 @@ export function WalletLeatherHero({
                         </div>
                         <div className="px-1">
                             <span className="text-[10px] text-emerald-200/90 font-medium block">
-                                Volatilitas
+                                {t('dashboard.volatility_label')}
                             </span>
                             <span className="text-xs font-bold font-mono text-emerald-100 tabular-nums block mt-0.5">
                                 {formattedVolatility}
@@ -179,7 +183,7 @@ export function WalletLeatherHero({
                         type="button"
                         onClick={toggleHide}
                         className="p-1.5 rounded-full text-emerald-100/75 hover:text-white active:scale-95 transition-all cursor-pointer"
-                        aria-label={hideAmount ? 'Tampilkan Saldo' : 'Sembunyikan Saldo'}
+                        aria-label={hideAmount ? t('dashboard.show_balance') : t('dashboard.hide_balance')}
                     >
                         {hideAmount ? (
                             <EyeOff className="size-5 stroke-[1.75]" />

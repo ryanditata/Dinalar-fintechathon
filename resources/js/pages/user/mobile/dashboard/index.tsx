@@ -5,6 +5,7 @@ import { QuickActionTiles } from '@/pages/user/mobile/components/QuickActionTile
 import { StockItemCard } from '@/pages/user/mobile/components/StockItemCard';
 import { WalletLeatherHero } from '@/pages/user/mobile/components/WalletLeatherHero';
 import { MobileAppLayout } from '@/pages/user/mobile/layouts/MobileAppLayout';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { type SharedData } from '@/types';
 import { Deferred, Head, Link, router, usePage } from '@inertiajs/react';
 import { ChevronRight, Sparkles, TrendingUp, Zap } from 'lucide-react';
@@ -71,6 +72,7 @@ export default function MobileDashboard({
     risk_free_rate = 6.0,
     last_updated,
 }: MobileDashboardProps) {
+    const { t } = useTranslation();
     const pageProps = usePage<SharedData>().props;
     const { auth } = pageProps;
 
@@ -91,6 +93,8 @@ export default function MobileDashboard({
 
     return (
         <MobileAppLayout>
+            <Head title={t('dashboard.title')} />
+
             {/* 1. Header (Avatar 40 & Keranjang Saham) */}
             <MobileHeader />
 
@@ -98,10 +102,10 @@ export default function MobileDashboard({
                 {/* 2. Wallet Card (Hero Dompet Kulit Gelap Berjahit & Rivet) */}
                 <WalletLeatherHero
                     amount={heroAmount}
-                    cardHolder={auth?.user?.name ? auth.user.name.toUpperCase() : 'INVESTOR DINALAR'}
+                    cardHolder={auth?.user?.name ? auth.user.name.toUpperCase() : t('dashboard.default_investor')}
                     referenceCode={heroRefCode}
-                    label={latest_portfolio ? latest_portfolio.title : 'Modal Portofolio AI'}
-                    sublabel={latest_portfolio ? 'Portofolio Terakhir' : 'Estimasi Modal'}
+                    label={latest_portfolio ? latest_portfolio.title : t('dashboard.ai_portfolio_capital')}
+                    sublabel={latest_portfolio ? t('dashboard.recent_portfolio') : t('dashboard.estimated_capital')}
                     expectedReturn={latest_portfolio?.best_portfolios?.sharpe?.return}
                     volatility={latest_portfolio?.best_portfolios?.sharpe?.risk}
                     sharpeRatio={latest_portfolio?.best_portfolios?.sharpe?.sharpe}
@@ -114,11 +118,12 @@ export default function MobileDashboard({
                 <section className="mx-1 rounded-[24px] bg-white p-4 border border-zinc-200 shadow-xs">
                     <div className="flex items-center justify-between mb-3">
                         <h3 className="text-base font-semibold text-emerald-600 tracking-tight">
-                            Bursa Pilihan
+                            {t('dashboard.market_selection')}
                         </h3>
                         <Link
                             href="/user/saham"
                             className="text-[12px] font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-0.5"
+                            aria-label={t('dashboard.market_selection')}
                         >
                             <ChevronRight />
                         </Link>
@@ -134,7 +139,7 @@ export default function MobileDashboard({
                                     : 'text-zinc-500 hover:text-zinc-900'
                                 }`}
                         >
-                            Populer
+                            {t('common.popular')}
                         </button>
                         <button
                             type="button"
@@ -144,7 +149,7 @@ export default function MobileDashboard({
                                     : 'text-zinc-500 hover:text-zinc-900'
                                 }`}
                         >
-                            Top Gainers
+                            {t('common.gainers')}
                         </button>
                         <button
                             type="button"
@@ -154,7 +159,7 @@ export default function MobileDashboard({
                                     : 'text-zinc-500 hover:text-zinc-900'
                                 }`}
                         >
-                            Top Losers
+                            {t('common.losers')}
                         </button>
                     </div>
 
@@ -176,7 +181,7 @@ export default function MobileDashboard({
                                         changePercent={stock.change_percent}
                                         recentPrices={stock.recent_prices}
                                         analysisCount={stock.analysis_count}
-                                        actionLabel="Analisis"
+                                        actionLabel={t('common.analyze')}
                                         onActionClick={() => {
                                             router.get('/user/saham', {
                                                 search: stock.ticker.replace('.JK', ''),
@@ -191,7 +196,7 @@ export default function MobileDashboard({
                                 ))
                             ) : (
                                 <div className="py-8 text-center text-xs text-zinc-500">
-                                    Belum ada data pergerakan saham.
+                                    {t('dashboard.no_stocks_movement')}
                                 </div>
                             )}
                         </div>
@@ -203,11 +208,12 @@ export default function MobileDashboard({
                     <section className="mx-1 rounded-[24px] bg-white p-4 border border-zinc-200 shadow-xs">
                         <div className="flex items-center justify-between mb-3">
                             <h3 className="text-base font-semibold text-emerald-600 tracking-tight">
-                                Riwayat Portofolio
+                                {t('dashboard.portfolio_history')}
                             </h3>
                             <Link
                                 href="/user/analyze/history"
                                 className="text-[12px] font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-0.5"
+                                aria-label={t('dashboard.portfolio_history')}
                             >
                                 <ChevronRight />
                             </Link>
@@ -229,17 +235,17 @@ export default function MobileDashboard({
                                         </span>
                                     </div>
                                     <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
-                                        {item.tickers.slice(0, 4).map((t, i) => (
+                                        {item.tickers.slice(0, 4).map((tTicker, i) => (
                                             <span
                                                 key={i}
                                                 className="text-[10px] px-1.5 py-0.5 rounded-full bg-white text-zinc-500 border border-zinc-200 font-mono"
                                             >
-                                                {t.replace('.JK', '')}
+                                                {tTicker.replace('.JK', '')}
                                             </span>
                                         ))}
                                         {item.tickers.length > 4 && (
                                             <span className="text-[10px] text-zinc-500">
-                                                +{item.tickers.length - 4} lagi
+                                                +{item.tickers.length - 4} {t('common.more')}
                                             </span>
                                         )}
                                     </div>
