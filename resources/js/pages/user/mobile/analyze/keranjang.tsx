@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface RecentOptimizationItem {
     id: number;
@@ -50,6 +51,8 @@ export default function MobileKeranjangPage({
     detailed_basket_stocks: serverDetailedStocks = {},
     global_timeframe,
 }: KeranjangProps) {
+    const { t, language } = useTranslation();
+
     // 1. BASKET STATE FROM DATABASE
     const [basketTickers, setBasketTickers] = useState<string[]>(serverBasketTickers);
     const [detailedBasketStocks, setDetailedBasketStocks] = useState<Record<string, AnalyzedStockPayload>>(serverDetailedStocks);
@@ -231,7 +234,8 @@ export default function MobileKeranjangPage({
     // Helper format Rupiah
     const formatRupiah = (val: number | string | null | undefined) => {
         if (val === null || val === undefined || isNaN(Number(val))) return 'Rp -';
-        return `Rp ${Number(val).toLocaleString('id-ID')}`;
+        const localeStr = language === 'en' ? 'en-US' : 'id-ID';
+        return `Rp ${Number(val).toLocaleString(localeStr)}`;
     };
 
     // Helper format tanggal (Contoh: 16 Sep 2026)
@@ -240,17 +244,18 @@ export default function MobileKeranjangPage({
         try {
             const cleanDateStr = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr.split(' ')[0];
             const parts = cleanDateStr.split('-');
+            const localeStr = language === 'en' ? 'en-US' : 'id-ID';
             if (parts.length === 3) {
                 const year = parseInt(parts[0], 10);
                 const month = parseInt(parts[1], 10) - 1;
                 const day = parseInt(parts[2], 10);
-                return new Date(year, month, day).toLocaleDateString('id-ID', {
+                return new Date(year, month, day).toLocaleDateString(localeStr, {
                     day: 'numeric',
                     month: 'short',
                     year: 'numeric',
                 });
             }
-            return new Date(dateStr).toLocaleDateString('id-ID', {
+            return new Date(dateStr).toLocaleDateString(localeStr, {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric',
@@ -274,8 +279,8 @@ export default function MobileKeranjangPage({
         router.post('/user/analyze/basket/timeframe', params, {
             preserveScroll: true,
             onSuccess: (page: any) => {
-                const label = params.preset ? (params.preset === 'all' ? 'All' : params.preset) : 'kustom';
-                toast.success(`Horison seluruh saham berhasil disinkronkan ke ${label}.`);
+                const label = params.preset ? (params.preset === 'all' ? t('analysis.all') : params.preset) : t('basket.custom').toLowerCase();
+                toast.success(t('basket.sync_timeframe_success', { label }));
 
                 const details = (page?.props?.detailed_basket_stocks || {}) as Record<string, AnalyzedStockPayload>;
                 const tickers = (page?.props?.basket_tickers || serverBasketTickers) as string[];
@@ -295,7 +300,7 @@ export default function MobileKeranjangPage({
                 }
             },
             onError: (errors) => {
-                const msg = Object.values(errors)[0] || 'Gagal memperbarui horison saham.';
+                const msg = Object.values(errors)[0] || t('basket.sync_timeframe_error');
                 toast.error(msg as string);
             },
             onFinish: () => {
@@ -360,10 +365,10 @@ export default function MobileKeranjangPage({
                     sessionStorage.setItem('user_basket_tickers', JSON.stringify(nextTickers));
                     sessionStorage.setItem('user_basket_detailed_stocks', JSON.stringify(nextDetails));
                 }
-                toast.success(`Saham ${clean} dihapus dari keranjang.`);
+                toast.success(t('basket.stock_removed_toast', { ticker: clean }));
             },
             onError: () => {
-                toast.error(`Gagal menghapus saham ${clean}.`);
+                toast.error(t('basket.stock_remove_error', { ticker: clean }));
             },
             onFinish: () => {
                 setIsProcessingBasket(false);
@@ -384,10 +389,10 @@ export default function MobileKeranjangPage({
                     sessionStorage.removeItem('user_basket_detailed_stocks');
                 }
                 setIsClearModalOpen(false);
-                toast.success('Keranjang berhasil dikosongkan.');
+                toast.success(t('basket.basket_cleared_toast'));
             },
             onError: () => {
-                toast.error('Gagal mengosongkan keranjang.');
+                toast.error(t('basket.basket_clear_error'));
             },
             onFinish: () => {
                 setIsProcessingBasket(false);
@@ -403,8 +408,8 @@ export default function MobileKeranjangPage({
 
     // Update stock in basket
     const handleUpdateStock = (payload: AnalyzedStockPayload) => {
-        const t = payload.ticker;
-        const clean = t.replace('.JK', '');
+        const tickerKey = payload.ticker;
+        const clean = tickerKey.replace('.JK', '');
 
         setIsProcessingBasket(true);
         router.post('/user/analyze/basket', payload as any, {
@@ -412,19 +417,19 @@ export default function MobileKeranjangPage({
             onSuccess: () => {
                 const nextDetails = {
                     ...detailedBasketStocks,
-                    [t]: payload,
+                    [tickerKey]: payload,
                     [clean]: payload,
                 };
                 setDetailedBasketStocks(nextDetails);
                 if (typeof window !== 'undefined') {
                     sessionStorage.setItem('user_basket_detailed_stocks', JSON.stringify(nextDetails));
                 }
-                toast.success(`Parameter analisis ${clean} berhasil diperbarui.`);
+                toast.success(t('basket.parameter_updated_toast', { ticker: clean }));
                 setIsEditModalOpen(false);
                 setEditingStock(null);
             },
             onError: () => {
-                toast.error(`Gagal memperbarui parameter ${clean}.`);
+                toast.error(t('basket.parameter_update_error', { ticker: clean }));
             },
             onFinish: () => {
                 setIsProcessingBasket(false);
@@ -437,13 +442,13 @@ export default function MobileKeranjangPage({
         e.preventDefault();
 
         if (basketStocks.length < 2) {
-            toast.error('Pilih minimal 2 saham di keranjang untuk menjalankan optimasi.');
+            toast.error(t('basket.min_stocks_required'));
             return;
         }
 
         if (hasNegativeReturn) {
             const list = negativeReturnStocks.map((s) => s.ticker.replace('.JK', '')).join(', ');
-            toast.error(`Tidak dapat melanjutkan: saham (${list}) memiliki return negatif. Sesuaikan horison waktu.`);
+            toast.error(t('basket.negative_return_error_toast', { tickers: list }));
             return;
         }
 
@@ -483,7 +488,7 @@ export default function MobileKeranjangPage({
 
         router.post('/user/analyze/optimize', payload, {
             onError: (errs) => {
-                const msg = Object.values(errs)[0] || 'Terjadi kesalahan saat memproses optimasi.';
+                const msg = Object.values(errs)[0] || t('basket.optimization_error_toast');
                 toast.error(msg as string);
                 setIsSubmitting(false);
             },
@@ -495,7 +500,7 @@ export default function MobileKeranjangPage({
 
     return (
         <MobileAppLayout hideBottomNav>
-            <Head title="Keranjang Saham" />
+            <Head title={t('basket.page_title')} />
 
             {/* Top Bar */}
             <header className="px-4 pt-3 pb-2 flex items-center justify-between select-none">
@@ -509,20 +514,20 @@ export default function MobileKeranjangPage({
                         }
                     }}
                     className="size-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center text-zinc-900 shadow-xs active:scale-95 transition-transform cursor-pointer"
-                    aria-label="Kembali ke halaman sebelumnya"
+                    aria-label={t('common.back')}
                 >
                     <ArrowLeft className="size-5 stroke-[2]" />
                 </button>
                 <h1 className="text-[18px] font-semibold text-zinc-900 tracking-tight text-center flex-1">
-                    Keranjang
+                    {t('nav.basket')}
                 </h1>
                 {basketStocks.length > 0 ? (
                     <button
                         type="button"
                         onClick={() => setIsClearModalOpen(true)}
                         className="size-10 rounded-full bg-white border border-zinc-200 text-rose-600 hover:text-rose-700 active:scale-95 transition-all flex items-center justify-center shadow-xs cursor-pointer"
-                        title="Kosongkan Keranjang"
-                        aria-label="Kosongkan Keranjang"
+                        title={t('basket.clear_all')}
+                        aria-label={t('basket.clear_all')}
                     >
                         <Trash className="size-4 stroke-[1.8]" />
                     </button>
@@ -539,7 +544,7 @@ export default function MobileKeranjangPage({
                             <div className="flex items-center gap-2">
                                 <ShoppingBag className="size-4 text-emerald-600" />
                                 <h3 className="text-[15px] font-semibold text-zinc-900 tracking-tight">
-                                    Saham Terpilih ({basketStocks.length})
+                                    {t('basket.selected_stocks')} ({basketStocks.length})
                                 </h3>
                             </div>
                             <Link
@@ -613,7 +618,7 @@ export default function MobileKeranjangPage({
                                                                 {stock.bursa || 'IDX'}
                                                             </span>
                                                         </div>
-                                                        <p className="text-[11px] text-zinc-500 truncate max-w-[170px] mt-0.5">
+                                                        <p className="text-[11px] text-zinc-500 truncate mt-0.5">
                                                             {stock.name || clean}
                                                         </p>
                                                     </div>
@@ -628,8 +633,8 @@ export default function MobileKeranjangPage({
                                                             handleRemoveStock(stock.ticker);
                                                         }}
                                                         className="size-8 rounded-lg bg-zinc-100 hover:bg-rose-50 text-zinc-500 hover:text-rose-600 flex items-center justify-center transition-colors"
-                                                        title="Hapus dari Keranjang"
-                                                        aria-label={`Hapus ${clean} dari keranjang`}
+                                                        title={t('basket.remove_from_basket')}
+                                                        aria-label={t('basket.remove_stock_aria', { ticker: clean })}
                                                     >
                                                         <Trash className="size-3.5 stroke-[1.8]" />
                                                     </button>
@@ -642,7 +647,7 @@ export default function MobileKeranjangPage({
                                                 <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/80 flex flex-col justify-between">
                                                     <div>
                                                         <span className="text-[10px] text-zinc-400 font-medium block">
-                                                            Harga Terakhir
+                                                            {t('stocks.price')}
                                                         </span>
                                                         <span className="text-[13px] font-bold text-zinc-900 font-mono tabular-nums">
                                                             {lastPrice > 0 ? formatRupiah(lastPrice) : '-'}
@@ -677,7 +682,7 @@ export default function MobileKeranjangPage({
                                                                 ) : (
                                                                     <TrendingDown className="size-3" />
                                                                 )}
-                                                                <span>Expected Return</span>
+                                                                <span>{t('analysis.expected_return')}</span>
                                                             </span>
                                                             <span
                                                                 className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded ${isPositive
@@ -687,11 +692,11 @@ export default function MobileKeranjangPage({
                                                             >
                                                                 {timeframePreset
                                                                     ? timeframePreset === 'all'
-                                                                        ? 'All'
+                                                                        ? t('analysis.all')
                                                                         : timeframePreset
                                                                     : dataPoints
                                                                         ? `${dataPoints}D`
-                                                                        : 'Custom'}
+                                                                        : t('basket.custom')}
                                                             </span>
                                                         </div>
                                                         <span
@@ -712,7 +717,7 @@ export default function MobileKeranjangPage({
 
                                                     {detailed?.metrics?.volatility !== undefined && (
                                                         <span className="text-[9px] text-zinc-500 block truncate pt-1">
-                                                            Risiko Volatilitas {detailed.metrics.volatility}%
+                                                            {t('basket.volatility_risk_label')} {detailed.metrics.volatility}%
                                                         </span>
                                                     )}
                                                 </div>
@@ -723,7 +728,7 @@ export default function MobileKeranjangPage({
                                                 <div className="flex items-center gap-1">
                                                     <Calendar className="size-3 text-emerald-600" />
                                                     <span className="font-mono">
-                                                        {formatDateRange(effectiveStartDate, timeframeEnd)} | {dataPoints} Hari Bursa
+                                                        {formatDateRange(effectiveStartDate, timeframeEnd)} | {dataPoints} {t('analysis.trading_days')}
                                                     </span>
                                                 </div>
                                             </div>
@@ -738,9 +743,9 @@ export default function MobileKeranjangPage({
                                     <ShoppingBag className="size-7 stroke-[1.8]" />
                                 </div>
                                 <div>
-                                    <h4 className="text-sm font-bold text-zinc-900">Keranjang Masih Kosong</h4>
+                                    <h4 className="text-sm font-bold text-zinc-900">{t('basket.empty_basket_title')}</h4>
                                     <p className="text-xs text-zinc-500 mt-1 max-w-[260px] mx-auto leading-relaxed">
-                                        Pilih minimal 2 saham dari katalog bursa Dinalar untuk memulai optimasi portofolio AI.
+                                        {t('basket.empty_basket_desc_mobile')}
                                     </p>
                                 </div>
                                 <Link
@@ -748,7 +753,7 @@ export default function MobileKeranjangPage({
                                     className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-emerald-600 text-white text-xs font-semibold shadow-xs active:scale-95 transition-transform"
                                 >
                                     <TrendingUp className="size-3.5" />
-                                    <span>Mulai Eksplorasi Saham</span>
+                                    <span>{t('basket.explore_stocks_btn')}</span>
                                 </Link>
                             </div>
                         )}
@@ -760,10 +765,10 @@ export default function MobileKeranjangPage({
                         <AlertCircle className="size-4 shrink-0 text-rose-600 mt-0.5" />
                         <div>
                             <span className="font-bold block text-rose-900">
-                                Return Negatif Terdeteksi
+                                {t('basket.negative_return_title')}
                             </span>
                             <p className="mt-0.5 text-rose-700 leading-relaxed text-[11px]">
-                                Saham ({negativeReturnStocks.map((s) => s.ticker.replace('.JK', '')).join(', ')}) memiliki tren return bernilai negatif pada horison ini. Mohon ubah horison waktu atau hapus dari keranjang agar analisis dapat diproses.
+                                {t('basket.negative_return_desc', { tickers: negativeReturnStocks.map((s) => s.ticker.replace('.JK', '')).join(', ') })}
                             </p>
                         </div>
                     </div>
@@ -775,10 +780,10 @@ export default function MobileKeranjangPage({
                         <AlertCircle className="size-4 shrink-0 text-amber-600 mt-0.5" />
                         <div>
                             <span className="font-bold block text-amber-900">
-                                Minimal 2 Saham Berbeda
+                                {t('basket.min_2_stocks_title')}
                             </span>
                             <p className="mt-0.5 text-amber-700 leading-relaxed text-[11px]">
-                                Tambahkan minimal 1 saham lagi ke keranjang agar algoritma Markowitz dapat menghitung portofolio optimal.
+                                {t('basket.min_2_stocks_desc')}
                             </p>
                         </div>
                     </div>
@@ -790,7 +795,7 @@ export default function MobileKeranjangPage({
                             <div className="flex items-center gap-2">
                                 <Sliders className="size-4 text-emerald-600" />
                                 <h3 className="text-[15px] font-semibold text-zinc-900 tracking-tight">
-                                    Optimasi Parameter
+                                    {t('basket.parameters_title')}
                                 </h3>
                             </div>
                         </div>
@@ -799,7 +804,7 @@ export default function MobileKeranjangPage({
                         <div className="space-y-1.5">
                             <div className="flex items-center justify-between">
                                 <label className="text-[12px] font-medium text-zinc-900">
-                                    Total Modal Investasi (IDR)
+                                    {t('basket.initial_capital')}
                                 </label>
                             </div>
                             <div className="relative">
@@ -823,10 +828,10 @@ export default function MobileKeranjangPage({
                             <div className="flex items-center justify-between">
                                 <div>
                                     <span className="text-[12px] font-medium text-zinc-900 block">
-                                        Risk-Free Rate (%)
+                                        {t('basket.risk_free_rate_label')}
                                     </span>
                                     <span className="text-[10px] text-zinc-400">
-                                        Acuan suku bunga bebas risiko (SBN / BI Rate)
+                                        {t('basket.risk_free_rate_desc')}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-1">
@@ -849,7 +854,7 @@ export default function MobileKeranjangPage({
                             <div className="flex items-center justify-between">
                                 <span className="text-[12px] font-medium text-zinc-900 flex items-center gap-1.5">
                                     <ChartNetwork className="size-3.5 text-emerald-600 shrink-0" />
-                                    <span>Horison Analisis</span>
+                                    <span>{t('analysis.horizon_title')}</span>
                                 </span>
                             </div>
 
@@ -869,7 +874,7 @@ export default function MobileKeranjangPage({
                                         {isUpdatingTimeframe && activePreset === preset && (
                                             <Loader2 className="size-3 animate-spin" />
                                         )}
-                                        <span>{preset === 'all' ? 'All' : preset}</span>
+                                        <span>{preset === 'all' ? t('analysis.all') : preset}</span>
                                     </button>
                                 ))}
                             </div>
@@ -879,13 +884,13 @@ export default function MobileKeranjangPage({
                         <div className="space-y-2 pt-2 border-t border-zinc-100">
                             <span className="text-[12px] font-medium text-zinc-900 flex items-center gap-1.5">
                                 <Calendar className="size-3.5 text-emerald-600 shrink-0" />
-                                <span>Rentang Waktu</span>
+                                <span>{t('analysis.time_range')}</span>
                             </span>
 
                             <div className="flex items-center gap-2">
                                 <div className="flex-1 grid grid-cols-2 gap-2">
                                     <div className="space-y-1">
-                                        <label className="text-[10px] text-zinc-400 block font-medium">Mulai</label>
+                                        <label className="text-[10px] text-zinc-400 block font-medium">{t('analysis.start_date')}</label>
                                         <input
                                             type="date"
                                             value={startDate}
@@ -896,7 +901,7 @@ export default function MobileKeranjangPage({
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[10px] text-zinc-400 block font-medium">Selesai</label>
+                                        <label className="text-[10px] text-zinc-400 block font-medium">{t('analysis.end_date')}</label>
                                         <input
                                             type="date"
                                             value={endDate}
@@ -914,8 +919,8 @@ export default function MobileKeranjangPage({
                                         disabled={isUpdatingTimeframe || basketStocks.length === 0}
                                         onClick={handleApplyDateRange}
                                         className="h-8 px-3 rounded-lg bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 text-zinc-700 font-semibold text-xs flex items-center justify-center gap-1 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
-                                        title="Terapkan rentang waktu ke seluruh saham"
-                                        aria-label="Terapkan rentang tanggal manual"
+                                        title={t('basket.apply_timeframe_title')}
+                                        aria-label={t('basket.apply_timeframe_title')}
                                     >
                                         <RefreshCw className={`size-3.5 ${isUpdatingTimeframe && !activePreset ? 'animate-spin text-emerald-600' : ''}`} />
                                     </button>
@@ -927,17 +932,17 @@ export default function MobileKeranjangPage({
                         {basketStocks.length > 0 && (
                             <section className="rounded-2xl bg-zinc-50 p-3.5 border border-zinc-200/80 space-y-2.5 text-xs">
                                 <div className="flex items-center justify-between text-zinc-500">
-                                    <span>Jumlah Saham Terpilih:</span>
-                                    <span className="font-mono font-bold text-zinc-900">{basketStocks.length} Saham</span>
+                                    <span>{t('basket.summary_selected_stocks')}</span>
+                                    <span className="font-mono font-bold text-zinc-900">{basketStocks.length} {t('basket.stocks_unit')}</span>
                                 </div>
                                 {hasNegativeReturn && (
                                     <div className="flex items-center justify-between text-rose-600 font-semibold">
-                                        <span>Return Negatif:</span>
-                                        <span className="font-mono font-bold">{negativeReturnStocks.length} Saham</span>
+                                        <span>{t('basket.summary_negative_return')}</span>
+                                        <span className="font-mono font-bold">{negativeReturnStocks.length} {t('basket.stocks_unit')}</span>
                                     </div>
                                 )}
                                 <div className="flex items-center justify-between text-zinc-500">
-                                    <span>Model Optimasi AI:</span>
+                                    <span>{t('basket.summary_ai_model')}</span>
                                     <span className="font-mono font-semibold text-emerald-600">NSGA-II + Markowitz</span>
                                 </div>
 
@@ -974,10 +979,10 @@ export default function MobileKeranjangPage({
                 <div className="flex items-center justify-between gap-3">
                     <div className="shrink-0 flex flex-col justify-center">
                         <span className="text-[11px] text-zinc-400 block font-medium leading-none mb-1.5">
-                            Total Dipilih
+                            {t('basket.total_selected')}
                         </span>
                         <span className="text-[15px] font-bold text-zinc-900 font-mono leading-none">
-                            {basketStocks.length} Saham
+                            {basketStocks.length} {t('basket.stocks_unit')}
                         </span>
                     </div>
 
@@ -993,12 +998,12 @@ export default function MobileKeranjangPage({
                         {isSubmitting ? (
                             <>
                                 <Loader2 className="size-4 animate-spin" />
-                                <span>Memproses Optimasi</span>
+                                <span>{t('basket.optimizing')}</span>
                             </>
                         ) : (
                             <>
                                 <Play className="size-4 fill-white" />
-                                <span>Analyze</span>
+                                <span>{t('basket.run_optimization_short')}</span>
                             </>
                         )}
                     </button>
@@ -1038,14 +1043,14 @@ export default function MobileKeranjangPage({
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2 text-rose-600 font-semibold text-sm">
                                 <AlertCircle className="size-5" />
-                                <span>Kosongkan Keranjang</span>
+                                <span>{t('basket.clear_modal_title')}</span>
                             </div>
                             <button
                                 type="button"
                                 disabled={isProcessingBasket}
                                 onClick={() => setIsClearModalOpen(false)}
                                 className="size-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-zinc-900 flex items-center justify-center transition-colors cursor-pointer"
-                                aria-label="Tutup Dialog"
+                                aria-label={t('common.close')}
                             >
                                 <X className="size-4" />
                             </button>
@@ -1053,7 +1058,7 @@ export default function MobileKeranjangPage({
 
                         {/* Description */}
                         <p className="text-xs text-zinc-600 leading-relaxed">
-                            Apakah Anda yakin ingin mengosongkan seluruh isi keranjang portofolio? Seluruh saham dan pengaturan parameter yang telah Anda pilih akan dihapus.
+                            {t('basket.clear_modal_desc')}
                         </p>
 
                         {/* Action Buttons */}
@@ -1064,7 +1069,7 @@ export default function MobileKeranjangPage({
                                 onClick={() => setIsClearModalOpen(false)}
                                 className="flex-1 h-11 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-semibold text-xs transition-all active:scale-95 cursor-pointer"
                             >
-                                Batal
+                                {t('common.cancel')}
                             </button>
                             <button
                                 type="button"
@@ -1075,10 +1080,10 @@ export default function MobileKeranjangPage({
                                 {isProcessingBasket ? (
                                     <>
                                         <Loader2 className="size-4 animate-spin" />
-                                        <span>Menghapus</span>
+                                        <span>{t('common.deleting')}</span>
                                     </>
                                 ) : (
-                                    <span>Ya, Kosongkan</span>
+                                    <span>{t('basket.yes_clear')}</span>
                                 )}
                             </button>
                         </div>
