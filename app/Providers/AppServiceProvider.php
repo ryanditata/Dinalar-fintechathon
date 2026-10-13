@@ -28,11 +28,19 @@ class AppServiceProvider extends ServiceProvider
         }
 
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
+            $locale = request()->input('lang') ?: (request()->cookie('dinalar_locale') ?: 'id');
+            $locale = in_array($locale, ['id', 'en']) ? $locale : 'id';
+
+            $subject = $locale === 'en'
+                ? 'Verify Your Email Address - Dinalar'
+                : 'Verifikasi Alamat Email Anda - Dinalar';
+
             return (new MailMessage)
-                ->subject('Verifikasi Alamat Email Anda - Dinalar')
+                ->subject($subject)
                 ->view('emails.verify-email', [
                     'user' => $notifiable,
                     'url' => $url,
+                    'locale' => $locale,
                 ]);
         });
 
@@ -42,12 +50,20 @@ class AppServiceProvider extends ServiceProvider
                 'email' => $notifiable->getEmailForPasswordReset(),
             ], false));
 
+            $locale = request()->input('lang') ?: (request()->cookie('dinalar_locale') ?: 'id');
+            $locale = in_array($locale, ['id', 'en']) ? $locale : 'id';
+
+            $subject = $locale === 'en'
+                ? 'Reset Password Notification - Dinalar'
+                : 'Atur Ulang Kata Sandi - Dinalar';
+
             return (new MailMessage)
-                ->subject('Atur Ulang Kata Sandi - Dinalar')
+                ->subject($subject)
                 ->view('emails.reset-password', [
                     'user' => $notifiable,
                     'url' => $url,
                     'count' => config('auth.passwords.'.config('auth.defaults.passwords').'.expire', 60),
+                    'locale' => $locale,
                 ]);
         });
     }

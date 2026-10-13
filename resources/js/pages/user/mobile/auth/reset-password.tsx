@@ -1,4 +1,5 @@
 import InputError from '@/components/input-error';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { MobileAuthLayout } from '@/pages/user/mobile/auth/MobileAuthLayout';
 import { Link, useForm } from '@inertiajs/react';
 import { Check, Eye, EyeOff, Loader2, Lock, Mail, ShieldCheck } from 'lucide-react';
@@ -10,6 +11,7 @@ interface MobileResetPasswordProps {
 }
 
 export default function MobileResetPassword({ token, email }: MobileResetPasswordProps) {
+    const { t } = useTranslation();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -32,8 +34,8 @@ export default function MobileResetPassword({ token, email }: MobileResetPasswor
 
     return (
         <MobileAuthLayout
-            title="Atur Ulang Kata Sandi"
-            subtitle="Buat kata sandi baru yang kuat dan aman untuk akun Dinalar Anda."
+            title={t('auth.reset_title', 'Atur Ulang Kata Sandi')}
+            subtitle={t('auth.reset_subtitle', 'Buat kata sandi baru yang kuat dan aman untuk akun Dinalar Anda.')}
             backHref={route('login')}
         >
             <div className="space-y-4">
@@ -51,7 +53,7 @@ export default function MobileResetPassword({ token, email }: MobileResetPasswor
                             htmlFor="email"
                             className="text-[12px] font-medium text-zinc-700 block"
                         >
-                            Alamat Email
+                            {t('auth.email_label', 'Alamat Email')}
                         </label>
                         <div className="relative">
                             <input
@@ -73,7 +75,7 @@ export default function MobileResetPassword({ token, email }: MobileResetPasswor
                             htmlFor="password"
                             className="text-[12px] font-medium text-zinc-700 block"
                         >
-                            Kata Sandi Baru
+                            {t('auth.new_password_label', 'Kata Sandi Baru')}
                         </label>
                         <div className="relative">
                             <input
@@ -82,7 +84,7 @@ export default function MobileResetPassword({ token, email }: MobileResetPasswor
                                 name="password"
                                 value={data.password}
                                 onChange={(e) => setData('password', e.target.value)}
-                                placeholder="Minimal 8 karakter"
+                                placeholder={t('auth.min_8_chars_placeholder', 'Minimal 8 karakter')}
                                 autoComplete="new-password"
                                 autoFocus
                                 required
@@ -93,7 +95,7 @@ export default function MobileResetPassword({ token, email }: MobileResetPasswor
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
                                 className="absolute right-2.5 top-1/2 -translate-y-1/2 size-7 flex items-center justify-center text-zinc-400 hover:text-zinc-700 active:scale-95 transition-all cursor-pointer"
-                                aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                                aria-label={showPassword ? t('auth.hide_password', 'Sembunyikan kata sandi') : t('auth.show_password', 'Tampilkan kata sandi')}
                             >
                                 {showPassword ? (
                                     <EyeOff className="size-4" />
@@ -121,7 +123,7 @@ export default function MobileResetPassword({ token, email }: MobileResetPasswor
                                         hasMinLength ? 'text-emerald-700 font-medium' : 'text-zinc-500'
                                     }`}
                                 >
-                                    Minimal 8 karakter
+                                    {t('auth.min_8_chars_checklist', 'Minimal 8 karakter')}
                                 </span>
                             </div>
                         )}
@@ -133,7 +135,7 @@ export default function MobileResetPassword({ token, email }: MobileResetPasswor
                             htmlFor="password_confirmation"
                             className="text-[12px] font-medium text-zinc-700 block"
                         >
-                            Konfirmasi Kata Sandi Baru
+                            {t('auth.confirm_new_password_label', 'Konfirmasi Kata Sandi Baru')}
                         </label>
                         <div className="relative">
                             <input
@@ -142,7 +144,7 @@ export default function MobileResetPassword({ token, email }: MobileResetPasswor
                                 name="password_confirmation"
                                 value={data.password_confirmation}
                                 onChange={(e) => setData('password_confirmation', e.target.value)}
-                                placeholder="Ulangi kata sandi baru"
+                                placeholder={t('auth.confirm_new_password_placeholder', 'Ulangi kata sandi baru')}
                                 autoComplete="new-password"
                                 required
                                 className="w-full h-11 px-3.5 pl-10 pr-10 rounded-xl bg-zinc-50 border border-zinc-200 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-emerald-500 focus:bg-white focus:ring-1 focus:ring-emerald-500 transition-all font-sans"
@@ -152,7 +154,7 @@ export default function MobileResetPassword({ token, email }: MobileResetPasswor
                                 type="button"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                 className="absolute right-2.5 top-1/2 -translate-y-1/2 size-7 flex items-center justify-center text-zinc-400 hover:text-zinc-700 active:scale-95 transition-all cursor-pointer"
-                                aria-label={showConfirmPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                                aria-label={showConfirmPassword ? t('auth.hide_password', 'Sembunyikan kata sandi') : t('auth.show_password', 'Tampilkan kata sandi')}
                             >
                                 {showConfirmPassword ? (
                                     <EyeOff className="size-4" />
@@ -182,7 +184,9 @@ export default function MobileResetPassword({ token, email }: MobileResetPasswor
                                             : 'text-rose-600 font-medium'
                                     }`}
                                 >
-                                    {isMatched ? 'Kata sandi cocok' : 'Kata sandi belum cocok'}
+                                    {isMatched
+                                        ? t('auth.passwords_match', 'Kata sandi cocok')
+                                        : t('auth.passwords_mismatch', 'Kata sandi belum cocok')}
                                 </span>
                             </div>
                         )}
@@ -198,22 +202,22 @@ export default function MobileResetPassword({ token, email }: MobileResetPasswor
                             {processing ? (
                                 <>
                                     <Loader2 className="size-4 animate-spin" />
-                                    <span>Menyimpan Kata Sandi...</span>
+                                    <span>{t('auth.saving_new_password', 'Menyimpan Kata Sandi...')}</span>
                                 </>
                             ) : (
-                                <span>Simpan Kata Sandi Baru</span>
+                                <span>{t('auth.save_new_password_btn', 'Simpan Kata Sandi Baru')}</span>
                             )}
                         </button>
                     </div>
                 </form>
 
                 <div className="pt-2 text-center text-xs text-zinc-500 border-t border-zinc-100">
-                    Batal mereset?{' '}
+                    {t('auth.cancel_reset_prompt', 'Batal mereset?')}{' '}
                     <Link
                         href={route('login')}
                         className="font-semibold text-emerald-600 hover:text-emerald-700 active:underline"
                     >
-                        Kembali Masuk
+                        {t('auth.back_to_login', 'Kembali Masuk')}
                     </Link>
                 </div>
             </div>

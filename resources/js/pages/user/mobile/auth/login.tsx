@@ -1,5 +1,6 @@
 import GoogleAuthButton from '@/components/auth/GoogleAuthButton';
 import InputError from '@/components/input-error';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { MobileAuthLayout } from '@/pages/user/mobile/auth/MobileAuthLayout';
 import { Link, useForm } from '@inertiajs/react';
 import { Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-react';
@@ -11,6 +12,7 @@ interface MobileLoginProps {
 }
 
 export default function MobileLogin({ status, canResetPassword = true }: MobileLoginProps) {
+    const { t } = useTranslation();
     const [showPassword, setShowPassword] = useState(false);
 
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -28,14 +30,14 @@ export default function MobileLogin({ status, canResetPassword = true }: MobileL
 
     return (
         <MobileAuthLayout
-            title="Selamat Datang"
-            subtitle="Masuk ke akun Anda untuk memantau dan mengoptimalkan portofolio saham."
+            title={t('auth.login_title', 'Selamat Datang')}
+            subtitle={t('auth.login_subtitle', 'Masuk ke akun Anda untuk memantau dan mengoptimalkan portofolio saham.')}
             status={status}
         >
             <div className="space-y-4">
                 {/* 1. Quick Google OAuth Button */}
                 <GoogleAuthButton
-                    text="Masuk dengan Google"
+                    text={t('auth.google_login', 'Masuk dengan Google')}
                     className="!h-11 !rounded-full !border-zinc-200 !bg-zinc-50 hover:!bg-zinc-100 !text-zinc-800 hover:!text-zinc-900 !text-xs font-semibold !shadow-2xs active:scale-[0.98]"
                 />
 
@@ -46,7 +48,7 @@ export default function MobileLogin({ status, canResetPassword = true }: MobileL
                     </div>
                     <div className="relative flex justify-center text-xs">
                         <span className="bg-white px-3 text-zinc-400 font-medium text-[11px] uppercase tracking-wider">
-                            Atau lanjutkan dengan email
+                            {t('auth.continue_with_email', 'Atau lanjutkan dengan email')}
                         </span>
                     </div>
                 </div>
@@ -59,7 +61,7 @@ export default function MobileLogin({ status, canResetPassword = true }: MobileL
                             htmlFor="email"
                             className="text-[12px] font-medium text-zinc-700 block"
                         >
-                            Alamat Email
+                            {t('auth.email_label', 'Alamat Email')}
                         </label>
                         <div className="relative">
                             <input
@@ -68,7 +70,7 @@ export default function MobileLogin({ status, canResetPassword = true }: MobileL
                                 name="email"
                                 value={data.email}
                                 onChange={(e) => setData('email', e.target.value)}
-                                placeholder="nama@email.com"
+                                placeholder={t('auth.email_placeholder', 'nama@email.com')}
                                 autoComplete="email"
                                 autoFocus
                                 required
@@ -86,14 +88,14 @@ export default function MobileLogin({ status, canResetPassword = true }: MobileL
                                 htmlFor="password"
                                 className="text-[12px] font-medium text-zinc-700 block"
                             >
-                                Kata Sandi
+                                {t('auth.password_label', 'Kata Sandi')}
                             </label>
                             {canResetPassword && (
                                 <Link
                                     href={route('password.request')}
                                     className="text-[11px] font-medium text-emerald-600 hover:text-emerald-700 active:underline"
                                 >
-                                    Lupa kata sandi?
+                                    {t('auth.forgot_password', 'Lupa kata sandi?')}
                                 </Link>
                             )}
                         </div>
@@ -104,7 +106,7 @@ export default function MobileLogin({ status, canResetPassword = true }: MobileL
                                 name="password"
                                 value={data.password}
                                 onChange={(e) => setData('password', e.target.value)}
-                                placeholder="Masukkan kata sandi"
+                                placeholder={t('auth.password_placeholder', 'Masukkan kata sandi')}
                                 autoComplete="current-password"
                                 required
                                 className="w-full h-11 px-3.5 pl-10 pr-10 rounded-xl bg-zinc-50 border border-zinc-200 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-emerald-500 focus:bg-white focus:ring-1 focus:ring-emerald-500 transition-all font-sans"
@@ -114,7 +116,7 @@ export default function MobileLogin({ status, canResetPassword = true }: MobileL
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
                                 className="absolute right-2.5 top-1/2 -translate-y-1/2 size-7 flex items-center justify-center text-zinc-400 hover:text-zinc-700 active:scale-95 transition-all cursor-pointer"
-                                aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                                aria-label={showPassword ? t('auth.hide_password', 'Sembunyikan kata sandi') : t('auth.show_password', 'Tampilkan kata sandi')}
                             >
                                 {showPassword ? (
                                     <EyeOff className="size-4" />
@@ -140,7 +142,7 @@ export default function MobileLogin({ status, canResetPassword = true }: MobileL
                             htmlFor="remember"
                             className="text-xs text-zinc-600 select-none cursor-pointer font-medium"
                         >
-                            Ingat saya di perangkat ini
+                            {t('auth.remember_me', 'Ingat saya di perangkat ini')}
                         </label>
                     </div>
 
@@ -154,10 +156,10 @@ export default function MobileLogin({ status, canResetPassword = true }: MobileL
                             {processing ? (
                                 <>
                                     <Loader2 className="size-4 animate-spin" />
-                                    <span>Memproses...</span>
+                                    <span>{t('auth.signing_in', 'Memproses...')}</span>
                                 </>
                             ) : (
-                                <span>Masuk ke Akun</span>
+                                <span>{t('auth.sign_in_btn', 'Masuk ke Akun')}</span>
                             )}
                         </button>
                     </div>
@@ -165,12 +167,12 @@ export default function MobileLogin({ status, canResetPassword = true }: MobileL
 
                 {/* Switch to Register */}
                 <div className="pt-2 text-center text-xs text-zinc-500 border-t border-zinc-100">
-                    Belum memiliki akun?{' '}
+                    {t('auth.no_account_prompt', 'Belum memiliki akun?')}{' '}
                     <Link
                         href={route('register')}
                         className="font-semibold text-emerald-600 hover:text-emerald-700 active:underline"
                     >
-                        Daftar Sekarang
+                        {t('auth.register_now', 'Daftar Sekarang')}
                     </Link>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 import { Toaster } from '@/components/ui/sonner';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Globe } from 'lucide-react';
 import React, { ReactNode } from 'react';
 
 interface MobileAuthLayoutProps {
@@ -18,6 +19,8 @@ export function MobileAuthLayout({
     backHref,
     status,
 }: MobileAuthLayoutProps) {
+    const { language, toggleLanguage, t } = useTranslation();
+
     React.useEffect(() => {
         document.body.classList.add('mobile-app-mode');
         return () => {
@@ -46,7 +49,7 @@ export function MobileAuthLayout({
                             <Link
                                 href={backHref}
                                 className="size-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center text-zinc-900 shadow-2xs active:scale-95 transition-transform"
-                                aria-label="Kembali"
+                                aria-label={t('common.back', 'Kembali')}
                             >
                                 <ArrowLeft className="size-5 stroke-[2]" />
                             </Link>
@@ -99,7 +102,7 @@ export function MobileAuthLayout({
                 {/* Footer Hak Cipta / Tagline */}
                 <footer className="pt-6 pb-2 text-center select-none">
                     <p className="text-[11px] text-zinc-400 font-medium">
-                        © {new Date().getFullYear()} Dinalar • AI Stock Portfolio Optimization Platform.
+                        © {new Date().getFullYear()} Dinalar • {t('auth.app_tagline', 'Platform Optimasi Portofolio Saham AI')}.
                     </p>
                 </footer>
             </div>

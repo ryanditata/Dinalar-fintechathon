@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ ($locale ?? 'id') === 'en' ? 'en' : 'id' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atur Ulang Kata Sandi - Dinalar</title>
+    <title>{{ ($locale ?? 'id') === 'en' ? 'Reset Password - Dinalar' : 'Atur Ulang Kata Sandi - Dinalar' }}</title>
     <!-- Instrument Sans Font -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
@@ -94,7 +94,7 @@
                                                             </td>
                                                             <!-- Badge Text (Pure White) -->
                                                             <td style="vertical-align: middle; font-size: 12px; font-weight: 600; color: #ffffff; letter-spacing: 0.1px; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                                                Keamanan Akun
+                                                                {{ ($locale ?? 'id') === 'en' ? 'Account Security' : 'Keamanan Akun' }}
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -108,7 +108,7 @@
                                 <tr>
                                     <td align="left" style="padding-bottom: 14px;">
                                         <h1 class="card-title" style="margin: 0; font-size: 22px; font-weight: 700; color: #ffffff; line-height: 1.35; letter-spacing: -0.3px; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                            Atur Ulang Kata Sandi Anda
+                                            {{ ($locale ?? 'id') === 'en' ? 'Reset Your Password' : 'Atur Ulang Kata Sandi Anda' }}
                                         </h1>
                                     </td>
                                 </tr>
@@ -116,12 +116,21 @@
                                 <!-- GREETING & MESSAGE -->
                                 <tr>
                                     <td align="left" style="padding-bottom: 24px;">
-                                        <p style="margin: 0 0 10px 0; font-size: 15px; color: #f4f4f5; line-height: 1.5; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                            Halo <strong style="color: #ffffff;">{{ $user->name ?? 'Pengguna Dinalar' }}</strong>,
-                                        </p>
-                                        <p style="margin: 0; font-size: 14px; color: #a1a1aa; line-height: 1.6; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                            Kami menerima permintaan untuk mengatur ulang kata sandi (password) akun <strong>Dinalar</strong> Anda. Silakan tekan tombol di bawah ini untuk membuat kata sandi baru:
-                                        </p>
+                                        @if(($locale ?? 'id') === 'en')
+                                            <p style="margin: 0 0 10px 0; font-size: 15px; color: #f4f4f5; line-height: 1.5; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                                                Hello <strong style="color: #ffffff;">{{ $user->name ?? 'Dinalar User' }}</strong>,
+                                            </p>
+                                            <p style="margin: 0; font-size: 14px; color: #a1a1aa; line-height: 1.6; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                                                We received a request to reset the password for your <strong>Dinalar</strong> account. Please click the button below to set up a new password:
+                                            </p>
+                                        @else
+                                            <p style="margin: 0 0 10px 0; font-size: 15px; color: #f4f4f5; line-height: 1.5; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                                                Halo <strong style="color: #ffffff;">{{ $user->name ?? 'Pengguna Dinalar' }}</strong>,
+                                            </p>
+                                            <p style="margin: 0; font-size: 14px; color: #a1a1aa; line-height: 1.6; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                                                Kami menerima permintaan untuk mengatur ulang kata sandi (password) akun <strong>Dinalar</strong> Anda. Silakan tekan tombol di bawah ini untuk membuat kata sandi baru:
+                                            </p>
+                                        @endif
                                     </td>
                                 </tr>
 
@@ -132,7 +141,7 @@
                                             <tr>
                                                 <td align="center" style="border-radius: 8px; background-color: #059669; box-shadow: 0 3px 12px rgba(5, 150, 105, 0.40);">
                                                     <a href="{{ $url }}" target="_blank" class="btn-action" style="display: inline-block; font-size: 13px; font-weight: 600; color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 8px; letter-spacing: 0.2px; background-color: #059669; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                                        Atur Ulang Kata Sandi
+                                                        {{ ($locale ?? 'id') === 'en' ? 'Reset Password' : 'Atur Ulang Kata Sandi' }}
                                                     </a>
                                                 </td>
                                             </tr>
@@ -146,7 +155,11 @@
                                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px 16px;">
                                             <tr>
                                                 <td style="font-size: 12px; color: #a1a1aa; line-height: 1.5; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                                    <strong>Informasi:</strong> Tautan pengaturan ulang kata sandi ini hanya berlaku selama <strong>{{ $count ?? 60 }} menit</strong>. Jika Anda tidak pernah meminta reset kata sandi, abaikan email ini dan akun Anda akan tetap aman.
+                                                    @if(($locale ?? 'id') === 'en')
+                                                        <strong>Information:</strong> This password reset link is valid for <strong>{{ $count ?? 60 }} minutes</strong>. If you did not request a password reset, you can safely ignore this email and your account remains secure.
+                                                    @else
+                                                        <strong>Informasi:</strong> Tautan pengaturan ulang kata sandi ini hanya berlaku selama <strong>{{ $count ?? 60 }} menit</strong>. Jika Anda tidak pernah meminta reset kata sandi, abaikan email ini dan akun Anda akan tetap aman.
+                                                    @endif
                                                 </td>
                                             </tr>
                                         </table>
@@ -157,7 +170,7 @@
                                 <tr>
                                     <td style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 16px;">
                                         <p style="margin: 0 0 6px 0; font-size: 12px; color: #71717a; line-height: 1.4; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                            Jika tombol di atas tidak dapat diklik, salin dan buka tautan ini:
+                                            {{ ($locale ?? 'id') === 'en' ? 'If the button above does not work, copy and paste this link into your browser:' : 'Jika tombol di atas tidak dapat diklik, salin dan buka tautan ini:' }}
                                         </p>
                                         <p style="margin: 0; font-size: 11px; line-height: 1.4; word-break: break-all; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
                                             <a href="{{ $url }}" style="color: #10b981; text-decoration: underline;">

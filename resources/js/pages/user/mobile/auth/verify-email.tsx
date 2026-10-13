@@ -1,3 +1,4 @@
+import { useTranslation } from '@/i18n/LanguageContext';
 import { MobileAuthLayout } from '@/pages/user/mobile/auth/MobileAuthLayout';
 import { Link, useForm } from '@inertiajs/react';
 import { Loader2, LogOut, MailCheck } from 'lucide-react';
@@ -8,20 +9,21 @@ interface MobileVerifyEmailProps {
 }
 
 export default function MobileVerifyEmail({ status }: MobileVerifyEmailProps) {
+    const { language, t } = useTranslation();
     const { post, processing } = useForm({});
 
     const handleResend = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('verification.send'));
+        post(route('verification.send', { lang: language }));
     };
 
     return (
         <MobileAuthLayout
-            title="Verifikasi Email"
-            subtitle="Kami telah mengirimkan tautan verifikasi ke email Anda. Silakan periksa kotak masuk atau folder spam Anda."
+            title={t('auth.verify_title', 'Verifikasi Email')}
+            subtitle={t('auth.verify_subtitle', 'Kami telah mengirimkan tautan verifikasi ke email Anda. Silakan periksa kotak masuk atau folder spam Anda.')}
             status={
                 status === 'verification-link-sent'
-                    ? 'Tautan verifikasi baru berhasil dikirimkan ke alamat email yang Anda daftarkan.'
+                    ? t('auth.verification_link_sent', 'Tautan verifikasi baru berhasil dikirimkan ke alamat email yang Anda daftarkan.')
                     : status
             }
         >
@@ -43,10 +45,10 @@ export default function MobileVerifyEmail({ status }: MobileVerifyEmailProps) {
                         {processing ? (
                             <>
                                 <Loader2 className="size-4 animate-spin" />
-                                <span>Mengirim Ulang...</span>
+                                <span>{t('auth.resending_verification', 'Mengirim Ulang...')}</span>
                             </>
                         ) : (
-                            <span>Kirim Ulang Email Verifikasi</span>
+                            <span>{t('auth.resend_verification_btn', 'Kirim Ulang Email Verifikasi')}</span>
                         )}
                     </button>
                 </form>
@@ -60,7 +62,7 @@ export default function MobileVerifyEmail({ status }: MobileVerifyEmailProps) {
                         className="inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-rose-600 active:scale-95 transition-colors cursor-pointer py-1"
                     >
                         <LogOut className="size-3.5" />
-                        <span>Keluar dari Akun (Log Out)</span>
+                        <span>{t('auth.logout_btn', 'Keluar dari Akun (Log Out)')}</span>
                     </Link>
                 </div>
             </div>

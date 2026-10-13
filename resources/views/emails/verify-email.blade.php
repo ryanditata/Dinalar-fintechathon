@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ ($locale ?? 'id') === 'en' ? 'en' : 'id' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi Alamat Email - Dinalar</title>
+    <title>{{ ($locale ?? 'id') === 'en' ? 'Verify Email Address - Dinalar' : 'Verifikasi Alamat Email - Dinalar' }}</title>
     <!-- Instrument Sans Font -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
@@ -95,7 +95,7 @@
                                                             </td>
                                                             <!-- Badge Text (Pure White) -->
                                                             <td style="vertical-align: middle; font-size: 12px; font-weight: 600; color: #ffffff; letter-spacing: 0.1px; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                                                Verifikasi Akun
+                                                                {{ ($locale ?? 'id') === 'en' ? 'Account Verification' : 'Verifikasi Akun' }}
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -109,7 +109,7 @@
                                 <tr>
                                     <td align="left" style="padding-bottom: 14px;">
                                         <h1 class="card-title" style="margin: 0; font-size: 22px; font-weight: 700; color: #ffffff; line-height: 1.35; letter-spacing: -0.3px; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                            Konfirmasi Alamat Email Anda
+                                            {{ ($locale ?? 'id') === 'en' ? 'Confirm Your Email Address' : 'Konfirmasi Alamat Email Anda' }}
                                         </h1>
                                     </td>
                                 </tr>
@@ -117,12 +117,21 @@
                                 <!-- GREETING & MESSAGE -->
                                 <tr>
                                     <td align="left" style="padding-bottom: 24px;">
-                                        <p style="margin: 0 0 10px 0; font-size: 15px; color: #f4f4f5; line-height: 1.5; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                            Halo <strong style="color: #ffffff;">{{ $user->name ?? 'Pengguna Dinalar' }}</strong>,
-                                        </p>
-                                        <p style="margin: 0; font-size: 14px; color: #a1a1aa; line-height: 1.6; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                            Terima kasih telah mendaftar di <strong>Dinalar</strong>. Untuk mengamankan akun dan mulai menggunakan seluruh fitur analisis portofolio saham, silakan konfirmasi email Anda dengan menekan tombol di bawah:
-                                        </p>
+                                        @if(($locale ?? 'id') === 'en')
+                                            <p style="margin: 0 0 10px 0; font-size: 15px; color: #f4f4f5; line-height: 1.5; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                                                Hello <strong style="color: #ffffff;">{{ $user->name ?? 'Dinalar User' }}</strong>,
+                                            </p>
+                                            <p style="margin: 0; font-size: 14px; color: #a1a1aa; line-height: 1.6; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                                                Thank you for signing up with <strong>Dinalar</strong>. To secure your account and start exploring all AI stock portfolio optimization features, please confirm your email address by clicking the button below:
+                                            </p>
+                                        @else
+                                            <p style="margin: 0 0 10px 0; font-size: 15px; color: #f4f4f5; line-height: 1.5; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                                                Halo <strong style="color: #ffffff;">{{ $user->name ?? 'Pengguna Dinalar' }}</strong>,
+                                            </p>
+                                            <p style="margin: 0; font-size: 14px; color: #a1a1aa; line-height: 1.6; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                                                Terima kasih telah mendaftar di <strong>Dinalar</strong>. Untuk mengamankan akun dan mulai menggunakan seluruh fitur analisis portofolio saham, silakan konfirmasi email Anda dengan menekan tombol di bawah:
+                                            </p>
+                                        @endif
                                     </td>
                                 </tr>
 
@@ -133,7 +142,7 @@
                                             <tr>
                                                 <td align="center" style="border-radius: 8px; background-color: #059669; box-shadow: 0 3px 12px rgba(5, 150, 105, 0.40);">
                                                     <a href="{{ $url }}" target="_blank" class="btn-action" style="display: inline-block; font-size: 13px; font-weight: 600; color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 8px; letter-spacing: 0.2px; background-color: #059669; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                                        Verifikasi Email Sekarang
+                                                        {{ ($locale ?? 'id') === 'en' ? 'Verify Email Now' : 'Verifikasi Email Sekarang' }}
                                                     </a>
                                                 </td>
                                             </tr>
@@ -147,7 +156,11 @@
                                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px 16px;">
                                             <tr>
                                                 <td style="font-size: 12px; color: #a1a1aa; line-height: 1.5; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                                    <strong>Informasi:</strong> Tautan verifikasi ini berlaku selama <strong>60 menit</strong>. Jika Anda tidak merasa mendaftar di Dinalar, abaikan email ini dengan aman.
+                                                    @if(($locale ?? 'id') === 'en')
+                                                        <strong>Information:</strong> This verification link is valid for <strong>60 minutes</strong>. If you did not create an account on Dinalar, you can safely disregard this email.
+                                                    @else
+                                                        <strong>Informasi:</strong> Tautan verifikasi ini berlaku selama <strong>60 menit</strong>. Jika Anda tidak merasa mendaftar di Dinalar, abaikan email ini dengan aman.
+                                                    @endif
                                                 </td>
                                             </tr>
                                         </table>
@@ -158,7 +171,7 @@
                                 <tr>
                                     <td style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 16px;">
                                         <p style="margin: 0 0 6px 0; font-size: 12px; color: #71717a; line-height: 1.4; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                            Jika tombol di atas tidak dapat diklik, salin dan buka tautan ini:
+                                            {{ ($locale ?? 'id') === 'en' ? 'If the button above does not work, copy and paste this link into your browser:' : 'Jika tombol di atas tidak dapat diklik, salin dan buka tautan ini:' }}
                                         </p>
                                         <p style="margin: 0; font-size: 11px; line-height: 1.4; word-break: break-all; font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
                                             <a href="{{ $url }}" style="color: #10b981; text-decoration: underline;">

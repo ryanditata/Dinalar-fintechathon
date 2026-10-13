@@ -1,10 +1,12 @@
 import InputError from '@/components/input-error';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { MobileAuthLayout } from '@/pages/user/mobile/auth/MobileAuthLayout';
 import { useForm } from '@inertiajs/react';
 import { Eye, EyeOff, Loader2, Lock, ShieldCheck } from 'lucide-react';
 import React, { useState } from 'react';
 
 export default function MobileConfirmPassword() {
+    const { t } = useTranslation();
     const [showPassword, setShowPassword] = useState(false);
 
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -20,8 +22,8 @@ export default function MobileConfirmPassword() {
 
     return (
         <MobileAuthLayout
-            title="Konfirmasi Kata Sandi"
-            subtitle="Ini adalah area sensitif aplikasi. Harap masukkan kata sandi akun Anda untuk melanjutkan."
+            title={t('auth.confirm_title', 'Konfirmasi Kata Sandi')}
+            subtitle={t('auth.confirm_subtitle', 'Ini adalah area sensitif aplikasi. Harap masukkan kata sandi akun Anda untuk melanjutkan.')}
         >
             <div className="space-y-4">
                 {/* Visual Icon */}
@@ -37,7 +39,7 @@ export default function MobileConfirmPassword() {
                             htmlFor="password"
                             className="text-[12px] font-medium text-zinc-700 block"
                         >
-                            Kata Sandi
+                            {t('auth.password_label', 'Kata Sandi')}
                         </label>
                         <div className="relative">
                             <input
@@ -46,7 +48,7 @@ export default function MobileConfirmPassword() {
                                 name="password"
                                 value={data.password}
                                 onChange={(e) => setData('password', e.target.value)}
-                                placeholder="Masukkan kata sandi akun"
+                                placeholder={t('auth.confirm_password_input_placeholder', 'Masukkan kata sandi akun')}
                                 autoComplete="current-password"
                                 autoFocus
                                 required
@@ -57,7 +59,7 @@ export default function MobileConfirmPassword() {
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
                                 className="absolute right-2.5 top-1/2 -translate-y-1/2 size-7 flex items-center justify-center text-zinc-400 hover:text-zinc-700 active:scale-95 transition-all cursor-pointer"
-                                aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                                aria-label={showPassword ? t('auth.hide_password', 'Sembunyikan kata sandi') : t('auth.show_password', 'Tampilkan kata sandi')}
                             >
                                 {showPassword ? (
                                     <EyeOff className="size-4" />
@@ -78,10 +80,10 @@ export default function MobileConfirmPassword() {
                         {processing ? (
                             <>
                                 <Loader2 className="size-4 animate-spin" />
-                                <span>Mengonfirmasi...</span>
+                                <span>{t('auth.confirming', 'Mengonfirmasi...')}</span>
                             </>
                         ) : (
-                            <span>Konfirmasi & Lanjutkan</span>
+                            <span>{t('auth.confirm_continue_btn', 'Konfirmasi & Lanjutkan')}</span>
                         )}
                     </button>
                 </form>

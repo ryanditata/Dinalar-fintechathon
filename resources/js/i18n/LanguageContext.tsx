@@ -435,6 +435,67 @@ const idDictionary: NestedObject = {
         add: 'Tambahkan',
         already_in_basket: 'Sudah di Keranjang',
     },
+    auth: {
+        app_tagline: 'Platform Optimasi Portofolio Saham AI',
+        switch_language: 'Ganti Bahasa',
+        login_title: 'Selamat Datang',
+        login_subtitle: 'Masuk ke akun Anda untuk memantau dan mengoptimalkan portofolio saham.',
+        google_login: 'Masuk dengan Google',
+        continue_with_email: 'Atau lanjutkan dengan email',
+        email_label: 'Alamat Email',
+        email_placeholder: 'nama@email.com',
+        password_label: 'Kata Sandi',
+        password_placeholder: 'Masukkan kata sandi',
+        forgot_password: 'Lupa kata sandi?',
+        remember_me: 'Ingat saya di perangkat ini',
+        sign_in_btn: 'Masuk ke Akun',
+        signing_in: 'Memproses...',
+        no_account_prompt: 'Belum memiliki akun?',
+        register_now: 'Daftar Sekarang',
+        show_password: 'Tampilkan kata sandi',
+        hide_password: 'Sembunyikan kata sandi',
+        register_title: 'Buat Akun Baru',
+        register_subtitle: 'Mulai rancang dan optimalkan portofolio investasi saham Anda dengan mudah.',
+        google_register: 'Daftar dengan Google',
+        register_with_email: 'Atau daftar dengan email',
+        fullname_label: 'Nama Lengkap',
+        fullname_placeholder: 'Contoh: Ryan Pratama',
+        min_8_chars_placeholder: 'Minimal 8 karakter',
+        min_8_chars_checklist: 'Minimal 8 karakter',
+        confirm_password_label: 'Konfirmasi Kata Sandi',
+        confirm_password_placeholder: 'Ulangi kata sandi',
+        passwords_match: 'Kata sandi cocok',
+        passwords_mismatch: 'Kata sandi belum cocok',
+        register_btn: 'Daftar Akun Baru',
+        registering: 'Membuat Akun...',
+        have_account_prompt: 'Sudah memiliki akun?',
+        login_here: 'Masuk di Sini',
+        forgot_title: 'Lupa Kata Sandi?',
+        forgot_subtitle: 'Masukkan email terdaftar Anda untuk menerima tautan pemulihan kata sandi.',
+        send_reset_link_btn: 'Kirim Tautan Pemulihan',
+        sending_link: 'Mengirim Tautan...',
+        remember_password_prompt: 'Ingat kata sandi Anda?',
+        back_to_login: 'Kembali Masuk',
+        reset_title: 'Atur Ulang Kata Sandi',
+        reset_subtitle: 'Buat kata sandi baru yang kuat dan aman untuk akun Dinalar Anda.',
+        new_password_label: 'Kata Sandi Baru',
+        confirm_new_password_label: 'Konfirmasi Kata Sandi Baru',
+        confirm_new_password_placeholder: 'Ulangi kata sandi baru',
+        save_new_password_btn: 'Simpan Kata Sandi Baru',
+        saving_new_password: 'Menyimpan Kata Sandi...',
+        cancel_reset_prompt: 'Batal mereset?',
+        verify_title: 'Verifikasi Email',
+        verify_subtitle: 'Kami telah mengirimkan tautan verifikasi ke email Anda. Silakan periksa kotak masuk atau folder spam Anda.',
+        verification_link_sent: 'Tautan verifikasi baru berhasil dikirimkan ke alamat email yang Anda daftarkan.',
+        resend_verification_btn: 'Kirim Ulang Email Verifikasi',
+        resending_verification: 'Mengirim Ulang...',
+        logout_btn: 'Keluar dari Akun (Log Out)',
+        confirm_title: 'Konfirmasi Kata Sandi',
+        confirm_subtitle: 'Ini adalah area sensitif aplikasi. Harap masukkan kata sandi akun Anda untuk melanjutkan.',
+        confirm_password_input_placeholder: 'Masukkan kata sandi akun',
+        confirm_continue_btn: 'Konfirmasi & Lanjutkan',
+        confirming: 'Mengonfirmasi...',
+    },
 };
 
 const enDictionary: NestedObject = {
@@ -855,6 +916,67 @@ const enDictionary: NestedObject = {
         add: 'Add to Basket',
         already_in_basket: 'Already in Basket',
     },
+    auth: {
+        app_tagline: 'AI Stock Portfolio Optimization Platform',
+        switch_language: 'Change Language',
+        login_title: 'Welcome Back',
+        login_subtitle: 'Sign in to your account to monitor and optimize your stock portfolio.',
+        google_login: 'Sign in with Google',
+        continue_with_email: 'Or continue with email',
+        email_label: 'Email Address',
+        email_placeholder: 'name@email.com',
+        password_label: 'Password',
+        password_placeholder: 'Enter your password',
+        forgot_password: 'Forgot password?',
+        remember_me: 'Remember me on this device',
+        sign_in_btn: 'Sign In to Account',
+        signing_in: 'Signing in...',
+        no_account_prompt: "Don't have an account?",
+        register_now: 'Register Now',
+        show_password: 'Show password',
+        hide_password: 'Hide password',
+        register_title: 'Create an Account',
+        register_subtitle: 'Start designing and optimizing your stock investment portfolio with ease.',
+        google_register: 'Sign up with Google',
+        register_with_email: 'Or register with email',
+        fullname_label: 'Full Name',
+        fullname_placeholder: 'e.g. John Doe',
+        min_8_chars_placeholder: 'Minimum 8 characters',
+        min_8_chars_checklist: 'Minimum 8 characters',
+        confirm_password_label: 'Confirm Password',
+        confirm_password_placeholder: 'Repeat your password',
+        passwords_match: 'Passwords match',
+        passwords_mismatch: 'Passwords do not match yet',
+        register_btn: 'Register New Account',
+        registering: 'Creating Account...',
+        have_account_prompt: 'Already have an account?',
+        login_here: 'Sign In Here',
+        forgot_title: 'Forgot Password?',
+        forgot_subtitle: 'Enter your registered email to receive a password reset link.',
+        send_reset_link_btn: 'Send Reset Link',
+        sending_link: 'Sending Link...',
+        remember_password_prompt: 'Remember your password?',
+        back_to_login: 'Back to Sign In',
+        reset_title: 'Reset Password',
+        reset_subtitle: 'Create a strong and secure new password for your Dinalar account.',
+        new_password_label: 'New Password',
+        confirm_new_password_label: 'Confirm New Password',
+        confirm_new_password_placeholder: 'Repeat new password',
+        save_new_password_btn: 'Save New Password',
+        saving_new_password: 'Saving Password...',
+        cancel_reset_prompt: 'Cancel resetting?',
+        verify_title: 'Verify Email',
+        verify_subtitle: 'We have sent a verification link to your email. Please check your inbox or spam folder.',
+        verification_link_sent: 'A new verification link has been sent to the email address you provided during registration.',
+        resend_verification_btn: 'Resend Verification Email',
+        resending_verification: 'Resending...',
+        logout_btn: 'Log Out of Account',
+        confirm_title: 'Confirm Password',
+        confirm_subtitle: 'This is a secure area of the application. Please confirm your password before continuing.',
+        confirm_password_input_placeholder: 'Enter account password',
+        confirm_continue_btn: 'Confirm & Continue',
+        confirming: 'Confirming...',
+    },
 };
 
 const translations: Record<Language, NestedObject> = {
@@ -886,9 +1008,10 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
         if (typeof window !== 'undefined') {
             try {
                 localStorage.setItem(STORAGE_KEY, lang);
+                document.cookie = `dinalar_locale=${lang};path=/;max-age=31536000;SameSite=Lax`;
                 document.documentElement.lang = lang;
             } catch {
-                // Ignore localStorage errors
+                // Ignore localStorage/cookie errors
             }
         }
     };
@@ -900,6 +1023,11 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     useEffect(() => {
         if (typeof window !== 'undefined') {
             document.documentElement.lang = language;
+            try {
+                document.cookie = `dinalar_locale=${language};path=/;max-age=31536000;SameSite=Lax`;
+            } catch {
+                // Ignore cookie errors
+            }
         }
     }, [language]);
 

@@ -1,4 +1,5 @@
 import InputError from '@/components/input-error';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { MobileAuthLayout } from '@/pages/user/mobile/auth/MobileAuthLayout';
 import { Link, useForm } from '@inertiajs/react';
 import { KeyRound, Loader2, Mail } from 'lucide-react';
@@ -9,19 +10,20 @@ interface MobileForgotPasswordProps {
 }
 
 export default function MobileForgotPassword({ status }: MobileForgotPasswordProps) {
+    const { language, t } = useTranslation();
     const { data, setData, post, processing, errors } = useForm({
         email: '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('password.email'));
+        post(route('password.email', { lang: language }));
     };
 
     return (
         <MobileAuthLayout
-            title="Lupa Kata Sandi?"
-            subtitle="Masukkan email terdaftar Anda untuk menerima tautan pemulihan kata sandi."
+            title={t('auth.forgot_title', 'Lupa Kata Sandi?')}
+            subtitle={t('auth.forgot_subtitle', 'Masukkan email terdaftar Anda untuk menerima tautan pemulihan kata sandi.')}
             backHref={route('login')}
             status={status}
         >
@@ -40,7 +42,7 @@ export default function MobileForgotPassword({ status }: MobileForgotPasswordPro
                             htmlFor="email"
                             className="text-[12px] font-medium text-zinc-700 block"
                         >
-                            Alamat Email
+                            {t('auth.email_label', 'Alamat Email')}
                         </label>
                         <div className="relative">
                             <input
@@ -49,7 +51,7 @@ export default function MobileForgotPassword({ status }: MobileForgotPasswordPro
                                 name="email"
                                 value={data.email}
                                 onChange={(e) => setData('email', e.target.value)}
-                                placeholder="nama@email.com"
+                                placeholder={t('auth.email_placeholder', 'nama@email.com')}
                                 autoComplete="email"
                                 autoFocus
                                 required
@@ -69,22 +71,22 @@ export default function MobileForgotPassword({ status }: MobileForgotPasswordPro
                         {processing ? (
                             <>
                                 <Loader2 className="size-4 animate-spin" />
-                                <span>Mengirim Tautan...</span>
+                                <span>{t('auth.sending_link', 'Mengirim Tautan...')}</span>
                             </>
                         ) : (
-                            <span>Kirim Tautan Pemulihan</span>
+                            <span>{t('auth.send_reset_link_btn', 'Kirim Tautan Pemulihan')}</span>
                         )}
                     </button>
                 </form>
 
                 {/* Return to Login */}
                 <div className="pt-2 text-center text-xs text-zinc-500 border-t border-zinc-100">
-                    Ingat kata sandi Anda?{' '}
+                    {t('auth.remember_password_prompt', 'Ingat kata sandi Anda?')}{' '}
                     <Link
                         href={route('login')}
                         className="font-semibold text-emerald-600 hover:text-emerald-700 active:underline"
                     >
-                        Kembali Masuk
+                        {t('auth.back_to_login', 'Kembali Masuk')}
                     </Link>
                 </div>
             </div>
