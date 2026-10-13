@@ -64,11 +64,12 @@ const PALETTE = [
     '#6366f1', // indigo
 ];
 
-// Helper format Rupiah
+// Helper format Rupiah / Currency
 const formatIdr = (val: number | string | null | undefined, lang: string = 'id') => {
-    if (val === null || val === undefined || isNaN(Number(val))) return 'Rp 0';
+    const prefix = lang === 'en' ? 'IDR' : 'Rp';
+    if (val === null || val === undefined || isNaN(Number(val))) return `${prefix} 0`;
     const locale = lang === 'en' ? 'en-US' : 'id-ID';
-    return `Rp ${Number(val).toLocaleString(locale)}`;
+    return `${prefix} ${Number(val).toLocaleString(locale)}`;
 };
 
 // Helper format Date

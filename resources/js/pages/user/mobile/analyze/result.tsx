@@ -190,9 +190,10 @@ export default function MobileResultPage({
 
     // Formatters
     const formatRupiah = (val: number | string | null | undefined) => {
-        if (val === null || val === undefined || isNaN(Number(val))) return 'Rp -';
+        const currencyPrefix = language === 'en' ? 'IDR' : 'Rp';
+        if (val === null || val === undefined || isNaN(Number(val))) return `${currencyPrefix} -`;
         const locale = language === 'en' ? 'en-US' : 'id-ID';
-        return `Rp ${Number(val).toLocaleString(locale)}`;
+        return `${currencyPrefix} ${Number(val).toLocaleString(locale)}`;
     };
 
     const formatPercent = (val: number | null | undefined) => {
@@ -620,9 +621,10 @@ export default function MobileResultPage({
         const lotUnit = t('result.lot_unit', 'Lot');
 
         allocationsList.forEach((item, idx) => {
+            const currencyPrefix = language === 'en' ? 'IDR' : 'Rp';
             stockLines += `${idx + 1}. *${item.ticker}* (${item.category})\n` +
                 `   ↳ ${t('result.wa_weight', 'Bobot:')} *${item.weight.toFixed(2)}%* | ${t('result.wa_nominal', 'Nominal:')} *${formatRupiah(item.nominal)}*\n` +
-                `   ↳ ${t('result.wa_price', 'Harga:')} *${item.lastClose > 0 ? `Rp ${item.lastClose.toLocaleString(numLocale)}` : '-'}* | ${t('result.wa_estimate', 'Estimasi:')} *${item.lot > 0 ? `${item.lot.toLocaleString(numLocale)} ${lotUnit}` : '-'}*\n`;
+                `   ↳ ${t('result.wa_price', 'Harga:')} *${item.lastClose > 0 ? `${currencyPrefix} ${item.lastClose.toLocaleString(numLocale)}` : '-'}* | ${t('result.wa_estimate', 'Estimasi:')} *${item.lot > 0 ? `${item.lot.toLocaleString(numLocale)} ${lotUnit}` : '-'}*\n`;
         });
 
         const dateRangeStr = optimization.start_date && optimization.end_date
@@ -1531,7 +1533,7 @@ export default function MobileResultPage({
                                         </span>
                                         {alloc.lastClose > 0 && (
                                             <span className="text-[9px] text-zinc-400 block">
-                                                (@ Rp {alloc.lastClose.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')})
+                                                (@ {language === 'en' ? 'IDR' : 'Rp'} {alloc.lastClose.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')})
                                             </span>
                                         )}
                                     </div>

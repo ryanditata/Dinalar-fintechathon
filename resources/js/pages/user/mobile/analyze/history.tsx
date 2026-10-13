@@ -232,7 +232,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                                     </div>
 
                                                     <div className="text-[13px] font-bold text-zinc-900 font-sans shrink-0">
-                                                        Rp {item.initial_capital.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}
+                                                        {language === 'en' ? 'IDR' : 'Rp'} {item.initial_capital.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}
                                                     </div>
                                                 </div>
                                             </div>

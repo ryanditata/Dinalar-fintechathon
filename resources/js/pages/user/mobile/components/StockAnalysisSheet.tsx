@@ -840,7 +840,7 @@ export function StockAnalysisSheet({
                                                                             {formatDate(d.date)}
                                                                         </div>
                                                                         <div className="font-bold text-zinc-900 text-[11px]">
-                                                                            {stock.bursa === 'NYSE' ? `$${formatRupiah(d.close_price)}` : `Rp ${formatRupiah(d.close_price)}`}
+                                                                            {stock.bursa === 'NYSE' ? `$${formatRupiah(d.close_price)}` : `${language === 'en' ? 'IDR ' : 'Rp '}${formatRupiah(d.close_price)}`}
                                                                         </div>
                                                                         <div
                                                                             className={`font-mono text-[10px] font-semibold ${d.daily_return >= 0 ? 'text-emerald-600' : 'text-rose-600'

@@ -72,7 +72,7 @@ export default function MobileDashboard({
     risk_free_rate = 6.0,
     last_updated,
 }: MobileDashboardProps) {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     const pageProps = usePage<SharedData>().props;
     const { auth } = pageProps;
 
@@ -231,7 +231,7 @@ export default function MobileDashboard({
                                             {item.title}
                                         </span>
                                         <span className="text-[11px] font-bold text-emerald-600 font-sans">
-                                            Rp {item.initial_capital.toLocaleString('id-ID')}
+                                            {language === 'en' ? 'IDR' : 'Rp'} {item.initial_capital.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}
                                         </span>
                                     </div>
                                     <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">

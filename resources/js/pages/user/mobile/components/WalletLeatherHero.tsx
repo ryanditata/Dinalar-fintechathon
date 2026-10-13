@@ -23,7 +23,7 @@ export function WalletLeatherHero({
     volatility,
     sharpeRatio,
 }: WalletLeatherHeroProps) {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
 
     const displayLabel = label ?? t('dashboard.ai_portfolio_capital');
     const [hideAmount, setHideAmount] = useState<boolean>(() => {
@@ -170,7 +170,7 @@ export function WalletLeatherHero({
                         <div className="flex items-baseline text-white">
                             {/* Simbol Mata Uang Kecil Terangkat (Superscript) */}
                             <span className="text-sm font-semibold text-emerald-200 mr-1.5 -translate-y-0.5">
-                                Rp
+                                {language === 'en' ? 'IDR' : 'Rp'}
                             </span>
                             <span className="text-[24px] font-bold tracking-tight font-sans tabular-nums text-white leading-none">
                                 {hideAmount ? '••••••••' : formattedAmount}

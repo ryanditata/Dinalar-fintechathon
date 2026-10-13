@@ -231,11 +231,12 @@ export default function MobileKeranjangPage({
     const hasMinStocks = basketStocks.length >= 2;
     const canOptimize = hasMinStocks && !hasNegativeReturn && !isSubmitting;
 
-    // Helper format Rupiah
+    // Helper format Rupiah / Currency
     const formatRupiah = (val: number | string | null | undefined) => {
-        if (val === null || val === undefined || isNaN(Number(val))) return 'Rp -';
+        const currencyPrefix = language === 'en' ? 'IDR' : 'Rp';
+        if (val === null || val === undefined || isNaN(Number(val))) return `${currencyPrefix} -`;
         const localeStr = language === 'en' ? 'en-US' : 'id-ID';
-        return `Rp ${Number(val).toLocaleString(localeStr)}`;
+        return `${currencyPrefix} ${Number(val).toLocaleString(localeStr)}`;
     };
 
     // Helper format tanggal (Contoh: 16 Sep 2026)
@@ -809,7 +810,7 @@ export default function MobileKeranjangPage({
                             </div>
                             <div className="relative">
                                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-zinc-900 font-mono">
-                                    Rp
+                                    {language === 'en' ? 'IDR' : 'Rp'}
                                 </span>
                                 <input
                                     type="number"
