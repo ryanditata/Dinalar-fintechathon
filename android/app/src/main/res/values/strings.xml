@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Dinalar</string>
+    <string name="title_activity_main">Dinalar</string>
+    <string name="package_name">com.dinalar.app</string>
+    <string name="custom_url_scheme">com.dinalar.app</string>
+</resources>

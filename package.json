@@ -8,9 +8,12 @@
         "format": "prettier --write resources/",
         "format:check": "prettier --check resources/",
         "lint": "eslint . --fix",
-        "types": "tsc --noEmit"
+        "types": "tsc --noEmit",
+        "cap:sync": "cap sync android",
+        "cap:open": "cap open android"
     },
     "devDependencies": {
+        "@capacitor/cli": "^7.6.9",
         "@eslint/js": "^9.19.0",
         "@types/file-saver": "^2.0.7",
         "@types/node": "^22.13.5",
@@ -24,6 +27,11 @@
         "typescript-eslint": "^8.23.0"
     },
     "dependencies": {
+        "@capacitor/android": "^8.5.3",
+        "@capacitor/app": "^8.1.2",
+        "@capacitor/core": "^8.5.3",
+        "@capacitor/splash-screen": "^8.0.2",
+        "@capacitor/status-bar": "^8.0.4",
         "@headlessui/react": "^2.2.0",
         "@inertiajs/react": "^2.1.0",
         "@radix-ui/react-avatar": "^1.1.3",
