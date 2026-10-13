@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface HistoryItem {
     id: number;
@@ -43,6 +44,8 @@ interface HistoryProps {
 }
 
 export default function MobileHistoryPage({ history }: HistoryProps) {
+    const { t, language } = useTranslation();
+
     const list: HistoryItem[] = Array.isArray(history)
         ? history
         : (history && typeof history === 'object' && 'data' in history && Array.isArray(history.data)
@@ -67,7 +70,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
         e.preventDefault();
         if (!editingItem) return;
         if (!editTitle.trim()) {
-            toast.error('Judul portofolio tidak boleh kosong.');
+            toast.error(t('history.title_required'));
             return;
         }
 
@@ -78,11 +81,11 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
             {
                 preserveScroll: true,
                 onSuccess: () => {
-                    toast.success('Judul portofolio berhasil diperbarui.');
+                    toast.success(t('history.update_success'));
                     setEditingItem(null);
                 },
                 onError: () => {
-                    toast.error('Gagal memperbarui judul.');
+                    toast.error(t('history.update_error'));
                 },
                 onFinish: () => {
                     setIsUpdating(false);
@@ -98,11 +101,11 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
         router.delete(`/user/analyze/history/${deletingItem.id}`, {
             preserveScroll: true,
             onSuccess: () => {
-                toast.success('Riwayat portofolio berhasil dihapus.');
+                toast.success(t('history.delete_success'));
                 setDeletingItem(null);
             },
             onError: () => {
-                toast.error('Gagal menghapus riwayat.');
+                toast.error(t('history.delete_error'));
             },
             onFinish: () => {
                 setIsDeleting(false);
@@ -112,7 +115,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
 
     const formatDate = (dateStr: string) => {
         try {
-            return new Date(dateStr).toLocaleString('id-ID', {
+            return new Date(dateStr).toLocaleString(language === 'en' ? 'en-US' : 'id-ID', {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric',
@@ -150,6 +153,8 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
 
     return (
         <MobileAppLayout>
+            <Head title={t('history.title')} />
+
             {/* 1. Header (Avatar 40 & Keranjang Saham) */}
             <MobileHeader />
 
@@ -161,15 +166,15 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                     <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200/80 flex items-center gap-3.5">
                         <img
                             src="/images/riwayat.png"
-                            alt="Riwayat Portofolio"
+                            alt={t('history.title')}
                             className="size-12 object-contain shrink-0 drop-shadow-xs select-none"
                         />
                         <div className="min-w-0">
                             <span className="text-[12px] text-zinc-500 font-medium block leading-tight">
-                                Portofolio Tersimpan
+                                {t('history.saved_portfolios')}
                             </span>
                             <div className="text-[26px] font-bold text-zinc-900 font-sans tracking-tight leading-tight mt-0.5">
-                                {list.length} Portofolio
+                                {list.length} {t('history.portfolios_count')}
                             </div>
                         </div>
                     </div>
@@ -227,7 +232,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                                     </div>
 
                                                     <div className="text-[13px] font-bold text-zinc-900 font-sans shrink-0">
-                                                        Rp {item.initial_capital.toLocaleString('id-ID')}
+                                                        Rp {item.initial_capital.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}
                                                     </div>
                                                 </div>
                                             </div>
@@ -236,7 +241,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                             {profile && (
                                                 <div className="flex items-center justify-between gap-1 text-[10.5px] font-medium text-zinc-500 pt-0.5">
                                                     <span className="inline-flex items-center gap-1">
-                                                        <span className="text-zinc-400">Return</span>
+                                                        <span className="text-zinc-400">{t('history.metric_return')}</span>
                                                         <span
                                                             className={`font-mono font-bold ${isPositiveReturn
                                                                     ? 'text-emerald-600'
@@ -248,14 +253,14 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                                     </span>
                                                     <span className="text-zinc-300">|</span>
                                                     <span className="inline-flex items-center gap-1">
-                                                        <span className="text-zinc-400">Volatilitas</span>
+                                                        <span className="text-zinc-400">{t('history.metric_volatility')}</span>
                                                         <span className="font-mono font-bold text-zinc-800">
                                                             {formatMetricRisk(riskVal)}
                                                         </span>
                                                     </span>
                                                     <span className="text-zinc-300">|</span>
                                                     <span className="inline-flex items-center gap-1">
-                                                        <span className="text-zinc-400">Sharpe Ratio</span>
+                                                        <span className="text-zinc-400">{t('history.metric_sharpe')}</span>
                                                         <span className="font-mono font-bold text-zinc-800">
                                                             {formatMetricSharpe(sharpeVal)}
                                                         </span>
@@ -276,7 +281,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                                     className="text-zinc-500 hover:text-zinc-900 flex items-center gap-1 font-medium cursor-pointer"
                                                 >
                                                     <Edit2 className="size-3" />
-                                                    Edit
+                                                    {t('common.edit')}
                                                 </button>
                                                 <button
                                                     type="button"
@@ -287,7 +292,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                                     className="text-rose-600 hover:text-rose-700 flex items-center gap-1 font-medium cursor-pointer"
                                                 >
                                                     <Trash className="size-3" />
-                                                    Hapus
+                                                    {t('common.delete')}
                                                 </button>
                                             </div>
 
@@ -305,17 +310,17 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                 </div>
                                 <div>
                                     <p className="text-sm font-semibold text-zinc-900">
-                                        Belum Ada Riwayat
+                                        {t('history.empty_history_title')}
                                     </p>
                                     <p className="text-xs text-zinc-500 mt-0.5">
-                                        Hasil kalkulasi portofolio yang Anda jalankan akan tersimpan otomatis di sini.
+                                        {t('history.empty_history_desc_short')}
                                     </p>
                                 </div>
                                 <Link
                                     href="/user/saham"
                                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-600 text-white text-xs font-semibold shadow-xs"
                                 >
-                                    Mulai Buat Portofolio
+                                    {t('history.create_portfolio_btn')}
                                 </Link>
                             </div>
                         )}
@@ -338,14 +343,14 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2 text-zinc-900 font-semibold text-sm">
                                 <Edit2 className="size-5 text-emerald-600" />
-                                <span>Ubah Judul Portofolio</span>
+                                <span>{t('history.edit_title_modal')}</span>
                             </div>
                             <button
                                 type="button"
                                 disabled={isUpdating}
                                 onClick={() => setEditingItem(null)}
                                 className="size-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-zinc-900 flex items-center justify-center transition-colors cursor-pointer"
-                                aria-label="Tutup Dialog"
+                                aria-label={t('common.close')}
                             >
                                 <X className="size-4" />
                             </button>
@@ -353,7 +358,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
 
                         {/* Description */}
                         <p className="text-xs text-zinc-600 leading-relaxed">
-                            Sesuaikan nama portofolio untuk memudahkan pencarian di kemudian hari.
+                            {t('history.edit_title_desc')}
                         </p>
 
                         <form onSubmit={handleSaveEdit} className="space-y-4">
@@ -361,7 +366,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                 type="text"
                                 value={editTitle}
                                 onChange={(e) => setEditTitle(e.target.value)}
-                                placeholder="Nama portofolio..."
+                                placeholder={t('history.portfolio_name_placeholder')}
                                 className="w-full h-11 px-3.5 rounded-xl bg-zinc-50 border border-zinc-200 text-sm text-zinc-900 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                                 autoFocus
                             />
@@ -374,7 +379,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                     onClick={() => setEditingItem(null)}
                                     className="flex-1 h-11 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-semibold text-xs transition-all active:scale-95 cursor-pointer"
                                 >
-                                    Batal
+                                    {t('common.cancel')}
                                 </button>
                                 <button
                                     type="submit"
@@ -384,10 +389,10 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                     {isUpdating ? (
                                         <>
                                             <Loader2 className="size-4 animate-spin" />
-                                            <span>Menyimpan</span>
+                                            <span>{t('common.saving')}</span>
                                         </>
                                     ) : (
-                                        <span>Simpan</span>
+                                        <span>{t('common.save')}</span>
                                     )}
                                 </button>
                             </div>
@@ -410,14 +415,14 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2 text-rose-600 font-semibold text-sm">
                                 <AlertCircle className="size-5" />
-                                <span>Hapus Riwayat Portofolio</span>
+                                <span>{t('history.delete_modal_title')}</span>
                             </div>
                             <button
                                 type="button"
                                 disabled={isDeleting}
                                 onClick={() => setDeletingItem(null)}
                                 className="size-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-zinc-900 flex items-center justify-center transition-colors cursor-pointer"
-                                aria-label="Tutup Dialog"
+                                aria-label={t('common.close')}
                             >
                                 <X className="size-4" />
                             </button>
@@ -425,11 +430,11 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
 
                         {/* Description */}
                         <p className="text-xs text-zinc-600 leading-relaxed">
-                            Apakah Anda yakin ingin menghapus portofolio{' '}
+                            {t('history.delete_confirm_prefix')}{' '}
                             <span className="font-semibold text-zinc-900">
                                 "{deletingItem.title}"
                             </span>
-                            ? Seluruh data riwayat analisis ini tidak dapat dikembalikan.
+                            ? {t('history.delete_confirm_suffix')}
                         </p>
 
                         {/* Action Buttons */}
@@ -440,7 +445,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                 onClick={() => setDeletingItem(null)}
                                 className="flex-1 h-11 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-semibold text-xs transition-all active:scale-95 cursor-pointer"
                             >
-                                Batal
+                                {t('common.cancel')}
                             </button>
                             <button
                                 type="button"
@@ -451,10 +456,10 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                 {isDeleting ? (
                                     <>
                                         <Loader2 className="size-4 animate-spin" />
-                                        <span>Menghapus</span>
+                                        <span>{t('common.deleting')}</span>
                                     </>
                                 ) : (
-                                    <span>Ya, Hapus</span>
+                                    <span>{t('common.yes_delete')}</span>
                                 )}
                             </button>
                         </div>
