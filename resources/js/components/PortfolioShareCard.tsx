@@ -1,3 +1,4 @@
+import { useTranslation } from '@/i18n/LanguageContext';
 import { type Stock } from '@/types';
 import React, { forwardRef } from 'react';
 import { Cell, Pie, PieChart } from 'recharts';
@@ -42,11 +43,13 @@ interface SingleShareCardProps {
     profileType: 'min_variance' | 'sharpe' | 'max_return' | 'sortino';
     optimization: PortfolioOptimizationRecord;
     stocks?: Record<string, Stock>;
+    language?: 'id' | 'en';
 }
 
 interface CompareShareCardProps {
     optimization: PortfolioOptimizationRecord;
     stocks?: Record<string, Stock>;
+    language?: 'id' | 'en';
 }
 
 const PALETTE = [
@@ -62,16 +65,18 @@ const PALETTE = [
 ];
 
 // Helper format Rupiah
-const formatIdr = (val: number | string | null | undefined) => {
+const formatIdr = (val: number | string | null | undefined, lang: string = 'id') => {
     if (val === null || val === undefined || isNaN(Number(val))) return 'Rp 0';
-    return `Rp ${Number(val).toLocaleString('id-ID')}`;
+    const locale = lang === 'en' ? 'en-US' : 'id-ID';
+    return `Rp ${Number(val).toLocaleString(locale)}`;
 };
 
 // Helper format Date
-const formatDateStr = (dateStr?: string | null) => {
+const formatDateStr = (dateStr?: string | null, lang: string = 'id') => {
     if (!dateStr) return '-';
     try {
-        return new Date(dateStr).toLocaleDateString('id-ID', {
+        const locale = lang === 'en' ? 'en-US' : 'id-ID';
+        return new Date(dateStr).toLocaleDateString(locale, {
             day: '2-digit',
             month: 'short',
             year: 'numeric',
@@ -85,42 +90,46 @@ const formatDateStr = (dateStr?: string | null) => {
  * 1. SINGLE PROFILE SHARE CARD (Rasio ~ 4:5, Story & Social Media Ready)
  */
 export const PortfolioShareCard = forwardRef<HTMLDivElement, SingleShareCardProps>(
-    ({ profile, profileType, optimization, stocks = {} }, ref) => {
+    ({ profile, profileType, optimization, stocks = {}, language: langProp }, ref) => {
+        const { language: ctxLang } = useTranslation();
+        const activeLang = langProp || ctxLang || 'id';
+        const isEn = activeLang === 'en';
+
         const initialCapital = Number(optimization.initial_capital || 0);
         const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
 
         const profileMeta = {
             min_variance: {
-                badge: 'PROFIL KONSERVATIF',
-                sub: 'Risiko Rendah (Minimum Variance)',
+                badge: isEn ? 'CONSERVATIVE PROFILE' : 'PROFIL KONSERVATIF',
+                sub: isEn ? 'Low Risk (Minimum Variance)' : 'Risiko Rendah (Minimum Variance)',
                 accentColor: '#06b6d4',
                 accentBg: 'rgba(6, 182, 212, 0.15)',
                 accentBorder: 'rgba(6, 182, 212, 0.4)',
             },
             sharpe: {
-                badge: 'PROFIL SEIMBANG',
-                sub: 'Optimal Sharpe Ratio (Pilihan Utama)',
+                badge: isEn ? 'BALANCED PROFILE' : 'PROFIL SEIMBANG',
+                sub: isEn ? 'Optimal Sharpe Ratio (Top Pick)' : 'Optimal Sharpe Ratio (Pilihan Utama)',
                 accentColor: '#10b981',
                 accentBg: 'rgba(16, 185, 129, 0.15)',
                 accentBorder: 'rgba(16, 185, 129, 0.4)',
             },
             max_return: {
-                badge: 'PROFIL AGRESIF',
-                sub: 'Return Maksimal (Growth)',
+                badge: isEn ? 'AGGRESSIVE PROFILE' : 'PROFIL AGRESIF',
+                sub: isEn ? 'Max Return (Growth)' : 'Return Maksimal (Growth)',
                 accentColor: '#f59e0b',
                 accentBg: 'rgba(245, 158, 11, 0.15)',
                 accentBorder: 'rgba(245, 158, 11, 0.4)',
             },
             sortino: {
-                badge: 'PROFIL DOWNSIDE OPTIMAL',
-                sub: 'Optimal Sortino Ratio',
+                badge: isEn ? 'OPTIMAL DOWNSIDE PROFILE' : 'PROFIL DOWNSIDE OPTIMAL',
+                sub: isEn ? 'Optimal Sortino Ratio' : 'Optimal Sortino Ratio',
                 accentColor: '#8b5cf6',
                 accentBg: 'rgba(139, 92, 246, 0.15)',
                 accentBorder: 'rgba(139, 92, 246, 0.4)',
             },
         }[profileType] || {
-            badge: 'REKOMENDASI PORTOFOLIO',
-            sub: 'Optimasi NSGA-II',
+            badge: isEn ? 'PORTFOLIO RECOMMENDATION' : 'REKOMENDASI PORTOFOLIO',
+            sub: isEn ? 'NSGA-II Optimization' : 'Optimasi NSGA-II',
             accentColor: '#10b981',
             accentBg: 'rgba(16, 185, 129, 0.15)',
             accentBorder: 'rgba(16, 185, 129, 0.4)',
@@ -257,7 +266,7 @@ export const PortfolioShareCard = forwardRef<HTMLDivElement, SingleShareCardProp
                     }}
                 >
                     <div style={{ fontSize: '15px', fontWeight: 700, color: '#f1f5f9', marginBottom: '2px' }}>
-                        {optimization.title || 'Portofolio Multi-Aset'}
+                        {optimization.title || (isEn ? 'Multi-Asset Portfolio' : 'Portofolio Multi-Aset')}
                     </div>
                     <div style={{ fontSize: '12px', color: profileMeta.accentColor, fontWeight: 600 }}>
                         {profileMeta.sub}
@@ -277,7 +286,7 @@ export const PortfolioShareCard = forwardRef<HTMLDivElement, SingleShareCardProp
                         }}
                     >
                         <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '4px', fontWeight: 500 }}>
-                            Expected Return (Tahunan)
+                            {isEn ? 'Expected Return (Annual)' : 'Expected Return (Tahunan)'}
                         </div>
                         <div style={{ fontSize: '20px', fontWeight: 800, color: '#10b981', fontFamily: '"JetBrains Mono", monospace' }}>
                             +{Number(profile.return || 0).toFixed(2)}%
@@ -295,7 +304,7 @@ export const PortfolioShareCard = forwardRef<HTMLDivElement, SingleShareCardProp
                         }}
                     >
                         <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '4px', fontWeight: 500 }}>
-                            Volatilitas Risiko (σ)
+                            {isEn ? 'Risk Volatility (σ)' : 'Volatilitas Risiko (σ)'}
                         </div>
                         <div style={{ fontSize: '20px', fontWeight: 800, color: '#06b6d4', fontFamily: '"JetBrains Mono", monospace' }}>
                             {Number(profile.risk || 0).toFixed(2)}%
@@ -333,10 +342,10 @@ export const PortfolioShareCard = forwardRef<HTMLDivElement, SingleShareCardProp
                 >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                         <span style={{ fontSize: '13px', fontWeight: 700, color: '#f1f5f9' }}>
-                            Rincian Alokasi Aset Saham
+                            {isEn ? 'Stock Asset Allocation Breakdown' : 'Rincian Alokasi Aset Saham'}
                         </span>
                         <span style={{ fontSize: '12px', fontWeight: 700, color: '#10b981', fontFamily: '"JetBrains Mono", monospace' }}>
-                            Modal: {formatIdr(initialCapital)}
+                            {isEn ? 'Capital:' : 'Modal:'} {formatIdr(initialCapital, activeLang)}
                         </span>
                     </div>
 
@@ -394,10 +403,10 @@ export const PortfolioShareCard = forwardRef<HTMLDivElement, SingleShareCardProp
                                         </span>
                                     </div>
                                     <div style={{ textAlign: 'right', fontFamily: '"JetBrains Mono", monospace' }}>
-                                        <span style={{ fontWeight: 700, color: '#f1f5f9' }}>{formatIdr(item.nominal)}</span>
+                                        <span style={{ fontWeight: 700, color: '#f1f5f9' }}>{formatIdr(item.nominal, activeLang)}</span>
                                         {item.lot > 0 && (
                                             <span style={{ color: '#10b981', fontSize: '10px', marginLeft: '6px' }}>
-                                                ~{item.lot} lot
+                                                ~{item.lot.toLocaleString(isEn ? 'en-US' : 'id-ID')} {isEn ? (item.lot > 1 ? 'lots' : 'lot') : 'lot'}
                                             </span>
                                         )}
                                     </div>
@@ -405,7 +414,7 @@ export const PortfolioShareCard = forwardRef<HTMLDivElement, SingleShareCardProp
                             ))}
                             {allocations.length > 4 && (
                                 <div style={{ fontSize: '10px', color: '#64748b', textAlign: 'right', marginTop: '2px' }}>
-                                    + {allocations.length - 4} saham lainnya di portofolio
+                                    + {allocations.length - 4} {isEn ? 'other stocks in portfolio' : 'saham lainnya di portofolio'}
                                 </div>
                             )}
                         </div>
@@ -428,17 +437,19 @@ export const PortfolioShareCard = forwardRef<HTMLDivElement, SingleShareCardProp
                     }}
                 >
                     <div>
-                        Rentang Waktu: <span style={{ color: '#94a3b8', fontWeight: 600 }}>
+                        {isEn ? 'Time Range:' : 'Rentang Waktu:'}{' '}
+                        <span style={{ color: '#94a3b8', fontWeight: 600 }}>
                             {optimization.start_date && optimization.end_date
-                                ? `${formatDateStr(optimization.start_date)} - ${formatDateStr(optimization.end_date)}`
-                                : formatDateStr(optimization.created_at)}
+                                ? `${formatDateStr(optimization.start_date, activeLang)} - ${formatDateStr(optimization.end_date, activeLang)}`
+                                : formatDateStr(optimization.created_at, activeLang)}
                         </span>
                     </div>
                     <div>
                         Risk-Free Rate: <span style={{ color: '#94a3b8', fontWeight: 600 }}>{optimization.risk_free_rate}%</span>
                     </div>
                     <div>
-                        Tanggal: <span style={{ color: '#94a3b8', fontWeight: 600 }}>{formatDateStr(optimization.created_at)}</span>
+                        {isEn ? 'Date:' : 'Tanggal:'}{' '}
+                        <span style={{ color: '#94a3b8', fontWeight: 600 }}>{formatDateStr(optimization.created_at, activeLang)}</span>
                     </div>
                 </div>
 
@@ -474,7 +485,11 @@ PortfolioShareCard.displayName = 'PortfolioShareCard';
  * 2. 3-PROFILE COMPARISON SHARE CARD (Landscape 16:9, Side-by-Side Comparison)
  */
 export const PortfolioCompareShareCard = forwardRef<HTMLDivElement, CompareShareCardProps>(
-    ({ optimization, stocks = {} }, ref) => {
+    ({ optimization, stocks = {}, language: langProp }, ref) => {
+        const { language: ctxLang } = useTranslation();
+        const activeLang = langProp || ctxLang || 'id';
+        const isEn = activeLang === 'en';
+
         const initialCapital = Number(optimization.initial_capital || 0);
         const best = optimization.best_portfolios || {};
         const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
@@ -482,7 +497,7 @@ export const PortfolioCompareShareCard = forwardRef<HTMLDivElement, CompareShare
         const profilesList = [
             {
                 key: 'min_variance',
-                title: 'Konservatif',
+                title: isEn ? 'Conservative' : 'Konservatif',
                 subtitle: 'Minimum Variance (MVP)',
                 color: '#06b6d4',
                 bg: 'rgba(6, 182, 212, 0.1)',
@@ -491,8 +506,8 @@ export const PortfolioCompareShareCard = forwardRef<HTMLDivElement, CompareShare
             },
             {
                 key: 'sharpe',
-                title: 'Seimbang',
-                subtitle: 'Optimal Sharpe Ratio (Utama)',
+                title: isEn ? 'Balanced' : 'Seimbang',
+                subtitle: isEn ? 'Optimal Sharpe Ratio (Top Pick)' : 'Optimal Sharpe Ratio (Utama)',
                 color: '#10b981',
                 bg: 'rgba(16, 185, 129, 0.15)',
                 border: 'rgba(16, 185, 129, 0.4)',
@@ -501,8 +516,8 @@ export const PortfolioCompareShareCard = forwardRef<HTMLDivElement, CompareShare
             },
             {
                 key: 'max_return',
-                title: 'Agresif',
-                subtitle: 'Max Expected Return',
+                title: isEn ? 'Aggressive' : 'Agresif',
+                subtitle: isEn ? 'Max Expected Return' : 'Max Expected Return',
                 color: '#f59e0b',
                 bg: 'rgba(245, 158, 11, 0.1)',
                 border: 'rgba(245, 158, 11, 0.3)',
@@ -536,14 +551,16 @@ export const PortfolioCompareShareCard = forwardRef<HTMLDivElement, CompareShare
                         />
                         <div>
                             <div style={{ fontSize: '12px', color: '#94a3b8' }}>
-                                Perbandingan 3 Profil Rekomendasi Portofolio
+                                {isEn
+                                    ? 'Comparison of 3 Portfolio Recommendation Profiles'
+                                    : 'Perbandingan 3 Profil Rekomendasi Portofolio'}
                             </div>
                         </div>
                     </div>
 
                     <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: '13px', fontWeight: 700, color: '#f8fafc' }}>
-                            Modal: {formatIdr(initialCapital)}
+                            {isEn ? 'Capital:' : 'Modal:'} {formatIdr(initialCapital, activeLang)}
                         </div>
                         <div style={{ fontSize: '11px', color: '#64748b' }}>
                             Risk-Free Rate: {optimization.risk_free_rate}%
@@ -624,7 +641,7 @@ export const PortfolioCompareShareCard = forwardRef<HTMLDivElement, CompareShare
                                             letterSpacing: '0.05em',
                                         }}
                                     >
-                                        REKOMENDASI UTAMA
+                                        {isEn ? 'MAIN RECOMMENDATION' : 'REKOMENDASI UTAMA'}
                                     </div>
                                 )}
 
@@ -666,7 +683,7 @@ export const PortfolioCompareShareCard = forwardRef<HTMLDivElement, CompareShare
                                         </div>
                                     </div>
                                     <div>
-                                        <div style={{ fontSize: '9px', color: '#64748b' }}>Risiko</div>
+                                        <div style={{ fontSize: '9px', color: '#64748b' }}>{isEn ? 'Risk' : 'Risiko'}</div>
                                         <div style={{ fontSize: '14px', fontWeight: 800, color: '#06b6d4', fontFamily: '"JetBrains Mono", monospace' }}>
                                             {Number(pData.risk || 0).toFixed(1)}%
                                         </div>
@@ -682,7 +699,7 @@ export const PortfolioCompareShareCard = forwardRef<HTMLDivElement, CompareShare
                                 {/* Top Assets List */}
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                     <div style={{ fontSize: '11px', fontWeight: 600, color: '#94a3b8', marginBottom: '2px' }}>
-                                        Top Alokasi Saham:
+                                        {isEn ? 'Top Stock Allocation:' : 'Top Alokasi Saham:'}
                                     </div>
                                     {topAssets.map((a) => (
                                         <div
@@ -703,7 +720,7 @@ export const PortfolioCompareShareCard = forwardRef<HTMLDivElement, CompareShare
                                                 {a.ticker} <span style={{ color: '#10b981', fontSize: '10px' }}>({a.weightPercent}%)</span>
                                             </span>
                                             <span style={{ color: '#94a3b8' }}>
-                                                {formatIdr(a.nominal)}
+                                                {formatIdr(a.nominal, activeLang)}
                                             </span>
                                         </div>
                                     ))}
@@ -716,7 +733,7 @@ export const PortfolioCompareShareCard = forwardRef<HTMLDivElement, CompareShare
                 {/* Footer */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', fontSize: '11px', color: '#64748b' }}>
                     <div>
-                        Tanggal: {formatDateStr(optimization.created_at)}
+                        {isEn ? 'Date:' : 'Tanggal:'} {formatDateStr(optimization.created_at, activeLang)}
                     </div>
                     <div style={{ fontWeight: 700, color: '#10b981' }}>
                         dinalar.my.id

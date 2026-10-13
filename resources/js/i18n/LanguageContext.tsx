@@ -10,7 +10,11 @@ interface LanguageContextType {
     language: Language;
     setLanguage: (lang: Language) => void;
     toggleLanguage: () => void;
-    t: (path: string, params?: Record<string, string | number>) => string;
+    t: (
+        path: string,
+        fallbackOrParams?: string | Record<string, string | number>,
+        params?: Record<string, string | number>
+    ) => string;
 }
 
 const idDictionary: NestedObject = {
@@ -205,6 +209,115 @@ const idDictionary: NestedObject = {
         export_excel: 'Ekspor Excel',
         save_portfolio: 'Simpan ke Riwayat',
         portfolio_saved: 'Portofolio berhasil disimpan ke riwayat Anda.',
+        portfolio_ref: 'Portofolio {refCode}',
+        header_title: 'Portofolio',
+        share_export: 'Bagikan & Export',
+        public_notice: 'Hasil optimasi portofolio Dinalar AI.',
+        create_your_portfolio: 'Buat Portofolio Anda',
+        badge_title: 'Hasil Optimasi Portofolio',
+        default_title: 'Rekomendasi Portofolio Multi-Aset',
+        hero_desc: 'Simulasi berbasis deret waktu historis {count} emiten saham pilihan Anda.',
+        investment_capital: 'Modal Investasi',
+        risk_free_rate: 'Risk-Free Rate (Rf)',
+        tickers_label: 'Emiten',
+        data_range: 'Rentang Data',
+        since: 'Sejak {date}',
+        historical: 'Historis',
+        profiles_title: '3 Profil Portofolio',
+        profile_label_min_variance: 'Konservatif (Risiko Rendah)',
+        profile_label_max_return: 'Agresif (Return Maksimal)',
+        profile_label_sortino: 'Downside Optimal (Sortino)',
+        profile_label_sharpe: 'Seimbang (Optimal Sharpe)',
+        profile_min_variance_tag: 'Risiko Rendah (MVP)',
+        profile_min_variance_name: 'Konservatif (Minimum Variance)',
+        profile_min_variance_desc: 'Fokus meminimalkan volatilitas risiko pasar.',
+        profile_sharpe_tag: 'Seimbang (Rekomendasi Utama)',
+        profile_sharpe_name: 'Moderat (Optimal Sharpe Ratio)',
+        profile_sharpe_desc: 'Rasio return-to-risk optimal paling efisien.',
+        profile_max_return_tag: 'Return Maksimal',
+        profile_max_return_name: 'Agresif (Max Expected Return)',
+        profile_max_return_desc: 'Memaksimalkan proyeksi imbal hasil frontier.',
+        download_min_variance_img: 'Unduh Gambar Profil Konservatif',
+        download_sharpe_img: 'Unduh Gambar Profil Seimbang',
+        download_max_return_img: 'Unduh Gambar Profil Agresif',
+        metric_return: 'Return',
+        metric_risk: 'Risiko (σ)',
+        metric_sharpe: 'Sharpe',
+        visualization_title: 'Visualisasi',
+        tab_frontier: 'Frontier',
+        tab_allocation: 'Alokasi',
+        custom_simulation: 'Simulasi Kustom',
+        custom_simulation_point: 'Simulasi Titik Kustom: Return {ret}% | Risiko {risk}%',
+        frontier_curve_desc: 'Kurva Pareto Efficient Frontier',
+        risk_axis: 'Risiko (σ)',
+        risk_axis_label: 'Risiko Volatilitas (σ %)',
+        return_axis: 'Return E(R)',
+        return_axis_label: 'Return E(R) %',
+        simulation_label: 'Simulasi',
+        top_3_weights: 'Top 3 Bobot:',
+        single_stock: 'Saham Tunggal',
+        recommended_profile: 'Profil Rekomendasi',
+        frontier_markowitz: 'Frontier (Markowitz)',
+        nsga_pareto: 'NSGA-II Pareto',
+        marker_sharpe: 'Seimbang (Sharpe)',
+        marker_min_variance: 'Risiko Rendah (MVP)',
+        marker_max_return: 'Return Maksimal',
+        donut_desc: 'Komposisi alokasi bobot saham untuk profil {profile}:',
+        weight_label: 'Bobot:',
+        nominal_label: 'Nominal:',
+        allocation_details_title: 'Detail Alokasi Portofolio',
+        nominal_funds: 'Nominal Dana',
+        estimated_purchase: 'Estimasi Pembelian',
+        lot_unit: 'Lot',
+        total_capital_allocation: 'Total Alokasi Modal:',
+        total_estimated_lots: 'Total Estimasi Lot:',
+        quantile_title: '5-Points Quantile Model',
+        metric_col: 'Metrik',
+        recent_history_title: 'Riwayat Analisis Terbaru',
+        share_modal_title: 'Export & Bagikan Portofolio',
+        opt_save_image: 'Simpan Gambar (PNG)',
+        opt_save_image_desc: 'Kartu profil terpilih dengan visual HD',
+        opt_download_pdf: 'Unduh Laporan (PDF)',
+        opt_download_pdf_desc: 'Laporan komprehensif Markowitz & NSGA-II',
+        opt_compare_profiles: 'Bandingkan 3 Profil (PNG)',
+        opt_compare_profiles_desc: 'Komparasi Konservatif, Moderat & Agresif',
+        opt_copy_public_link: 'Salin Tautan Publik',
+        opt_copy_public_link_desc: 'Bisa dilihat siapa saja tanpa login',
+        opt_share_whatsapp: 'Kirim Ringkasan ke WhatsApp',
+        opt_share_whatsapp_desc: 'Pesan terformat lengkap dengan estimasi lot',
+        pdf_download_success: 'Laporan PDF berhasil diunduh ({file})',
+        pdf_download_error: 'Gagal membuat dokumen PDF laporan. Silakan coba lagi.',
+        image_download_success: 'Gambar berhasil diunduh ({file})',
+        image_download_error: 'Gagal mengunduh gambar. Silakan coba lagi.',
+        share_native_success: 'Berhasil membagikan portofolio!',
+        share_fallback_download: 'Gambar portofolio telah diunduh. Anda dapat melampirkannya langsung ke WhatsApp / Instagram.',
+        share_prepare_error: 'Gagal menyiapkan gambar untuk dibagikan.',
+        share_title: 'Rekomendasi Portofolio Saham',
+        share_native_text: 'Halo! Cek rekomendasi portofolio saham kuantitatif saya ({profile}) dengan kode referensi {refCode} di Dinalar AI.',
+        link_copied_clipboard: 'Tautan publik berhasil disalin ke clipboard!',
+        link_copy_error: 'Gagal menyalin tautan ke clipboard. Silakan coba lagi.',
+        wa_header: 'HASIL ANALISIS PORTOFOLIO SAHAM DINALAR',
+        wa_title: 'Judul:',
+        wa_profile: 'Profil:',
+        wa_ref_code: 'Kode Ref:',
+        wa_analysis_date: 'Tanggal Analisis:',
+        wa_time_range: 'Rentang Waktu:',
+        wa_investment_capital: 'Modal Investasi:',
+        wa_risk_free_rate: 'Risk-Free Rate:',
+        wa_metrics_title: 'METRIK PERFORMA:',
+        wa_expected_return: 'Expected Return:',
+        wa_annual: 'Tahunan',
+        wa_risk_volatility: 'Volatilitas Risiko (σ):',
+        wa_sharpe_ratio: 'Sharpe Ratio:',
+        wa_allocation_title: 'RINCIAN ALOKASI SAHAM:',
+        wa_weight: 'Bobot:',
+        wa_nominal: 'Nominal:',
+        wa_price: 'Harga:',
+        wa_estimate: 'Estimasi:',
+        wa_total_purchase: 'TOTAL PEMBELIAN:',
+        wa_total_capital: 'Total Modal:',
+        wa_total_estimate: 'Total Estimasi:',
+        wa_footer: 'Analisis otomatis dengan Algoritma NSGA-II & Markowitz Frontier.\n🌐 Kunjungi: https://dinalar.my.id',
     },
     history: {
         title: 'Riwayat Optimasi',
@@ -516,6 +629,115 @@ const enDictionary: NestedObject = {
         export_excel: 'Export to Excel',
         save_portfolio: 'Save to History',
         portfolio_saved: 'Portfolio successfully saved to your history.',
+        portfolio_ref: 'Portfolio {refCode}',
+        header_title: 'Portfolio',
+        share_export: 'Share & Export',
+        public_notice: 'Dinalar AI portfolio optimization results.',
+        create_your_portfolio: 'Create Your Portfolio',
+        badge_title: 'Portfolio Optimization Results',
+        default_title: 'Multi-Asset Portfolio Recommendation',
+        hero_desc: 'Simulation based on historical time series of your {count} selected stocks.',
+        investment_capital: 'Investment Capital',
+        risk_free_rate: 'Risk-Free Rate (Rf)',
+        tickers_label: 'Tickers',
+        data_range: 'Data Range',
+        since: 'Since {date}',
+        historical: 'Historical',
+        profiles_title: '3 Portfolio Profiles',
+        profile_label_min_variance: 'Conservative (Low Risk)',
+        profile_label_max_return: 'Aggressive (Max Return)',
+        profile_label_sortino: 'Downside Optimal (Sortino)',
+        profile_label_sharpe: 'Balanced (Optimal Sharpe)',
+        profile_min_variance_tag: 'Low Risk (MVP)',
+        profile_min_variance_name: 'Conservative (Minimum Variance)',
+        profile_min_variance_desc: 'Focus on minimizing market risk volatility.',
+        profile_sharpe_tag: 'Balanced (Main Recommendation)',
+        profile_sharpe_name: 'Moderate (Optimal Sharpe Ratio)',
+        profile_sharpe_desc: 'Most efficient optimal return-to-risk ratio.',
+        profile_max_return_tag: 'Maximum Return',
+        profile_max_return_name: 'Aggressive (Max Expected Return)',
+        profile_max_return_desc: 'Maximizing projected frontier returns.',
+        download_min_variance_img: 'Download Conservative Profile Image',
+        download_sharpe_img: 'Download Balanced Profile Image',
+        download_max_return_img: 'Download Aggressive Profile Image',
+        metric_return: 'Return',
+        metric_risk: 'Risk (σ)',
+        metric_sharpe: 'Sharpe',
+        visualization_title: 'Visualization',
+        tab_frontier: 'Frontier',
+        tab_allocation: 'Allocation',
+        custom_simulation: 'Custom Simulation',
+        custom_simulation_point: 'Custom Simulation Point: Return {ret}% | Risk {risk}%',
+        frontier_curve_desc: 'Pareto Efficient Frontier Curve',
+        risk_axis: 'Risk (σ)',
+        risk_axis_label: 'Volatility Risk (σ %)',
+        return_axis: 'Return E(R)',
+        return_axis_label: 'Return E(R) %',
+        simulation_label: 'Simulation',
+        top_3_weights: 'Top 3 Weights:',
+        single_stock: 'Single Stock',
+        recommended_profile: 'Recommended Profile',
+        frontier_markowitz: 'Frontier (Markowitz)',
+        nsga_pareto: 'NSGA-II Pareto',
+        marker_sharpe: 'Balanced (Sharpe)',
+        marker_min_variance: 'Low Risk (MVP)',
+        marker_max_return: 'Max Return',
+        donut_desc: 'Asset allocation composition for {profile} profile:',
+        weight_label: 'Weight:',
+        nominal_label: 'Amount:',
+        allocation_details_title: 'Portfolio Allocation Details',
+        nominal_funds: 'Allocated Capital',
+        estimated_purchase: 'Estimated Purchase',
+        lot_unit: 'Lots',
+        total_capital_allocation: 'Total Capital Allocated:',
+        total_estimated_lots: 'Total Estimated Lots:',
+        quantile_title: '5-Points Quantile Model',
+        metric_col: 'Metric',
+        recent_history_title: 'Recent Analysis History',
+        share_modal_title: 'Export & Share Portfolio',
+        opt_save_image: 'Save Image (PNG)',
+        opt_save_image_desc: 'Selected profile card with HD visuals',
+        opt_download_pdf: 'Download Report (PDF)',
+        opt_download_pdf_desc: 'Comprehensive Markowitz & NSGA-II report',
+        opt_compare_profiles: 'Compare 3 Profiles (PNG)',
+        opt_compare_profiles_desc: 'Comparison of Conservative, Moderate & Aggressive',
+        opt_copy_public_link: 'Copy Public Link',
+        opt_copy_public_link_desc: 'Viewable by anyone without logging in',
+        opt_share_whatsapp: 'Send Summary to WhatsApp',
+        opt_share_whatsapp_desc: 'Formatted message with detailed lot estimates',
+        pdf_download_success: 'PDF Report successfully downloaded ({file})',
+        pdf_download_error: 'Failed to generate PDF report. Please try again.',
+        image_download_success: 'Image successfully downloaded ({file})',
+        image_download_error: 'Failed to download image. Please try again.',
+        share_native_success: 'Portfolio successfully shared!',
+        share_fallback_download: 'Portfolio image has been downloaded. You can attach it directly to WhatsApp / Instagram.',
+        share_prepare_error: 'Failed to prepare image for sharing.',
+        share_title: 'Stock Portfolio Recommendation',
+        share_native_text: 'Hello! Check out my quantitative stock portfolio recommendation ({profile}) with reference code {refCode} on Dinalar AI.',
+        link_copied_clipboard: 'Public link copied to clipboard!',
+        link_copy_error: 'Failed to copy link to clipboard. Please try again.',
+        wa_header: 'DINALAR STOCK PORTFOLIO ANALYSIS RESULTS',
+        wa_title: 'Title:',
+        wa_profile: 'Profile:',
+        wa_ref_code: 'Ref Code:',
+        wa_analysis_date: 'Analysis Date:',
+        wa_time_range: 'Time Range:',
+        wa_investment_capital: 'Investment Capital:',
+        wa_risk_free_rate: 'Risk-Free Rate:',
+        wa_metrics_title: 'PERFORMANCE METRICS:',
+        wa_expected_return: 'Expected Return:',
+        wa_annual: 'Annual',
+        wa_risk_volatility: 'Risk Volatility (σ):',
+        wa_sharpe_ratio: 'Sharpe Ratio:',
+        wa_allocation_title: 'STOCK ALLOCATION DETAILS:',
+        wa_weight: 'Weight:',
+        wa_nominal: 'Amount:',
+        wa_price: 'Price:',
+        wa_estimate: 'Estimate:',
+        wa_total_purchase: 'TOTAL PURCHASE:',
+        wa_total_capital: 'Total Capital:',
+        wa_total_estimate: 'Total Estimate:',
+        wa_footer: 'Automated quantitative analysis with NSGA-II & Markowitz Frontier.\n🌐 Visit: https://dinalar.my.id',
     },
     history: {
         title: 'Optimization History',
@@ -685,7 +907,21 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
      * Mengambil teks berdasarkan path bertingkat (misal: 'dashboard.greeting')
      * dan mengganti parameter jika ada (misal: { name: 'Ryan' } untuk '{name}')
      */
-    const t = (path: string, params?: Record<string, string | number>): string => {
+    const t = (
+        path: string,
+        fallbackOrParams?: string | Record<string, string | number>,
+        params?: Record<string, string | number>
+    ): string => {
+        let fallbackText: string | undefined = undefined;
+        let interpolationParams: Record<string, string | number> | undefined = undefined;
+
+        if (typeof fallbackOrParams === 'string') {
+            fallbackText = fallbackOrParams;
+            interpolationParams = params;
+        } else if (fallbackOrParams && typeof fallbackOrParams === 'object') {
+            interpolationParams = fallbackOrParams;
+        }
+
         const keys = path.split('.');
 
         let current: NestedObject | string | undefined = translations[language];
@@ -703,16 +939,16 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
                         break;
                     }
                 }
-                current = fallback || path;
+                current = fallback !== undefined ? fallback : (fallbackText || path);
                 break;
             }
         }
 
-        let result = typeof current === 'string' ? current : path;
+        let result = typeof current === 'string' ? current : (fallbackText || path);
 
         // Interpolasi parameter: {name} atau {{name}}
-        if (params && typeof result === 'string') {
-            Object.entries(params).forEach(([paramKey, val]) => {
+        if (interpolationParams && typeof result === 'string') {
+            Object.entries(interpolationParams).forEach(([paramKey, val]) => {
                 const regexSingle = new RegExp(`{${paramKey}}`, 'g');
                 const regexDouble = new RegExp(`{{${paramKey}}}`, 'g');
                 result = result.replace(regexDouble, String(val)).replace(regexSingle, String(val));
@@ -737,7 +973,10 @@ export const useTranslation = (): LanguageContextType => {
             language: 'id',
             setLanguage: () => {},
             toggleLanguage: () => {},
-            t: (path: string) => path,
+            t: (
+                path: string,
+                fallbackOrParams?: string | Record<string, string | number>
+            ) => (typeof fallbackOrParams === 'string' ? fallbackOrParams : path),
         };
     }
     return context;

@@ -9,6 +9,7 @@ export interface PDFReportOptions {
     selectedProfile: 'min_variance' | 'sharpe' | 'max_return' | 'sortino';
     profileLabel: string;
     stocks?: Record<string, Stock>;
+    language?: 'id' | 'en';
 }
 
 const PALETTE_HEX = [
@@ -35,16 +36,18 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
 }
 
 // Helper Format Rupiah
-const formatIdr = (val: number | string | null | undefined): string => {
+const formatIdr = (val: number | string | null | undefined, lang: string = 'id'): string => {
     if (val === null || val === undefined || isNaN(Number(val))) return 'Rp 0';
-    return `Rp ${Math.round(Number(val)).toLocaleString('id-ID')}`;
+    const locale = lang === 'en' ? 'en-US' : 'id-ID';
+    return `Rp ${Math.round(Number(val)).toLocaleString(locale)}`;
 };
 
 // Helper Format Date
-const formatDateStr = (dateStr?: string | null): string => {
+const formatDateStr = (dateStr?: string | null, lang: string = 'id'): string => {
     if (!dateStr) return '-';
     try {
-        return new Date(dateStr).toLocaleDateString('id-ID', {
+        const locale = lang === 'en' ? 'en-US' : 'id-ID';
+        return new Date(dateStr).toLocaleDateString(locale, {
             day: '2-digit',
             month: 'short',
             year: 'numeric',
@@ -68,7 +71,8 @@ const loadImage = (src: string): Promise<HTMLImageElement> => {
 // Helper Generate High-Res Vector Pie/Donut Chart Data URL
 function generatePieChartDataUrl(
     items: Array<{ ticker: string; weight: number; color: string }>,
-    size = 400
+    size = 400,
+    centerLabel = 'ALOKASI'
 ): string {
     if (typeof document === 'undefined') return '';
     try {
@@ -114,7 +118,7 @@ function generatePieChartDataUrl(
 
         ctx.fillStyle = '#64748b';
         ctx.font = 'bold 18px Helvetica, Arial, sans-serif';
-        ctx.fillText('ALOKASI', cx, cy + 18);
+        ctx.fillText(centerLabel, cx, cy + 18);
 
         return canvas.toDataURL('image/png');
     } catch {
@@ -131,7 +135,9 @@ export async function generatePortfolioPDFReport({
     selectedProfile,
     profileLabel,
     stocks = {},
+    language = 'id',
 }: PDFReportOptions): Promise<void> {
+    const isEn = language === 'en';
     const doc = new jsPDF({
         orientation: 'portrait',
         unit: 'pt',
@@ -165,13 +171,13 @@ export async function generatePortfolioPDFReport({
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
     doc.setTextColor(5, 150, 105); // #059669
-    doc.text('LAPORAN HASIL OPTIMASI PORTOFOLIO', pageWidth - margin, currentY + 12, { align: 'right' });
+    doc.text(isEn ? 'PORTFOLIO OPTIMIZATION REPORT' : 'LAPORAN HASIL OPTIMASI PORTOFOLIO', pageWidth - margin, currentY + 12, { align: 'right' });
 
     // Reference & Date (Right aligned)
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8.5);
     doc.setTextColor(100, 116, 139);
-    doc.text(`Ref: ${refCode} | Tanggal: ${formatDateStr(optimization.created_at)}`, pageWidth - margin, currentY + 26, { align: 'right' });
+    doc.text(`Ref: ${refCode} | ${isEn ? 'Date' : 'Tanggal'}: ${formatDateStr(optimization.created_at, language)}`, pageWidth - margin, currentY + 26, { align: 'right' });
 
     currentY += 44;
 
@@ -193,23 +199,25 @@ export async function generatePortfolioPDFReport({
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8);
     doc.setTextColor(100, 116, 139); // #64748b
-    doc.text('JUDUL PORTOFOLIO', margin + 14, currentY + 18);
+    doc.text(isEn ? 'PORTFOLIO TITLE' : 'JUDUL PORTOFOLIO', margin + 14, currentY + 18);
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10.5);
     doc.setTextColor(15, 23, 42);
-    const titleText = (optimization.title || 'Portofolio Multi-Aset').length > 34
-        ? `${(optimization.title || 'Portofolio Multi-Aset').substring(0, 34)}...`
-        : (optimization.title || 'Portofolio Multi-Aset');
+    const defaultTitle = isEn ? 'Multi-Asset Portfolio' : 'Portofolio Multi-Aset';
+    const titleText = (optimization.title || defaultTitle).length > 34
+        ? `${(optimization.title || defaultTitle).substring(0, 34)}...`
+        : (optimization.title || defaultTitle);
     doc.text(titleText, margin + 14, currentY + 33);
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8.5);
     doc.setTextColor(71, 85, 105);
-    doc.text('Profil:', margin + 14, currentY + 52);
+    doc.text(isEn ? 'Profile:' : 'Profil:', margin + 14, currentY + 52);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(5, 150, 105);
-    doc.text(profileLabel, margin + 42, currentY + 52);
+    const profileLabelX = margin + (isEn ? 48 : 42);
+    doc.text(profileLabel, profileLabelX, currentY + 52);
 
     // Kolom Kanan (Parameter Finansial dengan Right Alignment rapi di dalam card)
     const col2X = margin + 250;
@@ -219,10 +227,10 @@ export async function generatePortfolioPDFReport({
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8.5);
     doc.setTextColor(100, 116, 139);
-    doc.text('Modal Investasi:', col2X, currentY + 18);
+    doc.text(isEn ? 'Investment Capital:' : 'Modal Investasi:', col2X, currentY + 18);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(15, 23, 42);
-    doc.text(formatIdr(initialCapital), rightMarginX, currentY + 18, { align: 'right' });
+    doc.text(formatIdr(initialCapital, language), rightMarginX, currentY + 18, { align: 'right' });
 
     // Row 2: Risk-Free Rate
     doc.setFont('helvetica', 'normal');
@@ -235,12 +243,12 @@ export async function generatePortfolioPDFReport({
     // Row 3: Rentang Waktu
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(100, 116, 139);
-    doc.text('Rentang Waktu:', col2X, currentY + 50);
+    doc.text(isEn ? 'Time Range:' : 'Rentang Waktu:', col2X, currentY + 50);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(15, 23, 42);
     const dateRange = optimization.start_date && optimization.end_date
-        ? `${formatDateStr(optimization.start_date)} - ${formatDateStr(optimization.end_date)}`
-        : formatDateStr(optimization.created_at);
+        ? `${formatDateStr(optimization.start_date, language)} - ${formatDateStr(optimization.end_date, language)}`
+        : formatDateStr(optimization.created_at, language);
     doc.text(dateRange, rightMarginX, currentY + 50, { align: 'right' });
 
     currentY += boxHeight + 14;
@@ -263,7 +271,7 @@ export async function generatePortfolioPDFReport({
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8);
     doc.setTextColor(22, 101, 52);
-    doc.text('EXPECTED RETURN (TAHUNAN)', margin + 10, currentY + 16);
+    doc.text(isEn ? 'EXPECTED RETURN (ANNUAL)' : 'EXPECTED RETURN (TAHUNAN)', margin + 10, currentY + 16);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(15);
     doc.setTextColor(5, 150, 105);
@@ -277,7 +285,7 @@ export async function generatePortfolioPDFReport({
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8);
     doc.setTextColor(7, 89, 133);
-    doc.text('VOLATILITAS RISIKO', card2X + 10, currentY + 16);
+    doc.text(isEn ? 'RISK VOLATILITY' : 'VOLATILITAS RISIKO', card2X + 10, currentY + 16);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(15);
     doc.setTextColor(2, 132, 199);
@@ -362,7 +370,7 @@ export async function generatePortfolioPDFReport({
         weight: a.weight,
         color: PALETTE_HEX[idx % PALETTE_HEX.length],
     }));
-    const pieDataUrl = generatePieChartDataUrl(pieItems, 400);
+    const pieDataUrl = generatePieChartDataUrl(pieItems, 400, isEn ? 'ALLOCATION' : 'ALOKASI');
 
     if (pieDataUrl) {
         const pieSize = 72;
@@ -374,12 +382,18 @@ export async function generatePortfolioPDFReport({
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9.5);
     doc.setTextColor(15, 23, 42);
-    doc.text('Komposisi Bobot Aset Portofolio', legendStartX, currentY + 18);
+    doc.text(isEn ? 'Portfolio Asset Weight Composition' : 'Komposisi Bobot Aset Portofolio', legendStartX, currentY + 18);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(100, 116, 139);
-    doc.text('Distribusi persentase modal yang dialokasikan ke masing-masing emiten saham terpilih:', legendStartX, currentY + 30);
+    doc.text(
+        isEn
+            ? 'Percentage distribution of capital allocated to each selected stock:'
+            : 'Distribusi persentase modal yang dialokasikan ke masing-masing emiten saham terpilih:',
+        legendStartX,
+        currentY + 30
+    );
 
     // Badges / Legend Grid
     let badgeX = legendStartX;
@@ -419,7 +433,7 @@ export async function generatePortfolioPDFReport({
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10.5);
     doc.setTextColor(15, 23, 42);
-    doc.text('Rincian Alokasi Dana & Estimasi Pembelian Saham', margin, currentY);
+    doc.text(isEn ? 'Capital Allocation Details & Estimated Stock Purchase' : 'Rincian Alokasi Dana & Estimasi Pembelian Saham', margin, currentY);
     currentY += 8;
 
     const tableBody = allocationsList.map((item, idx) => [
@@ -428,9 +442,11 @@ export async function generatePortfolioPDFReport({
         item.name,
         item.category,
         `${item.weight.toFixed(2)}%`,
-        formatIdr(item.nominal),
-        item.lastClose > 0 ? formatIdr(item.lastClose) : '-',
-        item.lot > 0 ? `${item.lot.toLocaleString('id-ID')} Lot` : '-',
+        formatIdr(item.nominal, language),
+        item.lastClose > 0 ? formatIdr(item.lastClose, language) : '-',
+        item.lot > 0
+            ? `${item.lot.toLocaleString(isEn ? 'en-US' : 'id-ID')} ${isEn ? (item.lot > 1 ? 'Lots' : 'Lot') : 'Lot'}`
+            : '-',
     ]);
 
     // Tambahkan baris total
@@ -438,18 +454,29 @@ export async function generatePortfolioPDFReport({
         [
             '',
             'Total',
-            'Portofolio Optimal',
+            isEn ? 'Optimal Portfolio' : 'Portofolio Optimal',
             '-',
             `${totalWeight.toFixed(2)}%`,
-            formatIdr(totalNominal),
+            formatIdr(totalNominal, language),
             '-',
-            totalLots > 0 ? `${totalLots.toLocaleString('id-ID')} Lot` : '-',
+            totalLots > 0
+                ? `${totalLots.toLocaleString(isEn ? 'en-US' : 'id-ID')} ${isEn ? (totalLots > 1 ? 'Lots' : 'Lot') : 'Lot'}`
+                : '-',
         ],
     ];
 
     autoTable(doc, {
         startY: currentY,
-        head: [['No', 'Kode', 'Nama Emiten', 'Bursa', 'Bobot (%)', 'Nominal (IDR)', 'Harga Terakhir', 'Estimasi']],
+        head: [[
+            'No',
+            isEn ? 'Ticker' : 'Kode',
+            isEn ? 'Company Name' : 'Nama Emiten',
+            isEn ? 'Exchange' : 'Bursa',
+            isEn ? 'Weight (%)' : 'Bobot (%)',
+            'Nominal (IDR)',
+            isEn ? 'Last Price' : 'Harga Terakhir',
+            isEn ? 'Estimate' : 'Estimasi',
+        ]],
         body: tableBody,
         foot: tableFoot,
         theme: 'grid',
@@ -496,25 +523,25 @@ export async function generatePortfolioPDFReport({
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(10);
         doc.setTextColor(15, 23, 42);
-        doc.text('Perbandingan Opsi Profil Frontier Lainnya', margin, currentY);
+        doc.text(isEn ? 'Comparison of Other Frontier Profile Options' : 'Perbandingan Opsi Profil Frontier Lainnya', margin, currentY);
         currentY += 8;
 
         const best = optimization.best_portfolios || {};
         const compareProfiles = [
             {
-                name: 'Konservatif (Minimum Variance)',
+                name: isEn ? 'Conservative (Minimum Variance)' : 'Konservatif (Minimum Variance)',
                 data: best.min_variance,
-                note: 'Minimalkan volatilitas risiko pasar',
+                note: isEn ? 'Minimize market risk volatility' : 'Minimalkan volatilitas risiko pasar',
             },
             {
-                name: 'Moderat (Optimal Sharpe Ratio)',
+                name: isEn ? 'Balanced (Optimal Sharpe Ratio)' : 'Moderat (Optimal Sharpe Ratio)',
                 data: best.sharpe,
-                note: 'Rasio return-to-risk paling efisien (Utama)',
+                note: isEn ? 'Most efficient return-to-risk ratio (Primary)' : 'Rasio return-to-risk paling efisien (Utama)',
             },
             {
-                name: 'Agresif (Max Return)',
+                name: isEn ? 'Aggressive (Max Return)' : 'Agresif (Max Return)',
                 data: best.max_return || best.omega,
-                note: 'Maksimalkan proyeksi imbal hasil frontier',
+                note: isEn ? 'Maximize frontier projected return' : 'Maksimalkan proyeksi imbal hasil frontier',
             },
         ];
 
@@ -528,7 +555,13 @@ export async function generatePortfolioPDFReport({
 
         autoTable(doc, {
             startY: currentY,
-            head: [['Profil Portofolio', 'Expected Return', 'Risiko (%)', 'Sharpe', 'Karakteristik Strategi']],
+            head: [[
+                isEn ? 'Portfolio Profile' : 'Profil Portofolio',
+                'Expected Return',
+                isEn ? 'Risk (%)' : 'Risiko (%)',
+                'Sharpe',
+                isEn ? 'Strategy Characteristics' : 'Karakteristik Strategi',
+            ]],
             body: compareBody,
             theme: 'striped',
             margin: { left: margin, right: margin },
@@ -569,6 +602,7 @@ export async function generatePortfolioPDFReport({
     doc.text('dinalar.my.id', pageWidth - margin, footerY + 8, { align: 'right' });
 
     // Save File
-    const filename = `Laporan-Portofolio-${selectedProfile}-${refCode}.pdf`;
+    const filePrefix = isEn ? 'Portfolio-Report' : 'Laporan-Portofolio';
+    const filename = `${filePrefix}-${selectedProfile}-${refCode}.pdf`;
     doc.save(filename);
 }

@@ -1,3 +1,4 @@
+import { useTranslation } from '@/i18n/LanguageContext';
 import { saveAs } from 'file-saver';
 import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
@@ -11,6 +12,7 @@ export interface ExportResult {
 }
 
 export function useExportShare() {
+    const { t } = useTranslation();
     const [isExporting, setIsExporting] = useState<boolean>(false);
 
     /**
@@ -41,13 +43,13 @@ export function useExportShare() {
 
             if (autoDownload) {
                 saveAs(blob, filename);
-                toast.success(`Gambar berhasil diunduh (${filename})`);
+                toast.success(t('result.image_download_success', `Gambar berhasil diunduh (${filename})`, { file: filename }));
             }
 
             return { dataUrl, blob, file };
         } catch (error) {
             console.error('Failed to export as image:', error);
-            toast.error('Gagal mengunduh gambar. Silakan coba lagi.');
+            toast.error(t('result.image_download_error', 'Gagal mengunduh gambar. Silakan coba lagi.'));
             throw error;
         } finally {
             setIsExporting(false);
@@ -84,10 +86,10 @@ export function useExportShare() {
 
             pdf.addImage(dataUrl, 'PNG', 0, 0, width, height, undefined, 'FAST');
             pdf.save(filename);
-            toast.success(`Laporan PDF berhasil diunduh (${filename})`);
+            toast.success(t('result.pdf_download_success', `Laporan PDF berhasil diunduh (${filename})`, { file: filename }));
         } catch (error) {
             console.error('Failed to export as PDF:', error);
-            toast.error('Gagal membuat dokumen PDF. Silakan coba lagi.');
+            toast.error(t('result.pdf_download_error', 'Gagal membuat dokumen PDF laporan. Silakan coba lagi.'));
             throw error;
         } finally {
             setIsExporting(false);
@@ -123,7 +125,7 @@ export function useExportShare() {
                         title,
                         text: shareText,
                     });
-                    toast.success('Berhasil membagikan portofolio!');
+                    toast.success(t('result.share_native_success', 'Berhasil membagikan portofolio!'));
                     return true;
                 } catch (shareErr: any) {
                     if (shareErr.name === 'AbortError') {
@@ -137,12 +139,15 @@ export function useExportShare() {
             // Fallback for Desktop / browsers without file Web Share: download file + notify
             saveAs(blob, filename);
             toast.success(
-                'Gambar portofolio telah diunduh. Anda dapat melampirkannya langsung ke WhatsApp / Instagram.'
+                t(
+                    'result.share_fallback_download',
+                    'Gambar portofolio telah diunduh. Anda dapat melampirkannya langsung ke WhatsApp / Instagram.'
+                )
             );
             return false;
         } catch (error) {
             console.error('Failed to share portfolio:', error);
-            toast.error('Gagal menyiapkan gambar untuk dibagikan.');
+            toast.error(t('result.share_prepare_error', 'Gagal menyiapkan gambar untuk dibagikan.'));
             return false;
         } finally {
             setIsExporting(false);

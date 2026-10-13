@@ -1,5 +1,6 @@
 import { PortfolioCompareShareCard, PortfolioShareCard } from '@/components/PortfolioShareCard';
 import { copyTextToClipboard, useExportShare } from '@/hooks/useExportShare';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { MobileAppLayout } from '@/pages/user/mobile/layouts/MobileAppLayout';
 import { type Stock } from '@/types';
 import { generatePortfolioPDFReport } from '@/utils/pdfReportGenerator';
@@ -139,12 +140,13 @@ export default function MobileResultPage({
     history = [],
     isPublic = false,
 }: ResultProps) {
+    const { t, language } = useTranslation();
     const [selectedProfile, setSelectedProfile] = useState<'sharpe' | 'min_variance' | 'max_return' | 'sortino'>('sharpe');
     const [clickedPoint, setClickedPoint] = useState<any>(null);
     const [hoveredPoint, setHoveredPoint] = useState<{ x: number; y: number } | null>(null);
     const [isGeneratingShare, setIsGeneratingShare] = useState<boolean>(false);
     const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
-    const [activeChartTab, setActiveChartTab] = useState<'frontier' | 'donut'>('frontier');
+    const [activeChartTab, setActiveChartTab] = useState<'frontier' | 'donut'>('donut');
 
     // Clear clicked point when user switches profile
     React.useEffect(() => {
@@ -173,7 +175,7 @@ export default function MobileResultPage({
                 sharpe: clickedPoint.sharpe,
                 capital_allocation,
                 isCustom: true,
-                name: clickedPoint.name || 'Simulasi Kustom',
+                name: clickedPoint.name || t('result.custom_simulation', 'Simulasi Kustom'),
             } as BestPortfolioItem & { isCustom?: boolean; name?: string };
         }
 
@@ -184,12 +186,13 @@ export default function MobileResultPage({
                 : selectedProfile === 'sortino' && bestPortfolios.sortino
                     ? bestPortfolios.sortino
                     : bestPortfolios.sharpe || bestPortfolios.min_variance;
-    }, [clickedPoint, selectedProfile, bestPortfolios, initialCapital]);
+    }, [clickedPoint, selectedProfile, bestPortfolios, initialCapital, t]);
 
     // Formatters
     const formatRupiah = (val: number | string | null | undefined) => {
         if (val === null || val === undefined || isNaN(Number(val))) return 'Rp -';
-        return `Rp ${Number(val).toLocaleString('id-ID')}`;
+        const locale = language === 'en' ? 'en-US' : 'id-ID';
+        return `Rp ${Number(val).toLocaleString(locale)}`;
     };
 
     const formatPercent = (val: number | null | undefined) => {
@@ -202,7 +205,8 @@ export default function MobileResultPage({
     const formatDate = (dateStr?: string | null) => {
         if (!dateStr) return '-';
         try {
-            return new Date(dateStr).toLocaleDateString('id-ID', {
+            const locale = language === 'en' ? 'en-US' : 'id-ID';
+            return new Date(dateStr).toLocaleDateString(locale, {
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric',
@@ -215,14 +219,14 @@ export default function MobileResultPage({
     const getProfileLabel = (p: string) => {
         switch (p) {
             case 'min_variance':
-                return 'Konservatif (Risiko Rendah)';
+                return t('result.profile_label_min_variance', 'Konservatif (Risiko Rendah)');
             case 'max_return':
-                return 'Agresif (Return Maksimal)';
+                return t('result.profile_label_max_return', 'Agresif (Return Maksimal)');
             case 'sortino':
-                return 'Downside Optimal (Sortino)';
+                return t('result.profile_label_sortino', 'Downside Optimal (Sortino)');
             case 'sharpe':
             default:
-                return 'Seimbang (Optimal Sharpe)';
+                return t('result.profile_label_sharpe', 'Seimbang (Optimal Sharpe)');
         }
     };
 
@@ -463,7 +467,8 @@ export default function MobileResultPage({
         if (!singleCardRef.current) return;
 
         const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
-        const filename = `Portofolio-${targetProf}-${refCode}.png`;
+        const filePrefix = language === 'en' ? 'Portfolio' : 'Portofolio';
+        const filename = `${filePrefix}-${targetProf}-${refCode}.png`;
         setIsShareModalOpen(false);
         await exportAsImage(singleCardRef.current, filename, true);
     };
@@ -471,25 +476,29 @@ export default function MobileResultPage({
     const handleExportPDF = async () => {
         try {
             setIsShareModalOpen(false);
-            generatePortfolioPDFReport({
+            const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
+            const filePrefix = language === 'en' ? 'Portfolio-Report' : 'Laporan-Portofolio';
+            const filename = `${filePrefix}-${selectedProfile}-${refCode}.pdf`;
+            await generatePortfolioPDFReport({
                 optimization: optimization as any,
                 activePortfolio: activePortfolio as any,
                 selectedProfile,
                 profileLabel: getProfileLabel(selectedProfile),
                 stocks,
+                language,
             });
-            const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
-            toast.success(`Laporan PDF berhasil diunduh (Laporan-Portofolio-${selectedProfile}-${refCode}.pdf)`);
+            toast.success(t('result.pdf_download_success', { file: filename }));
         } catch (error) {
             console.error('Failed to generate PDF report:', error);
-            toast.error('Gagal membuat dokumen PDF laporan. Silakan coba lagi.');
+            toast.error(t('result.pdf_download_error', 'Gagal membuat dokumen PDF laporan. Silakan coba lagi.'));
         }
     };
 
     const handleExportCompare = async () => {
         if (!compareCardRef.current) return;
         const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
-        const filename = `Komparasi-Portofolio-3-Profil-${refCode}.png`;
+        const filePrefix = language === 'en' ? 'Portfolio-3-Profiles-Comparison' : 'Komparasi-Portofolio-3-Profil';
+        const filename = `${filePrefix}-${refCode}.png`;
         setIsShareModalOpen(false);
         await exportAsImage(compareCardRef.current, filename, true);
     };
@@ -503,10 +512,11 @@ export default function MobileResultPage({
         if (!singleCardRef.current) return;
 
         const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
-        const filename = `Portofolio-${targetProf}-${refCode}.png`;
-        const shareText = `Halo! Cek rekomendasi portofolio saham kuantitatif saya (${getProfileLabel(targetProf)}) dengan kode referensi ${refCode} di Dinalar AI.`;
+        const filePrefix = language === 'en' ? 'Portfolio' : 'Portofolio';
+        const filename = `${filePrefix}-${targetProf}-${refCode}.png`;
+        const shareText = t('result.share_native_text', { profile: getProfileLabel(targetProf), refCode });
         setIsShareModalOpen(false);
-        await sharePortfolio(singleCardRef.current, filename, 'Rekomendasi Portofolio Saham', shareText);
+        await sharePortfolio(singleCardRef.current, filename, t('result.share_title', 'Rekomendasi Portofolio Saham'), shareText);
     };
 
     const handleGeneratePublicLink = async () => {
@@ -524,7 +534,7 @@ export default function MobileResultPage({
             });
 
             if (!response.ok) {
-                throw new Error('Gagal membuat tautan publik');
+                throw new Error(t('result.link_copy_error', 'Gagal membuat tautan publik'));
             }
 
             const data = await response.json();
@@ -532,10 +542,10 @@ export default function MobileResultPage({
                 const copied = await copyTextToClipboard(data.url);
                 if (copied) {
                     setIsShareModalOpen(false);
-                    toast.success('Tautan publik berhasil disalin ke clipboard!');
+                    toast.success(t('result.link_copied_clipboard', 'Tautan publik berhasil disalin ke clipboard!'));
                 }
             } else {
-                throw new Error('URL tidak ditemukan');
+                throw new Error('URL not found');
             }
         } catch (error) {
             console.error('Failed to generate share link:', error);
@@ -543,9 +553,9 @@ export default function MobileResultPage({
             const copied = await copyTextToClipboard(fallbackUrl);
             if (copied) {
                 setIsShareModalOpen(false);
-                toast.success('Tautan berhasil disalin ke clipboard!');
+                toast.success(t('result.link_copied_clipboard', 'Tautan berhasil disalin ke clipboard!'));
             } else {
-                toast.error('Gagal menyalin tautan ke clipboard. Silakan coba lagi.');
+                toast.error(t('result.link_copy_error', 'Gagal menyalin tautan ke clipboard. Silakan coba lagi.'));
             }
         } finally {
             setIsGeneratingShare(false);
@@ -564,15 +574,15 @@ export default function MobileResultPage({
         if (activeProfData?.capital_allocation && Object.keys(activeProfData.capital_allocation).length > 0) {
             rawAllocMap = activeProfData.capital_allocation;
         } else if (activeProfData?.weights) {
-            Object.entries(activeProfData.weights).forEach(([ticker, rawWeight]) => {
-                const clean = ticker.replace('.JK', '');
+            Object.entries(activeProfData.weights).forEach(([tickerKey, rawWeight]) => {
+                const clean = tickerKey.replace('.JK', '');
                 const weightVal = Number(rawWeight);
                 const weightPercent = weightVal <= 1.0 ? weightVal * 100 : weightVal;
                 const nominal =
-                    activeProfData.allocation_idr?.[ticker] ??
+                    activeProfData.allocation_idr?.[tickerKey] ??
                     activeProfData.allocation_idr?.[clean] ??
                     (weightPercent / 100) * initialCapital;
-                rawAllocMap[ticker] = {
+                rawAllocMap[tickerKey] = {
                     weight_percent: weightPercent,
                     nominal_idr: nominal,
                 };
@@ -606,35 +616,39 @@ export default function MobileResultPage({
         const totalNominal = allocationsList.reduce((sum, item) => sum + item.nominal, 0);
 
         let stockLines = '';
+        const numLocale = language === 'en' ? 'en-US' : 'id-ID';
+        const lotUnit = t('result.lot_unit', 'Lot');
+
         allocationsList.forEach((item, idx) => {
             stockLines += `${idx + 1}. *${item.ticker}* (${item.category})\n` +
-                `   ↳ Bobot: *${item.weight.toFixed(2)}%* | Nominal: *${formatRupiah(item.nominal)}*\n` +
-                `   ↳ Harga: *${item.lastClose > 0 ? `Rp ${item.lastClose.toLocaleString('id-ID')}` : '-'}* | Estimasi: *${item.lot > 0 ? `${item.lot.toLocaleString('id-ID')} Lot` : '-'}*\n`;
+                `   ↳ ${t('result.wa_weight', 'Bobot:')} *${item.weight.toFixed(2)}%* | ${t('result.wa_nominal', 'Nominal:')} *${formatRupiah(item.nominal)}*\n` +
+                `   ↳ ${t('result.wa_price', 'Harga:')} *${item.lastClose > 0 ? `Rp ${item.lastClose.toLocaleString(numLocale)}` : '-'}* | ${t('result.wa_estimate', 'Estimasi:')} *${item.lot > 0 ? `${item.lot.toLocaleString(numLocale)} ${lotUnit}` : '-'}*\n`;
         });
 
         const dateRangeStr = optimization.start_date && optimization.end_date
             ? `${formatDate(optimization.start_date)} - ${formatDate(optimization.end_date)}`
             : formatDate(optimization.created_at);
 
-        const text = `📊 *HASIL ANALISIS PORTOFOLIO SAHAM DINALAR*\n\n` +
-            `• *Judul:* ${optimization.title || 'Portofolio Multi-Aset'}\n` +
-            `• *Profil:* ${getProfileLabel(selectedProfile)}\n` +
-            `• *Kode Ref:* ${refCode}\n` +
-            `• *Tanggal Analisis:* ${formatDate(optimization.created_at)}\n` +
-            `• *Rentang Waktu:* ${dateRangeStr}\n` +
-            `• *Modal Investasi:* ${formatRupiah(initialCapital)}\n` +
-            `• *Risk-Free Rate:* ${optimization.risk_free_rate}%\n\n` +
-            `📈 *METRIK PERFORMA:*\n` +
-            `• Expected Return: *+${returnVal}%* (Tahunan)\n` +
-            `• Volatilitas Risiko (σ): *${riskVal}%*\n` +
-            `• Sharpe Ratio: *${sharpeVal}*\n\n` +
-            `💼 *RINCIAN ALOKASI SAHAM:*\n` +
+        const totalLotsText = `${totalLots.toLocaleString(numLocale)} ${lotUnit}`;
+
+        const text = `📊 *${t('result.wa_header', 'HASIL ANALISIS PORTOFOLIO SAHAM DINALAR')}*\n\n` +
+            `• *${t('result.wa_title', 'Judul:')}* ${optimization.title || t('result.default_title', 'Portofolio Multi-Aset')}\n` +
+            `• *${t('result.wa_profile', 'Profil:')}* ${getProfileLabel(selectedProfile)}\n` +
+            `• *${t('result.wa_ref_code', 'Kode Ref:')}* ${refCode}\n` +
+            `• *${t('result.wa_analysis_date', 'Tanggal Analisis:')}* ${formatDate(optimization.created_at)}\n` +
+            `• *${t('result.wa_time_range', 'Rentang Waktu:')}* ${dateRangeStr}\n` +
+            `• *${t('result.wa_investment_capital', 'Modal Investasi:')}* ${formatRupiah(initialCapital)}\n` +
+            `• *${t('result.wa_risk_free_rate', 'Risk-Free Rate:')}* ${optimization.risk_free_rate}%\n\n` +
+            `📈 *${t('result.wa_metrics_title', 'METRIK PERFORMA:')}*\n` +
+            `• ${t('result.wa_expected_return', 'Expected Return:')} *+${returnVal}%* (${t('result.wa_annual', 'Tahunan')})\n` +
+            `• ${t('result.wa_risk_volatility', 'Volatilitas Risiko (σ):')} *${riskVal}%*\n` +
+            `• ${t('result.wa_sharpe_ratio', 'Sharpe Ratio:')} *${sharpeVal}*\n\n` +
+            `💼 *${t('result.wa_allocation_title', 'RINCIAN ALOKASI SAHAM:')}*\n` +
             `${stockLines}\n` +
-            `📌 *TOTAL PEMBELIAN:*\n` +
-            `• Total Modal: *${formatRupiah(totalNominal)}* (100.00%)\n` +
-            `• Total Estimasi: *${totalLots.toLocaleString('id-ID')} Lot*\n\n` +
-            `Analisis otomatis dengan Algoritma NSGA-II & Markowitz Frontier.\n` +
-            `🌐 Kunjungi: https://dinalar.my.id`;
+            `📌 *${t('result.wa_total_purchase', 'TOTAL PEMBELIAN:')}*\n` +
+            `• ${t('result.wa_total_capital', 'Total Modal:')} *${formatRupiah(totalNominal)}* (100.00%)\n` +
+            `• ${t('result.wa_total_estimate', 'Total Estimasi:')} *${totalLotsText}*\n\n` +
+            `${t('result.wa_footer', 'Analisis otomatis dengan Algoritma NSGA-II & Markowitz Frontier.\n🌐 Kunjungi: https://dinalar.my.id')}`;
 
         shareToWhatsAppText(text);
     };
@@ -677,7 +691,7 @@ export default function MobileResultPage({
             markers.push({
                 x: Number(bestPortfolios.sharpe.risk),
                 y: Number(bestPortfolios.sharpe.return),
-                name: '⚖️ Seimbang (Sharpe)',
+                name: `⚖️ ${t('result.marker_sharpe', 'Seimbang (Sharpe)')}`,
                 color: '#10b981',
             });
         }
@@ -685,7 +699,7 @@ export default function MobileResultPage({
             markers.push({
                 x: Number(bestPortfolios.min_variance.risk),
                 y: Number(bestPortfolios.min_variance.return),
-                name: '🛡️ Risiko Rendah (MVP)',
+                name: `🛡️ ${t('result.marker_min_variance', 'Risiko Rendah (MVP)')}`,
                 color: '#06b6d4',
             });
         }
@@ -693,12 +707,12 @@ export default function MobileResultPage({
             markers.push({
                 x: Number(bestPortfolios.max_return.risk),
                 y: Number(bestPortfolios.max_return.return),
-                name: '🚀 Return Maksimal',
+                name: `🚀 ${t('result.marker_max_return', 'Return Maksimal')}`,
                 color: '#f59e0b',
             });
         }
         return markers;
-    }, [bestPortfolios]);
+    }, [bestPortfolios, t]);
 
     // Donut Chart Data
     const donutData = useMemo(() => {
@@ -784,7 +798,7 @@ export default function MobileResultPage({
 
     return (
         <MobileAppLayout hideBottomNav={isPublic || isShareModalOpen}>
-            <Head title={`Portofolio ${refCode}`} />
+            <Head title={t('result.portfolio_ref', { refCode })} />
 
             {/* Top Bar Header */}
             <header className="px-4 pt-3 pb-2 flex items-center justify-between select-none">
@@ -798,14 +812,14 @@ export default function MobileResultPage({
                         }
                     }}
                     className="size-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center text-zinc-900 shadow-xs active:scale-95 transition-transform cursor-pointer"
-                    aria-label="Kembali ke halaman sebelumnya"
+                    aria-label={t('common.back', 'Kembali ke halaman sebelumnya')}
                 >
                     <ArrowLeft className="size-5 stroke-[2]" />
                 </button>
 
                 <div className="text-center flex-1 min-w-0 px-2">
                     <h1 className="text-[18px] font-semibold text-zinc-900 tracking-tight text-center flex-1">
-                        Portofolio
+                        {t('result.header_title', 'Portofolio')}
                     </h1>
                 </div>
 
@@ -814,8 +828,8 @@ export default function MobileResultPage({
                         type="button"
                         onClick={() => setIsShareModalOpen(true)}
                         className="size-10 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-xs active:scale-95 transition-all cursor-pointer"
-                        aria-label="Bagikan & Export Portofolio"
-                        title="Bagikan & Export"
+                        aria-label={t('result.share_export', 'Bagikan & Export')}
+                        title={t('result.share_export', 'Bagikan & Export')}
                     >
                         <Share2 className="size-4 stroke-[2]" />
                     </button>
@@ -824,7 +838,7 @@ export default function MobileResultPage({
                         href="/register"
                         className="px-3 py-1.5 rounded-full bg-emerald-600 text-white text-xs font-semibold shadow-xs active:scale-95 transition-transform"
                     >
-                        Daftar
+                        {t('nav.register', 'Daftar')}
                     </Link>
                 )}
             </header>
@@ -833,9 +847,9 @@ export default function MobileResultPage({
             {isPublic && (
                 <div className="bg-emerald-500/10 border-b border-emerald-500/20 px-3 py-2 text-center text-[11px] text-emerald-800 flex items-center justify-center gap-1.5">
                     <Sparkles className="size-3.5 text-emerald-600 shrink-0" />
-                    <span>Hasil optimasi portofolio Dinalar AI.</span>
+                    <span>{t('result.public_notice', 'Hasil optimasi portofolio Dinalar AI.')}</span>
                     <Link href="/register" className="font-bold underline text-emerald-700">
-                        Buat Portofolio Anda
+                        {t('result.create_your_portfolio', 'Buat Portofolio Anda')}
                     </Link>
                 </div>
             )}
@@ -848,47 +862,47 @@ export default function MobileResultPage({
                     <div className="flex items-center justify-between">
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-900/10 px-3 py-1 text-xs font-semibold text-black ring-1 ring-inset ring-gray-900/20 backdrop-blur-xs">
                             <Sparkles className="h-5 w-5 text-emerald-600" />
-                            Hasil Optimasi Portofolio
+                            {t('result.badge_title', 'Hasil Optimasi Portofolio')}
                         </span>
                     </div>
 
                     <div>
                         <h2 className="text-[17px] font-bold text-zinc-900 tracking-tight leading-snug">
-                            {optimization.title || 'Rekomendasi Portofolio Multi-Aset'}
+                            {optimization.title || t('result.default_title', 'Rekomendasi Portofolio Multi-Aset')}
                         </h2>
                         <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">
-                            Simulasi berbasis deret waktu historis {optimization.tickers?.length || 0} emiten saham pilihan Anda.
+                            {t('result.hero_desc', { count: optimization.tickers?.length || 0 })}
                         </p>
                     </div>
 
                     {/* Metadata Grid (2x2 Chips) */}
                     <div className="grid grid-cols-2 gap-2 pt-1 border-t border-zinc-100 text-xs font-sans">
                         <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/80">
-                            <span className="text-[10px] text-zinc-400 block font-medium">Modal Investasi</span>
+                            <span className="text-[10px] text-zinc-400 block font-medium">{t('result.investment_capital', 'Modal Investasi')}</span>
                             <span className="text-[13px] font-bold text-zinc-900 font-mono block mt-0.5">
                                 {formatRupiah(initialCapital)}
                             </span>
                         </div>
                         <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/80">
-                            <span className="text-[10px] text-zinc-400 block font-medium">Risk-Free Rate (Rf)</span>
+                            <span className="text-[10px] text-zinc-400 block font-medium">{t('result.risk_free_rate', 'Risk-Free Rate (Rf)')}</span>
                             <span className="text-[13px] font-bold text-emerald-600 font-mono block mt-0.5">
                                 {optimization.risk_free_rate}%
                             </span>
                         </div>
                         <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/80">
-                            <span className="text-[10px] text-zinc-400 block font-medium">Emiten</span>
-                            <span className="text-[11px] font-bold text-zinc-900 font-mono block mt-0.5 truncate" title={optimization.tickers?.map((t) => t.replace('.JK', '')).join(', ')}>
-                                {optimization.tickers?.map((t) => t.replace('.JK', '')).join(', ') || '-'}
+                            <span className="text-[10px] text-zinc-400 block font-medium">{t('result.tickers_label', 'Emiten')}</span>
+                            <span className="text-[11px] font-bold text-zinc-900 font-mono block mt-0.5 truncate" title={optimization.tickers?.map((tick) => tick.replace('.JK', '')).join(', ')}>
+                                {optimization.tickers?.map((tick) => tick.replace('.JK', '')).join(', ') || '-'}
                             </span>
                         </div>
                         <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/80">
-                            <span className="text-[10px] text-zinc-400 block font-medium">Rentang Data</span>
+                            <span className="text-[10px] text-zinc-400 block font-medium">{t('result.data_range', 'Rentang Data')}</span>
                             <span className="text-[11px] font-bold text-zinc-900 font-mono block mt-0.5 truncate" title={optimization.start_date && optimization.end_date ? `${formatDate(optimization.start_date)} - ${formatDate(optimization.end_date)}` : '-'}>
                                 {optimization.start_date && optimization.end_date
                                     ? `${formatDate(optimization.start_date)} - ${formatDate(optimization.end_date)}`
                                     : optimization.start_date
-                                        ? `Sejak ${formatDate(optimization.start_date)}`
-                                        : 'Historis'}
+                                        ? t('result.since', { date: formatDate(optimization.start_date) })
+                                        : t('result.historical', 'Historis')}
                             </span>
                         </div>
                     </div>
@@ -900,7 +914,7 @@ export default function MobileResultPage({
                         <div className="flex items-center gap-2">
                             <ShieldCheck className="size-4 text-emerald-600" />
                             <h3 className="text-[15px] font-semibold text-zinc-900 tracking-tight">
-                                3 Profil Portofolio
+                                {t('result.profiles_title', '3 Profil Portofolio')}
                             </h3>
                         </div>
                     </div>
@@ -927,7 +941,7 @@ export default function MobileResultPage({
                                 <div className="flex items-center justify-between">
                                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-100 text-cyan-800 border border-cyan-200">
                                         <Shield className="size-3" />
-                                        <span>Risiko Rendah (MVP)</span>
+                                        <span>{t('result.profile_min_variance_tag', 'Risiko Rendah (MVP)')}</span>
                                     </span>
                                     <div className="flex items-center gap-2">
                                         <button
@@ -937,8 +951,8 @@ export default function MobileResultPage({
                                                 handleExportPNG('min_variance');
                                             }}
                                             className="size-7 rounded-full bg-zinc-100 hover:bg-cyan-100 text-zinc-500 hover:text-cyan-700 flex items-center justify-center transition-colors"
-                                            title="Unduh Gambar Profil Konservatif"
-                                            aria-label="Unduh Gambar Profil Konservatif"
+                                            title={t('result.download_min_variance_img', 'Unduh Gambar Profil Konservatif')}
+                                            aria-label={t('result.download_min_variance_img', 'Unduh Gambar Profil Konservatif')}
                                         >
                                             <Download className="size-3" />
                                         </button>
@@ -950,28 +964,28 @@ export default function MobileResultPage({
 
                                 <div className="mt-1.5">
                                     <h4 className="text-[14px] font-bold text-zinc-900">
-                                        Konservatif (Minimum Variance)
+                                        {t('result.profile_min_variance_name', 'Konservatif (Minimum Variance)')}
                                     </h4>
                                     <p className="text-[11px] text-zinc-500">
-                                        Fokus meminimalkan volatilitas risiko pasar.
+                                        {t('result.profile_min_variance_desc', 'Fokus meminimalkan volatilitas risiko pasar.')}
                                     </p>
                                 </div>
 
                                 <div className="grid grid-cols-3 gap-2 mt-2 pt-2 border-t border-zinc-100 text-center font-mono">
                                     <div>
-                                        <span className="text-[10px] text-zinc-400 block font-sans">Return</span>
+                                        <span className="text-[10px] text-zinc-400 block font-sans">{t('result.metric_return', 'Return')}</span>
                                         <span className="text-[13px] font-bold text-emerald-600">
                                             {formatPercent(bestPortfolios.min_variance.return)}
                                         </span>
                                     </div>
                                     <div>
-                                        <span className="text-[10px] text-zinc-400 block font-sans">Risiko (σ)</span>
+                                        <span className="text-[10px] text-zinc-400 block font-sans">{t('result.metric_risk', 'Risiko (σ)')}</span>
                                         <span className="text-[13px] font-bold text-cyan-600">
                                             {formatPercent(bestPortfolios.min_variance.risk)}
                                         </span>
                                     </div>
                                     <div>
-                                        <span className="text-[10px] text-zinc-400 block font-sans">Sharpe</span>
+                                        <span className="text-[10px] text-zinc-400 block font-sans">{t('result.metric_sharpe', 'Sharpe')}</span>
                                         <span className="text-[13px] font-bold text-zinc-900">
                                             {bestPortfolios.min_variance.sharpe?.toFixed(2)}
                                         </span>
@@ -1001,7 +1015,7 @@ export default function MobileResultPage({
                                 <div className="flex items-center justify-between">
                                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
                                         <Sparkles className="size-3" />
-                                        <span>Seimbang (Rekomendasi Utama)</span>
+                                        <span>{t('result.profile_sharpe_tag', 'Seimbang (Rekomendasi Utama)')}</span>
                                     </span>
                                     <div className="flex items-center gap-2">
                                         <button
@@ -1011,8 +1025,8 @@ export default function MobileResultPage({
                                                 handleExportPNG('sharpe');
                                             }}
                                             className="size-7 rounded-full bg-zinc-100 hover:bg-emerald-100 text-zinc-500 hover:text-emerald-700 flex items-center justify-center transition-colors"
-                                            title="Unduh Gambar Profil Seimbang"
-                                            aria-label="Unduh Gambar Profil Seimbang"
+                                            title={t('result.download_sharpe_img', 'Unduh Gambar Profil Seimbang')}
+                                            aria-label={t('result.download_sharpe_img', 'Unduh Gambar Profil Seimbang')}
                                         >
                                             <Download className="size-3" />
                                         </button>
@@ -1024,28 +1038,28 @@ export default function MobileResultPage({
 
                                 <div className="mt-1.5">
                                     <h4 className="text-[14px] font-bold text-zinc-900">
-                                        Moderat (Optimal Sharpe Ratio)
+                                        {t('result.profile_sharpe_name', 'Moderat (Optimal Sharpe Ratio)')}
                                     </h4>
                                     <p className="text-[11px] text-zinc-500">
-                                        Rasio return-to-risk optimal paling efisien.
+                                        {t('result.profile_sharpe_desc', 'Rasio return-to-risk optimal paling efisien.')}
                                     </p>
                                 </div>
 
                                 <div className="grid grid-cols-3 gap-2 mt-2 pt-2 border-t border-zinc-100 text-center font-mono">
                                     <div>
-                                        <span className="text-[10px] text-zinc-400 block font-sans">Return</span>
+                                        <span className="text-[10px] text-zinc-400 block font-sans">{t('result.metric_return', 'Return')}</span>
                                         <span className="text-[13px] font-bold text-emerald-600">
                                             {formatPercent(bestPortfolios.sharpe.return)}
                                         </span>
                                     </div>
                                     <div>
-                                        <span className="text-[10px] text-zinc-400 block font-sans">Risiko (σ)</span>
+                                        <span className="text-[10px] text-zinc-400 block font-sans">{t('result.metric_risk', 'Risiko (σ)')}</span>
                                         <span className="text-[13px] font-bold text-zinc-900">
                                             {formatPercent(bestPortfolios.sharpe.risk)}
                                         </span>
                                     </div>
                                     <div>
-                                        <span className="text-[10px] text-zinc-400 block font-sans">Sharpe</span>
+                                        <span className="text-[10px] text-zinc-400 block font-sans">{t('result.metric_sharpe', 'Sharpe')}</span>
                                         <span className="text-[13px] font-bold text-emerald-600">
                                             {bestPortfolios.sharpe.sharpe?.toFixed(2)}
                                         </span>
@@ -1075,7 +1089,7 @@ export default function MobileResultPage({
                                 <div className="flex items-center justify-between">
                                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800 border border-amber-200">
                                         <Zap className="size-3" />
-                                        <span>Return Maksimal</span>
+                                        <span>{t('result.profile_max_return_tag', 'Return Maksimal')}</span>
                                     </span>
                                     <div className="flex items-center gap-2">
                                         <button
@@ -1085,8 +1099,8 @@ export default function MobileResultPage({
                                                 handleExportPNG('max_return');
                                             }}
                                             className="size-7 rounded-full bg-zinc-100 hover:bg-amber-100 text-zinc-500 hover:text-amber-700 flex items-center justify-center transition-colors"
-                                            title="Unduh Gambar Profil Agresif"
-                                            aria-label="Unduh Gambar Profil Agresif"
+                                            title={t('result.download_max_return_img', 'Unduh Gambar Profil Agresif')}
+                                            aria-label={t('result.download_max_return_img', 'Unduh Gambar Profil Agresif')}
                                         >
                                             <Download className="size-3" />
                                         </button>
@@ -1098,28 +1112,28 @@ export default function MobileResultPage({
 
                                 <div className="mt-1.5">
                                     <h4 className="text-[14px] font-bold text-zinc-900">
-                                        Agresif (Max Expected Return)
+                                        {t('result.profile_max_return_name', 'Agresif (Max Expected Return)')}
                                     </h4>
                                     <p className="text-[11px] text-zinc-500">
-                                        Memaksimalkan proyeksi imbal hasil frontier.
+                                        {t('result.profile_max_return_desc', 'Memaksimalkan proyeksi imbal hasil frontier.')}
                                     </p>
                                 </div>
 
                                 <div className="grid grid-cols-3 gap-2 mt-2 pt-2 border-t border-zinc-100 text-center font-mono">
                                     <div>
-                                        <span className="text-[10px] text-zinc-400 block font-sans">Return</span>
+                                        <span className="text-[10px] text-zinc-400 block font-sans">{t('result.metric_return', 'Return')}</span>
                                         <span className="text-[13px] font-bold text-amber-600">
                                             {formatPercent(bestPortfolios.max_return?.return || bestPortfolios.omega?.return)}
                                         </span>
                                     </div>
                                     <div>
-                                        <span className="text-[10px] text-zinc-400 block font-sans">Risiko (σ)</span>
+                                        <span className="text-[10px] text-zinc-400 block font-sans">{t('result.metric_risk', 'Risiko (σ)')}</span>
                                         <span className="text-[13px] font-bold text-rose-600">
                                             {formatPercent(bestPortfolios.max_return?.risk || bestPortfolios.omega?.risk)}
                                         </span>
                                     </div>
                                     <div>
-                                        <span className="text-[10px] text-zinc-400 block font-sans">Sharpe</span>
+                                        <span className="text-[10px] text-zinc-400 block font-sans">{t('result.metric_sharpe', 'Sharpe')}</span>
                                         <span className="text-[13px] font-bold text-zinc-900">
                                             {(bestPortfolios.max_return?.sharpe || bestPortfolios.omega?.sharpe)?.toFixed(2)}
                                         </span>
@@ -1135,29 +1149,18 @@ export default function MobileResultPage({
                     {/* Header with Segment Switcher */}
                     <div className="flex items-center justify-between border-b border-zinc-100 pb-2">
                         <div className="flex items-center gap-2">
-                            {activeChartTab === 'frontier' ? (
-                                <LineChart className="size-4 text-emerald-600" />
-                            ) : (
+                            {activeChartTab === 'donut' ? (
                                 <PieIcon className="size-4 text-emerald-600" />
+                            ) : (
+                                <LineChart className="size-4 text-emerald-600" />
                             )}
                             <h3 className="text-[15px] font-semibold text-zinc-900 tracking-tight">
-                                Visualisasi
+                                {t('result.visualization_title', 'Visualisasi')}
                             </h3>
                         </div>
 
                         {/* Switcher Pills */}
                         <div className="flex items-center p-0.5 bg-zinc-100 rounded-lg border border-zinc-200/80">
-                            <button
-                                type="button"
-                                onClick={() => setActiveChartTab('frontier')}
-                                className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
-                                    activeChartTab === 'frontier'
-                                        ? 'bg-white text-emerald-600 shadow-2xs'
-                                        : 'text-zinc-500 hover:text-zinc-900'
-                                }`}
-                            >
-                                Frontier
-                            </button>
                             <button
                                 type="button"
                                 onClick={() => setActiveChartTab('donut')}
@@ -1167,7 +1170,18 @@ export default function MobileResultPage({
                                         : 'text-zinc-500 hover:text-zinc-900'
                                 }`}
                             >
-                                Alokasi
+                                {t('result.tab_allocation', 'Alokasi')}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setActiveChartTab('frontier')}
+                                className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                                    activeChartTab === 'frontier'
+                                        ? 'bg-white text-emerald-600 shadow-2xs'
+                                        : 'text-zinc-500 hover:text-zinc-900'
+                                }`}
+                            >
+                                {t('result.tab_frontier', 'Frontier')}
                             </button>
                         </div>
                     </div>
@@ -1178,7 +1192,10 @@ export default function MobileResultPage({
                             <div className="flex items-center gap-1.5">
                                 <span className="size-2 rounded-full bg-purple-600 animate-pulse" />
                                 <span className="text-[11px] font-medium">
-                                    Simulasi Titik Kustom: Return <strong>{clickedPoint.y?.toFixed(2)}%</strong> | Risiko <strong>{clickedPoint.x?.toFixed(2)}%</strong>
+                                    {t('result.custom_simulation_point', {
+                                        ret: clickedPoint.y?.toFixed(2),
+                                        risk: clickedPoint.x?.toFixed(2),
+                                    })}
                                 </span>
                             </div>
                             <button
@@ -1186,7 +1203,7 @@ export default function MobileResultPage({
                                 onClick={() => setClickedPoint(null)}
                                 className="text-[11px] font-bold text-purple-700 underline hover:text-purple-900 ml-2"
                             >
-                                Reset
+                                {t('common.reset', 'Reset')}
                             </button>
                         </div>
                     )}
@@ -1195,7 +1212,7 @@ export default function MobileResultPage({
                     {activeChartTab === 'frontier' && (
                         <div className="space-y-2">
                             <p className="text-[11px] text-zinc-500">
-                                Kurva Pareto Efficient Frontier
+                                {t('result.frontier_curve_desc', 'Kurva Pareto Efficient Frontier')}
                             </p>
 
                             <div className="h-64 w-full select-none -ml-2 min-w-0">
@@ -1219,11 +1236,11 @@ export default function MobileResultPage({
                                         <XAxis
                                             type="number"
                                             dataKey="x"
-                                            name="Risiko (σ)"
+                                            name={t('result.risk_axis', 'Risiko (σ)')}
                                             unit="%"
                                             tick={{ fontSize: 9, fill: '#71717a' }}
                                             label={{
-                                                value: 'Risiko Volatilitas (σ %)',
+                                                value: t('result.risk_axis_label', 'Risiko Volatilitas (σ %)'),
                                                 position: 'insideBottom',
                                                 offset: -12,
                                                 fontSize: 10,
@@ -1234,11 +1251,11 @@ export default function MobileResultPage({
                                         <YAxis
                                             type="number"
                                             dataKey="y"
-                                            name="Return E(R)"
+                                            name={t('result.return_axis', 'Return E(R)')}
                                             unit="%"
                                             tick={{ fontSize: 9, fill: '#71717a' }}
                                             label={{
-                                                value: 'Return E(R) %',
+                                                value: t('result.return_axis_label', 'Return E(R) %'),
                                                 angle: -90,
                                                 position: 'insideLeft',
                                                 fontSize: 10,
@@ -1255,8 +1272,8 @@ export default function MobileResultPage({
                                                     let top3: { ticker: string; weight: number }[] = [];
                                                     if (data.weights) {
                                                         top3 = Object.entries(data.weights)
-                                                            .map(([t, w]) => ({
-                                                                ticker: t.replace('.JK', ''),
+                                                            .map(([tk, w]) => ({
+                                                                ticker: tk.replace('.JK', ''),
                                                                 weight: Number(w as number) <= 1.0 ? Number(w as number) * 100 : Number(w as number),
                                                             }))
                                                             .sort((a, b) => b.weight - a.weight)
@@ -1267,26 +1284,26 @@ export default function MobileResultPage({
                                                         <div className="rounded-xl border border-zinc-200 bg-white/95 backdrop-blur-md p-2.5 shadow-xl text-xs space-y-1 font-sans min-w-[160px] z-50">
                                                             <div className="font-bold text-zinc-900 flex items-center gap-1.5 pb-0.5 border-b border-zinc-100 text-[11px]">
                                                                 <span className="size-2 rounded-full bg-emerald-600" />
-                                                                <span>{data.name || 'Simulasi'}</span>
+                                                                <span>{data.name || t('result.simulation_label', 'Simulasi')}</span>
                                                             </div>
                                                             <div className="font-mono text-[10px] text-zinc-600 pt-0.5">
-                                                                Return: <strong className="text-emerald-600">+{data.y?.toFixed(2)}%</strong>
+                                                                {t('result.metric_return', 'Return')}: <strong className="text-emerald-600">+{data.y?.toFixed(2)}%</strong>
                                                             </div>
                                                             <div className="font-mono text-[10px] text-zinc-600">
-                                                                Risiko: <strong>{data.x?.toFixed(2)}%</strong>
+                                                                {t('result.metric_risk', 'Risiko')}: <strong>{data.x?.toFixed(2)}%</strong>
                                                             </div>
                                                             {data.sharpe !== undefined && (
                                                                 <div className="font-mono text-[10px] text-zinc-600">
-                                                                    Sharpe: <strong>{data.sharpe?.toFixed(2)}</strong>
+                                                                    {t('result.metric_sharpe', 'Sharpe')}: <strong>{data.sharpe?.toFixed(2)}</strong>
                                                                 </div>
                                                             )}
                                                             {top3.length > 0 && (
                                                                 <div className="pt-1 border-t border-zinc-100">
-                                                                    <div className="text-[9px] text-zinc-400 font-semibold">Top 3 Bobot:</div>
-                                                                    {top3.map((t, i) => (
+                                                                    <div className="text-[9px] text-zinc-400 font-semibold">{t('result.top_3_weights', 'Top 3 Bobot:')}</div>
+                                                                    {top3.map((topItem, i) => (
                                                                         <div key={i} className="flex justify-between font-mono text-[9px]">
-                                                                            <span className="text-zinc-800 font-bold">{t.ticker}</span>
-                                                                            <span className="text-emerald-600 font-semibold">{t.weight.toFixed(1)}%</span>
+                                                                            <span className="text-zinc-800 font-bold">{topItem.ticker}</span>
+                                                                            <span className="text-emerald-600 font-semibold">{topItem.weight.toFixed(1)}%</span>
                                                                         </div>
                                                                     ))}
                                                                 </div>
@@ -1300,7 +1317,7 @@ export default function MobileResultPage({
 
                                         {hoveredPoint && (
                                             <>
-                                                <ReferenceLine
+                                                 <ReferenceLine
                                                     x={hoveredPoint.x}
                                                     stroke="#a1a1aa"
                                                     strokeDasharray="3 3"
@@ -1348,7 +1365,7 @@ export default function MobileResultPage({
 
                                         {/* Individual Stocks */}
                                         <Scatter
-                                            name="Saham Tunggal"
+                                            name={t('result.single_stock', 'Saham Tunggal')}
                                             data={assetPoints}
                                             fill="#94a3b8"
                                             shape="triangle"
@@ -1356,7 +1373,7 @@ export default function MobileResultPage({
 
                                         {/* Best Key Recommendation Markers */}
                                         <Scatter
-                                            name="Profil Rekomendasi"
+                                            name={t('result.recommended_profile', 'Profil Rekomendasi')}
                                             data={keyMarkers}
                                             fill="#e11d48"
                                             shape="cross"
@@ -1369,11 +1386,11 @@ export default function MobileResultPage({
                             <div className="flex items-center justify-center gap-3 flex-wrap text-[10px] text-zinc-500 pt-1.5 border-t border-zinc-100">
                                 <span className="flex items-center gap-1">
                                     <span className="size-2 rounded-full bg-emerald-500" />
-                                    <span>Frontier (Markowitz)</span>
+                                    <span>{t('result.frontier_markowitz', 'Frontier (Markowitz)')}</span>
                                 </span>
                                 <span className="flex items-center gap-1">
                                     <span className="size-2 rounded-full bg-purple-500 opacity-60" />
-                                    <span>NSGA-II Pareto</span>
+                                    <span>{t('result.nsga_pareto', 'NSGA-II Pareto')}</span>
                                 </span>
                             </div>
                         </div>
@@ -1383,7 +1400,7 @@ export default function MobileResultPage({
                     {activeChartTab === 'donut' && (
                         <div className="space-y-3">
                             <p className="text-[11px] text-zinc-500">
-                                Komposisi alokasi bobot saham untuk profil <strong className="text-zinc-800">{getProfileLabel(selectedProfile)}</strong>:
+                                {t('result.donut_desc', { profile: getProfileLabel(selectedProfile) })}
                             </p>
 
                             <div className="h-44 w-full select-none min-w-0">
@@ -1415,10 +1432,10 @@ export default function MobileResultPage({
                                                                 {d.ticker}
                                                             </div>
                                                             <div className="font-mono text-emerald-600 font-bold text-[11px]">
-                                                                Bobot: {d.weightPercent?.toFixed(2)}%
+                                                                {t('result.weight_label', 'Bobot:')} {d.weightPercent?.toFixed(2)}%
                                                             </div>
                                                             <div className="font-mono text-zinc-500 text-[10px]">
-                                                                Nominal: {formatRupiah(d.nominalAmount)}
+                                                                {t('result.nominal_label', 'Nominal:')} {formatRupiah(d.nominalAmount)}
                                                             </div>
                                                         </div>
                                                     );
@@ -1460,7 +1477,7 @@ export default function MobileResultPage({
                         <div className="flex items-center gap-2">
                             <Layers className="size-4 text-emerald-600" />
                             <h3 className="text-[15px] font-semibold text-zinc-900 tracking-tight">
-                                Detail Alokasi Portofolio
+                                {t('result.allocation_details_title', 'Detail Alokasi Portofolio')}
                             </h3>
                         </div>
                     </div>
@@ -1502,19 +1519,19 @@ export default function MobileResultPage({
                                 {/* Nominal and Lot Row */}
                                 <div className="grid grid-cols-2 gap-2 pt-1.5 border-t border-zinc-200/60 font-mono text-xs">
                                     <div>
-                                        <span className="text-[10px] text-zinc-400 block font-sans">Nominal Dana</span>
+                                        <span className="text-[10px] text-zinc-400 block font-sans">{t('result.nominal_funds', 'Nominal Dana')}</span>
                                         <span className="font-bold text-zinc-900">
                                             {formatRupiah(alloc.nominal)}
                                         </span>
                                     </div>
                                     <div className="text-right">
-                                        <span className="text-[10px] text-zinc-400 block font-sans">Estimasi Pembelian</span>
+                                        <span className="text-[10px] text-zinc-400 block font-sans">{t('result.estimated_purchase', 'Estimasi Pembelian')}</span>
                                         <span className="font-bold text-emerald-600 font-mono">
-                                            {alloc.lot > 0 ? `${alloc.lot.toLocaleString('id-ID')} Lot` : '-'}
+                                            {alloc.lot > 0 ? `${alloc.lot.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')} ${t('result.lot_unit', 'Lot')}` : '-'}
                                         </span>
                                         {alloc.lastClose > 0 && (
                                             <span className="text-[9px] text-zinc-400 block">
-                                                (@ Rp {alloc.lastClose.toLocaleString('id-ID')})
+                                                (@ Rp {alloc.lastClose.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')})
                                             </span>
                                         )}
                                     </div>
@@ -1526,15 +1543,15 @@ export default function MobileResultPage({
                     {/* Total Summary Footer Card */}
                     <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 font-mono space-y-1 mt-3">
                         <div className="flex items-center justify-between text-xs">
-                            <span className="font-sans font-semibold text-emerald-800">Total Alokasi Modal:</span>
+                            <span className="font-sans font-semibold text-emerald-800">{t('result.total_capital_allocation', 'Total Alokasi Modal:')}</span>
                             <span className="font-bold text-emerald-900">
                                 {formatRupiah(totalNominal)} ({totalWeight.toFixed(2)}%)
                             </span>
                         </div>
                         <div className="flex items-center justify-between text-xs pt-1 border-t border-emerald-200/60">
-                            <span className="font-sans font-semibold text-emerald-800">Total Estimasi Lot:</span>
+                            <span className="font-sans font-semibold text-emerald-800">{t('result.total_estimated_lots', 'Total Estimasi Lot:')}</span>
                             <span className="font-bold text-emerald-900">
-                                {totalLots > 0 ? `${totalLots.toLocaleString('id-ID')} Lot` : '-'}
+                                {totalLots > 0 ? `${totalLots.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')} ${t('result.lot_unit', 'Lot')}` : '-'}
                             </span>
                         </div>
                     </div>
@@ -1547,7 +1564,7 @@ export default function MobileResultPage({
                             <div className="flex items-center gap-2">
                                 <Activity className="size-4 text-emerald-600" />
                                 <h3 className="text-[15px] font-semibold text-zinc-900 tracking-tight">
-                                    5-Points Quantile Model
+                                    {t('result.quantile_title', '5-Points Quantile Model')}
                                 </h3>
                             </div>
                         </div>
@@ -1556,7 +1573,7 @@ export default function MobileResultPage({
                             <table className="w-full text-left text-xs font-mono">
                                 <thead>
                                     <tr className="border-b border-zinc-200 text-[10px] text-zinc-400 font-sans">
-                                        <th className="py-2 text-left">Metrik</th>
+                                        <th className="py-2 text-left">{t('result.metric_col', 'Metrik')}</th>
                                         <th className="py-2 text-right">Min</th>
                                         <th className="py-2 text-right">Q1</th>
                                         <th className="py-2 text-right font-bold text-emerald-600">Med</th>
@@ -1621,7 +1638,7 @@ export default function MobileResultPage({
                     <section className="mx-1 rounded-[24px] bg-white p-4 border border-zinc-200 shadow-xs space-y-2.5">
                         <div className="flex items-center justify-between">
                             <span className="text-[12px] font-semibold text-zinc-900">
-                                Riwayat Analisis Terbaru
+                                {t('result.recent_history_title', 'Riwayat Analisis Terbaru')}
                             </span>
                             <Link
                                 href="/user/analyze/history"
@@ -1670,7 +1687,7 @@ export default function MobileResultPage({
                             data-drag-handle="true"
                             onMouseDown={handleShareMouseDown}
                             className="w-full pt-1 pb-1.5 flex items-center justify-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0"
-                            title="Geser ke bawah untuk menutup"
+                            title={t('analysis.drag_to_close', 'Geser ke bawah untuk menutup')}
                         >
                             <div className="w-10 h-1.5 bg-zinc-300 rounded-full transition-transform active:scale-105" />
                         </div>
@@ -1684,7 +1701,7 @@ export default function MobileResultPage({
                             <div className="flex items-center gap-2">
                                 <Share2 className="size-4 text-emerald-600" />
                                 <h3 className="text-sm font-bold text-zinc-900">
-                                    Export & Bagikan Portofolio
+                                    {t('result.share_modal_title', 'Export & Bagikan Portofolio')}
                                 </h3>
                             </div>
                         </div>
@@ -1707,10 +1724,10 @@ export default function MobileResultPage({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <span className="text-xs font-bold text-zinc-900 block">
-                                        Simpan Gambar (PNG)
+                                        {t('result.opt_save_image', 'Simpan Gambar (PNG)')}
                                     </span>
                                     <span className="text-[10px] text-zinc-400 block truncate">
-                                        Kartu profil terpilih dengan visual HD
+                                        {t('result.opt_save_image_desc', 'Kartu profil terpilih dengan visual HD')}
                                     </span>
                                 </div>
                             </button>
@@ -1727,10 +1744,10 @@ export default function MobileResultPage({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <span className="text-xs font-bold text-zinc-900 block">
-                                        Unduh Laporan (PDF)
+                                        {t('result.opt_download_pdf', 'Unduh Laporan (PDF)')}
                                     </span>
                                     <span className="text-[10px] text-zinc-400 block truncate">
-                                        Laporan komprehensif Markowitz & NSGA-II
+                                        {t('result.opt_download_pdf_desc', 'Laporan komprehensif Markowitz & NSGA-II')}
                                     </span>
                                 </div>
                             </button>
@@ -1747,10 +1764,10 @@ export default function MobileResultPage({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <span className="text-xs font-bold text-zinc-900 block">
-                                        Bandingkan 3 Profil (PNG)
+                                        {t('result.opt_compare_profiles', 'Bandingkan 3 Profil (PNG)')}
                                     </span>
                                     <span className="text-[10px] text-zinc-400 block truncate">
-                                        Komparasi Konservatif, Moderat & Agresif
+                                        {t('result.opt_compare_profiles_desc', 'Komparasi Konservatif, Moderat & Agresif')}
                                     </span>
                                 </div>
                             </button>
@@ -1771,10 +1788,10 @@ export default function MobileResultPage({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <span className="text-xs font-bold text-emerald-600 block">
-                                        Salin Tautan Publik
+                                        {t('result.opt_copy_public_link', 'Salin Tautan Publik')}
                                     </span>
                                     <span className="text-[10px] text-zinc-400 block truncate">
-                                        Bisa dilihat siapa saja tanpa login
+                                        {t('result.opt_copy_public_link_desc', 'Bisa dilihat siapa saja tanpa login')}
                                     </span>
                                 </div>
                             </button>
@@ -1791,10 +1808,10 @@ export default function MobileResultPage({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <span className="text-xs font-bold text-zinc-900 block">
-                                        Kirim Ringkasan ke WhatsApp
+                                        {t('result.opt_share_whatsapp', 'Kirim Ringkasan ke WhatsApp')}
                                     </span>
                                     <span className="text-[10px] text-zinc-400 block truncate">
-                                        Pesan terformat lengkap dengan estimasi lot
+                                        {t('result.opt_share_whatsapp_desc', 'Pesan terformat lengkap dengan estimasi lot')}
                                     </span>
                                 </div>
                             </button>
@@ -1820,6 +1837,7 @@ export default function MobileResultPage({
                     profileType={selectedProfile}
                     optimization={optimization as any}
                     stocks={stocks}
+                    language={language}
                 />
 
                 {/* Kartu Komparasi 3 Profil Sekaligus */}
@@ -1828,6 +1846,7 @@ export default function MobileResultPage({
                         ref={compareCardRef}
                         optimization={optimization as any}
                         stocks={stocks}
+                        language={language}
                     />
                 </div>
             </div>
