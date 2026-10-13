@@ -1,3 +1,4 @@
+import { useTranslation } from '@/i18n/LanguageContext';
 import { Loader2 } from 'lucide-react';
 import React from 'react';
 
@@ -17,6 +18,7 @@ export function MobileHeaderSpinner({
     pullDistance = 0,
     isRefreshing = false,
 }: MobileHeaderSpinnerProps) {
+    const { t } = useTranslation();
     const isVisible = isRefreshing || pullDistance > 8;
 
     if (!isVisible) return null;
@@ -28,7 +30,7 @@ export function MobileHeaderSpinner({
 
     return (
         <aside
-            aria-label="Loading indicator"
+            aria-label={t('common.loading', 'Loading indicator')}
             className="fixed inset-x-0 z-50 flex justify-center pointer-events-none select-none"
             style={{
                 top: 'calc(10px + env(safe-area-inset-top, 0px))',
@@ -45,7 +47,7 @@ export function MobileHeaderSpinner({
                     opacity: isRefreshing ? 1 : Math.max(progress, 0.4),
                 }}
                 role="status"
-                aria-label="Memuat..."
+                aria-label={t('common.loading', 'Memuat...')}
             >
                 <Loader2
                     className={`size-6 text-emerald-600 dark:text-emerald-400 stroke-[2.2] ${

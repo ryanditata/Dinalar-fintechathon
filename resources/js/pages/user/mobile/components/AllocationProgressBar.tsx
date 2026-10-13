@@ -1,3 +1,4 @@
+import { useTranslation } from '@/i18n/LanguageContext';
 import { ChevronRight } from 'lucide-react';
 import React from 'react';
 
@@ -11,13 +12,17 @@ export interface AllocationProgressBarProps {
 }
 
 export function AllocationProgressBar({
-    label = 'Alokasi Keranjang Saham',
+    label,
     currentValue,
     totalValue,
     percentage = 45,
-    actionLabel = 'Atur Parameter Optimasi',
+    actionLabel,
     onActionClick,
 }: AllocationProgressBarProps) {
+    const { t } = useTranslation();
+    const displayLabel = label ?? t('basket.allocation_progress_label', 'Alokasi Keranjang Saham');
+    const displayActionLabel = actionLabel ?? t('basket.set_optimization_param', 'Atur Parameter Optimasi');
+
     // Clamp percentage between 0 and 100
     const clampedPercent = Math.min(Math.max(percentage, 0), 100);
 
@@ -50,7 +55,7 @@ export function AllocationProgressBar({
 
             {/* 2. Baris Info (Margin Atas 12) */}
             <div className="mt-3 flex items-center justify-between text-xs">
-                <span className="text-zinc-500 font-medium">{label}</span>
+                <span className="text-zinc-500 font-medium">{displayLabel}</span>
                 <div className="flex items-baseline font-sans tabular-nums">
                     <span className="font-bold text-zinc-900 text-sm">
                         {currentValue !== undefined ? currentValue : `${clampedPercent.toFixed(0)}%`}
@@ -64,7 +69,7 @@ export function AllocationProgressBar({
             </div>
 
             {/* 3. Divider & Baris Aksi */}
-            {actionLabel && (
+            {displayActionLabel && (
                 <>
                     <div className="mt-3 h-[1px] bg-zinc-200 w-full" />
                     <button
@@ -73,7 +78,7 @@ export function AllocationProgressBar({
                         className="w-full pt-2.5 pb-0.5 flex items-center justify-between text-left group active:opacity-75 transition-opacity"
                     >
                         <span className="text-[14px] font-medium text-zinc-900 group-hover:text-emerald-600 transition-colors">
-                            {actionLabel}
+                            {displayActionLabel}
                         </span>
                         <ChevronRight className="size-4 text-zinc-500 group-hover:text-emerald-600 transition-colors" />
                     </button>

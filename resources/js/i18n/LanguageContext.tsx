@@ -89,12 +89,13 @@ const idDictionary: NestedObject = {
         no_stocks_movement: 'Belum ada data pergerakan saham.',
         quick_actions: 'Aksi Cepat',
         wallet_card_aria: 'Kartu Modal Portofolio',
-        portfolio: 'Portofolio',
+        portfolio: 'Portofolio Terakhir Anda',
         return_label: 'Return',
         volatility_label: 'Volatilitas',
         show_balance: 'Tampilkan Saldo',
         hide_balance: 'Sembunyikan Saldo',
         basket_aria: 'Keranjang Saham ({count} dipilih)',
+        loading_market: 'Memuat data pasar...',
     },
     saham: {
         title: 'Daftar Saham',
@@ -126,6 +127,7 @@ const idDictionary: NestedObject = {
         in_basket_aria: 'Sudah di Keranjang {ticker}',
         analyze_add_aria: 'Analisis dan Tambah {ticker}',
         clear_search: 'Hapus Pencarian',
+        loading_stocks: 'Memuat daftar saham...',
     },
     basket: {
         title: 'Keranjang Portofolio',
@@ -185,6 +187,8 @@ const idDictionary: NestedObject = {
         parameter_updated_toast: 'Parameter analisis {ticker} berhasil diperbarui.',
         parameter_update_error: 'Gagal memperbarui parameter {ticker}.',
         optimization_error_toast: 'Terjadi kesalahan saat memproses optimasi.',
+        allocation_progress_label: 'Alokasi Keranjang Saham',
+        set_optimization_param: 'Atur Parameter Optimasi',
     },
     result: {
         title: 'Hasil Optimasi Portofolio',
@@ -344,6 +348,7 @@ const idDictionary: NestedObject = {
         delete_confirm_suffix: 'Seluruh data riwayat analisis ini tidak dapat dikembalikan.',
         delete_success: 'Riwayat portofolio berhasil dihapus.',
         delete_error: 'Gagal menghapus riwayat.',
+        loading_history: 'Memuat riwayat optimasi...',
     },
     landing: {
         tagline: 'AI Stock Portfolio Optimization Platform',
@@ -434,6 +439,7 @@ const idDictionary: NestedObject = {
         update: 'Perbarui',
         add: 'Tambahkan',
         already_in_basket: 'Sudah di Keranjang',
+        no_historical_data: 'Data historis tidak tersedia',
     },
     auth: {
         app_tagline: 'Platform Optimasi Portofolio Saham AI',
@@ -570,12 +576,13 @@ const enDictionary: NestedObject = {
         no_stocks_movement: 'No stock movement data available.',
         quick_actions: 'Quick Actions',
         wallet_card_aria: 'Portfolio Capital Card',
-        portfolio: 'Portfolio',
+        portfolio: 'Your Latest Portfolio',
         return_label: 'Return',
         volatility_label: 'Volatility',
         show_balance: 'Show Balance',
         hide_balance: 'Hide Balance',
         basket_aria: 'Stock Basket ({count} selected)',
+        loading_market: 'Loading market data...',
     },
     saham: {
         title: 'Stock Explorer',
@@ -607,6 +614,7 @@ const enDictionary: NestedObject = {
         in_basket_aria: 'Already in Basket {ticker}',
         analyze_add_aria: 'Analyze and Add {ticker}',
         clear_search: 'Clear Search',
+        loading_stocks: 'Loading stocks list...',
     },
     basket: {
         title: 'Portfolio Basket',
@@ -666,6 +674,8 @@ const enDictionary: NestedObject = {
         parameter_updated_toast: 'Analysis parameters for {ticker} updated.',
         parameter_update_error: 'Failed to update parameters for {ticker}.',
         optimization_error_toast: 'An error occurred while processing optimization.',
+        allocation_progress_label: 'Stock Basket Allocation',
+        set_optimization_param: 'Configure Optimization Parameters',
     },
     result: {
         title: 'Portfolio Optimization Results',
@@ -825,6 +835,7 @@ const enDictionary: NestedObject = {
         delete_confirm_suffix: 'This optimization record cannot be recovered.',
         delete_success: 'Portfolio record deleted successfully.',
         delete_error: 'Failed to delete record.',
+        loading_history: 'Loading optimization history...',
     },
     landing: {
         tagline: 'AI Stock Portfolio Optimization Platform',
@@ -915,6 +926,7 @@ const enDictionary: NestedObject = {
         update: 'Update',
         add: 'Add to Basket',
         already_in_basket: 'Already in Basket',
+        no_historical_data: 'Historical data not available',
     },
     auth: {
         app_tagline: 'AI Stock Portfolio Optimization Platform',

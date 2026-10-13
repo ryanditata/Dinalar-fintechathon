@@ -1,3 +1,4 @@
+import { useTranslation } from '@/i18n/LanguageContext';
 import React from 'react';
 import {
     Area,
@@ -32,13 +33,15 @@ export function PolylineTrendChart({
     valueSuffix = '',
     height = 175,
 }: PolylineTrendChartProps) {
+    const { t } = useTranslation();
+
     if (!data || data.length === 0) {
         return (
             <div
                 className="w-full flex items-center justify-center text-xs text-zinc-500 bg-white/50 rounded-2xl border border-dashed border-zinc-300"
                 style={{ height }}
             >
-                Data historis tidak tersedia
+                {t('analysis.no_historical_data', 'Data historis tidak tersedia')}
             </div>
         );
     }

@@ -92,8 +92,8 @@ export function WalletLeatherHero({
                         <div className="size-5 rounded-full bg-emerald-900 flex items-center justify-center">
                             <Sparkles className="size-3 text-white" />
                         </div>
-                        <span className="text-xs font-bold tracking-tight text-emerald-950 font-sans">
-                            {t('dashboard.portfolio')}
+                        <span className="text-xs font-bold tracking-tight text-emerald-950 font-sans truncate">
+                            {t('dashboard.portfolio', 'Portofolio Terakhir Anda')}
                         </span>
                     </div>
 

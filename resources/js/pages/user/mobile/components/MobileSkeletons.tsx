@@ -1,11 +1,14 @@
+import { useTranslation } from '@/i18n/LanguageContext';
 import React from 'react';
 
 /**
  * Skeleton placeholder untuk daftar kartu saham pada halaman Eksplorasi Saham (/user/saham)
  */
 export function StockCardsSkeleton({ count = 5 }: { count?: number }) {
+    const { t } = useTranslation();
+
     return (
-        <div className="space-y-2 pt-1 animate-pulse" aria-busy="true" aria-label="Memuat daftar saham...">
+        <div className="space-y-2 pt-1 animate-pulse" aria-busy="true" aria-label={t('saham.loading_stocks', 'Memuat daftar saham...')}>
             <div className="h-4 w-20 bg-zinc-200/80 rounded-full mb-2" />
             {Array.from({ length: count }).map((_, i) => (
                 <div
@@ -42,8 +45,10 @@ export function StockCardsSkeleton({ count = 5 }: { count?: number }) {
  * Skeleton placeholder untuk daftar saham pilihan/gainers/losers pada Dashboard (/user/dashboard)
  */
 export function DashboardStockCardsSkeleton({ count = 5 }: { count?: number }) {
+    const { t } = useTranslation();
+
     return (
-        <div className="space-y-2.5 animate-pulse" aria-busy="true" aria-label="Memuat data pasar...">
+        <div className="space-y-2.5 animate-pulse" aria-busy="true" aria-label={t('dashboard.loading_market', 'Memuat data pasar...')}>
             {Array.from({ length: count }).map((_, i) => (
                 <div
                     key={i}
@@ -74,8 +79,10 @@ export function DashboardStockCardsSkeleton({ count = 5 }: { count?: number }) {
  * Skeleton placeholder untuk daftar riwayat portofolio AI (/user/analyze/history)
  */
 export function HistoryListSkeleton({ count = 4 }: { count?: number }) {
+    const { t } = useTranslation();
+
     return (
-        <div className="space-y-3 animate-pulse" aria-busy="true" aria-label="Memuat riwayat optimasi...">
+        <div className="space-y-3 animate-pulse" aria-busy="true" aria-label={t('history.loading_history', 'Memuat riwayat optimasi...')}>
             {Array.from({ length: count }).map((_, i) => (
                 <div
                     key={i}

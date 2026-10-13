@@ -1,4 +1,5 @@
 import SparklineChart from '@/components/SparklineChart';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import React from 'react';
 
@@ -27,10 +28,12 @@ export function StockItemCard({
     recentPrices,
     analysisCount,
     subtext,
-    actionLabel = 'Analisis',
+    actionLabel,
     onActionClick,
     onClick,
 }: StockItemCardProps) {
+    const { t } = useTranslation();
+    const displayActionLabel = actionLabel ?? t('common.analyze', 'Analisis');
     const cleanTicker = ticker.replace('.JK', '');
     const isPositive = (changePercent ?? 0) >= 0;
     const numPrice = typeof price === 'number' ? price : Number(price) || 0;
@@ -84,7 +87,7 @@ export function StockItemCard({
                         }}
                         className="text-[11px] font-semibold h-7 px-2.5 rounded-lg border border-zinc-200 bg-white text-zinc-700 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 active:scale-95 transition-all cursor-pointer shrink-0"
                     >
-                        {actionLabel}
+                        {displayActionLabel}
                     </button>
                 </div>
 
