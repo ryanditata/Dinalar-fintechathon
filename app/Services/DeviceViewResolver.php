@@ -7,6 +7,45 @@ use Illuminate\Http\Request;
 class DeviceViewResolver
 {
     /**
+     * Menentukan apakah request berasal dari Aplikasi Native/Hybrid ter-install
+     * (Capacitor, Android APK WebView, iOS Native App, atau PWA Standalone).
+     * Bukan sekadar pengunjung biasa yang membuka website dari browser Safari/Chrome.
+     */
+    public static function isNativeApp(?Request $request = null): bool
+    {
+        $request = $request ?: request();
+
+        // 1. Cek parameter override aplikasi (misal: ?app=true atau ?source=app)
+        if ($request->has('app') && in_array(strtolower((string) $request->query('app')), ['true', '1', 'yes'], true)) {
+            return true;
+        }
+        if ($request->query('source') === 'app' || $request->query('device') === 'app') {
+            return true;
+        }
+
+        // 2. Cek Header Khusus Capacitor / Hybrid Mobile App
+        if ($request->hasHeader('X-Capacitor') || $request->hasHeader('X-Mobile-App') || $request->hasHeader('X-Native-App')) {
+            return true;
+        }
+
+        // 3. Cek Header Android WebView (secara default Android WebView mengirimkan package ID)
+        if ($request->hasHeader('X-Requested-With')) {
+            $requestedWith = (string) $request->header('X-Requested-With');
+            if (!in_array(strtolower($requestedWith), ['xmlhttprequest', 'com.android.browser'], true)) {
+                return true;
+            }
+        }
+
+        // 4. Cek User-Agent spesifik WebView / Capacitor
+        $userAgent = $request->header('User-Agent', '');
+        if (str_contains($userAgent, '; wv)') || str_contains($userAgent, 'Capacitor')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Menentukan apakah request berasal dari perangkat mobile / aplikasi.
      */
     public static function isMobile(?Request $request = null): bool
@@ -16,7 +55,7 @@ class DeviceViewResolver
         // 1. Cek query parameter override (misal untuk testing di desktop: ?device=mobile)
         if ($request->has('device')) {
             $deviceParam = strtolower((string) $request->query('device'));
-            if ($deviceParam === 'mobile') {
+            if ($deviceParam === 'mobile' || $deviceParam === 'app') {
                 return true;
             }
             if ($deviceParam === 'desktop') {
@@ -24,8 +63,8 @@ class DeviceViewResolver
             }
         }
 
-        // 2. Cek Header Capacitor / Hybrid App
-        if ($request->hasHeader('X-Capacitor') || $request->hasHeader('X-Mobile-App')) {
+        // 2. Jika merupakan Native App, otomatis mobile
+        if (self::isNativeApp($request)) {
             return true;
         }
 
