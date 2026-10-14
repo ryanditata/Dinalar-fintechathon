@@ -27,23 +27,9 @@ import {
     TrendingDown,
     TrendingUp,
 } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/user/dashboard',
-    },
-    {
-        title: 'Eksplorasi Saham',
-        href: '/user/saham',
-    },
-    {
-        title: 'Keranjang Saham',
-        href: '/user/analyze/keranjang',
-    },
-];
 
 interface RecentOptimizationItem {
     id: number;
@@ -74,6 +60,23 @@ export default function PortfolioSetupPage({
     global_timeframe,
     recent_optimizations = [],
 }: KeranjangProps) {
+    const { t, language } = useTranslation();
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: t('nav.dashboard', 'Dashboard'),
+            href: '/user/dashboard',
+        },
+        {
+            title: t('saham.title', 'Eksplorasi Saham'),
+            href: '/user/saham',
+        },
+        {
+            title: t('basket.page_title', 'Keranjang Saham'),
+            href: '/user/analyze/keranjang',
+        },
+    ];
+
     // 1. BASKET STATE FROM DATABASE
     const [basketTickers, setBasketTickers] = useState<string[]>(serverBasketTickers);
     const [detailedBasketStocks, setDetailedBasketStocks] = useState<Record<string, AnalyzedStockPayload>>(serverDetailedStocks);
@@ -261,8 +264,8 @@ export default function PortfolioSetupPage({
         router.post('/user/analyze/basket/timeframe', params, {
             preserveScroll: true,
             onSuccess: (page: any) => {
-                const label = params.preset ? (params.preset === 'all' ? 'All' : params.preset) : 'kustom';
-                toast.success(`Horison analisis seluruh saham berhasil disinkronkan ke ${label}.`);
+                const label = params.preset ? (params.preset === 'all' ? (language === 'en' ? 'All' : 'Semua') : params.preset) : t('basket.custom', 'kustom');
+                toast.success(t('basket.sync_timeframe_success', { label }));
 
                 // Sinkronkan input Rentang Waktu dengan tanggal bursa lookback riil hasil kalkulasi server (sama persis seperti StockAnalysisModal)
                 const details = (page?.props?.detailed_basket_stocks || {}) as Record<string, AnalyzedStockPayload>;
@@ -284,7 +287,7 @@ export default function PortfolioSetupPage({
             },
             onError: (errors) => {
                 console.error('Failed to update basket timeframe:', errors);
-                const msg = Object.values(errors)[0] || 'Gagal memperbarui horison saham di keranjang.';
+                const msg = Object.values(errors)[0] || t('basket.sync_timeframe_error', 'Gagal memperbarui horison saham.');
                 toast.error(msg);
             },
             onFinish: () => {
@@ -327,15 +330,16 @@ export default function PortfolioSetupPage({
         }
     };
 
-    // Helper format Rupiah
+    // Helper format Rupiah / Currency
     const formatRupiah = (val: number | string | null | undefined) => {
         if (val === null || val === undefined || isNaN(Number(val))) return 'Rp -';
-        return `Rp ${Number(val).toLocaleString('id-ID')}`;
+        return `Rp ${Number(val).toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}`;
     };
 
-    // Helper format tanggal (Contoh: 16 Sep 2026)
+    // Helper format tanggal (Contoh: 16 Sep 2026 / Sep 16, 2026)
     const formatDate = (dateStr?: string) => {
         if (!dateStr) return '-';
+        const locale = language === 'en' ? 'en-US' : 'id-ID';
         try {
             const cleanDateStr = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr.split(' ')[0];
             const parts = cleanDateStr.split('-');
@@ -343,13 +347,13 @@ export default function PortfolioSetupPage({
                 const year = parseInt(parts[0], 10);
                 const month = parseInt(parts[1], 10) - 1;
                 const day = parseInt(parts[2], 10);
-                return new Date(year, month, day).toLocaleDateString('id-ID', {
+                return new Date(year, month, day).toLocaleDateString(locale, {
                     day: 'numeric',
                     month: 'short',
                     year: 'numeric',
                 });
             }
-            return new Date(dateStr).toLocaleDateString('id-ID', {
+            return new Date(dateStr).toLocaleDateString(locale, {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric',
@@ -387,10 +391,10 @@ export default function PortfolioSetupPage({
                     sessionStorage.setItem('user_basket_tickers', JSON.stringify(newTickers));
                     sessionStorage.setItem('user_basket_detailed_stocks', JSON.stringify(newDetails));
                 }
-                toast.success(`Saham ${clean} berhasil dihapus dari keranjang.`);
+                toast.success(t('basket.stock_removed_toast', { ticker: clean }));
             },
             onError: () => {
-                toast.error(`Gagal menghapus saham ${clean} dari keranjang.`);
+                toast.error(t('basket.stock_remove_error', { ticker: clean }));
             },
             onFinish: () => {
                 setIsProcessingBasket(false);
@@ -414,10 +418,10 @@ export default function PortfolioSetupPage({
                     sessionStorage.removeItem('user_basket_detailed_stocks');
                 }
                 setIsClearModalOpen(false);
-                toast.success('Keranjang berhasil dikosongkan.');
+                toast.success(t('basket.basket_cleared_toast', 'Keranjang berhasil dikosongkan.'));
             },
             onError: () => {
-                toast.error('Gagal mengosongkan keranjang.');
+                toast.error(t('basket.basket_clear_error', 'Gagal mengosongkan keranjang.'));
             },
             onFinish: () => {
                 setIsProcessingBasket(false);
@@ -431,8 +435,8 @@ export default function PortfolioSetupPage({
     };
 
     const handleUpdateStockInBasket = (dataPayload: AnalyzedStockPayload) => {
-        const t = dataPayload.ticker;
-        const clean = t.replace('.JK', '');
+        const t_code = dataPayload.ticker;
+        const clean = t_code.replace('.JK', '');
 
         setIsProcessingBasket(true);
         router.post('/user/analyze/basket', dataPayload as any, {
@@ -440,7 +444,7 @@ export default function PortfolioSetupPage({
             onSuccess: () => {
                 const newDetails = {
                     ...detailedBasketStocks,
-                    [t]: dataPayload,
+                    [t_code]: dataPayload,
                     [clean]: dataPayload,
                 };
                 setDetailedBasketStocks(newDetails);
@@ -448,12 +452,12 @@ export default function PortfolioSetupPage({
                     sessionStorage.setItem('user_basket_detailed_stocks', JSON.stringify(newDetails));
                 }
 
-                toast.success(`Parameter analisis untuk ${clean} berhasil diperbarui.`);
+                toast.success(t('basket.parameter_updated_toast', { ticker: clean }));
                 setIsEditModalOpen(false);
                 setEditingStock(null);
             },
             onError: () => {
-                toast.error(`Gagal memperbarui parameter untuk ${clean}.`);
+                toast.error(t('basket.parameter_update_error', { ticker: clean }));
             },
             onFinish: () => {
                 setIsProcessingBasket(false);
@@ -466,15 +470,13 @@ export default function PortfolioSetupPage({
         e.preventDefault();
 
         if (basketStocks.length < 2) {
-            toast.error('Pilih minimal 2 saham di keranjang agar dapat melakukan analisis.');
+            toast.error(t('basket.min_stocks_required', 'Pilih minimal 2 saham di keranjang agar dapat melakukan analisis.'));
             return;
         }
 
         if (hasNegativeReturnStocks) {
             const tickersList = negativeReturnStocks.map((s) => s.ticker.replace('.JK', '')).join(', ');
-            toast.error(
-                `Tidak dapat melakukan analisis: masih terdapat saham dengan return negatif (${tickersList}). Harap sesuaikan parameter rentang waktu saham tersebut atau hapus dari keranjang.`
-            );
+            toast.error(t('basket.negative_return_error_toast', { tickers: tickersList }));
             return;
         }
 
@@ -519,7 +521,7 @@ export default function PortfolioSetupPage({
         router.post('/user/analyze/optimize', payload, {
             onError: (errors) => {
                 console.error('Optimize errors:', errors);
-                const msg = Object.values(errors)[0] || 'Terjadi kesalahan saat memproses optimasi portofolio.';
+                const msg = Object.values(errors)[0] || t('basket.optimization_error_toast', 'Terjadi kesalahan saat memproses optimasi.');
                 toast.error(msg);
             },
             onFinish: () => {
@@ -530,7 +532,7 @@ export default function PortfolioSetupPage({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Keranjang Saham" />
+            <Head title={t('basket.page_title', 'Keranjang Saham')} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4 sm:p-6 mx-auto w-full pb-20">
                 {/* HERO HEADER SECTION */}
@@ -542,7 +544,7 @@ export default function PortfolioSetupPage({
                         <div className="shrink-0">
                             <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary ring-1 ring-inset ring-primary/20 backdrop-blur-xs">
                                 <ShoppingBag className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                                Keranjang & Optimasi
+                                {t('basket.title', 'Keranjang & Optimasi')}
                             </span>
                         </div>
 
@@ -550,7 +552,7 @@ export default function PortfolioSetupPage({
                             <Button asChild size="sm" className="gap-2 shadow-xs cursor-pointer h-9 bg-emerald-600 hover:bg-emerald-700 text-white">
                                 <Link href="/user/saham">
                                     <Plus className="h-4 w-4" />
-                                    Saham
+                                    {t('saham.title', 'Saham')}
                                 </Link>
                             </Button>
                         </div>
@@ -567,12 +569,12 @@ export default function PortfolioSetupPage({
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <CardTitle className="text-base font-bold flex items-center gap-2">
                                             <ShoppingBag className="h-4 w-4 text-primary" />
-                                            <span>Keranjang Saham</span>
+                                            <span>{t('basket.page_title', 'Keranjang Saham')}</span>
                                             <Badge
                                                 variant="secondary"
                                                 className="ml-1 text-xs font-mono font-bold bg-primary/10 text-primary"
                                             >
-                                                {basketStocks.length} Saham
+                                                {basketStocks.length} {t('basket.stocks_unit', 'Saham')}
                                             </Badge>
                                         </CardTitle>
                                         {isUpdatingTimeframe && (
@@ -581,7 +583,7 @@ export default function PortfolioSetupPage({
                                                 className="text-[10px] py-0.5 px-2 text-primary border-primary/30 bg-primary/10 flex items-center gap-1 animate-pulse"
                                             >
                                                 <Loader2 className="h-2.5 w-2.5 animate-spin" />
-                                                <span>Menyinkronkan Seluruh Saham...</span>
+                                                <span>{t('basket.syncing_stocks', 'Menyinkronkan Seluruh Saham...')}</span>
                                             </Badge>
                                         )}
                                     </div>
@@ -596,7 +598,7 @@ export default function PortfolioSetupPage({
                                                 className="h-8 text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-500/10 cursor-pointer gap-1.5 w-full sm:w-auto"
                                             >
                                                 <Trash className="h-3.5 w-3.5" />
-                                                <span>Kosongkan</span>
+                                                <span>{t('basket.clear_all', 'Kosongkan')}</span>
                                             </Button>
                                         </div>
                                     )}
@@ -609,14 +611,14 @@ export default function PortfolioSetupPage({
                                         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground mb-3">
                                             <ShoppingBag className="h-6 w-6" />
                                         </div>
-                                        <h4 className="text-sm font-bold text-foreground">Keranjang Masih Kosong</h4>
+                                        <h4 className="text-sm font-bold text-foreground">{t('basket.empty_basket_title', 'Keranjang Masih Kosong')}</h4>
                                         <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                                            Silakan kembali ke menu Eksplorasi Saham dan klik tombol <strong>'+'</strong> untuk memasukkan saham ke keranjang.
+                                            {t('basket.empty_basket_desc', 'Silakan kembali ke menu Eksplorasi Saham dan klik tombol \'+\' untuk memasukkan saham ke keranjang.')}
                                         </p>
                                         <Button asChild size="sm" className="mt-4 gap-1.5 text-xs cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white">
                                             <Link href="/user/saham">
                                                 <TrendingUp className="h-3.5 w-3.5" />
-                                                <span>Mulai Pilih Saham</span>
+                                                <span>{t('basket.explore_stocks_btn', 'Mulai Pilih Saham')}</span>
                                             </Link>
                                         </Button>
                                     </div>
@@ -710,7 +712,7 @@ export default function PortfolioSetupPage({
                                                                             handleOpenEditModal(stock);
                                                                         }}
                                                                         className="h-7 w-7 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 cursor-pointer transition-colors"
-                                                                        title="Ubah Parameter"
+                                                                        title={t('basket.change_parameters', 'Ubah Parameter')}
                                                                     >
                                                                         <Sliders className="h-3.5 w-3.5" />
                                                                     </Button>
@@ -723,7 +725,7 @@ export default function PortfolioSetupPage({
                                                                             handleRemoveStock(stock.ticker);
                                                                         }}
                                                                         className="h-7 w-7 rounded-lg text-muted-foreground hover:text-rose-600 hover:bg-rose-500/10 cursor-pointer transition-colors"
-                                                                        title="Hapus dari Keranjang"
+                                                                        title={t('basket.remove_from_basket', 'Hapus dari Keranjang')}
                                                                     >
                                                                         <Trash className="h-3.5 w-3.5" />
                                                                     </Button>
@@ -736,7 +738,7 @@ export default function PortfolioSetupPage({
                                                                 <div className="h-full flex items-center justify-between gap-3 p-3 rounded-lg bg-muted/30 border border-border/50">
                                                                     <div className="flex flex-col">
                                                                         <span className="text-[10px] text-muted-foreground font-medium">
-                                                                            Harga Terakhir
+                                                                            {t('saham.price', 'Harga Terakhir')}
                                                                         </span>
                                                                         <span className="font-mono text-sm font-bold text-foreground">
                                                                             {lastPrice > 0 ? formatRupiah(lastPrice) : '-'}
@@ -744,7 +746,7 @@ export default function PortfolioSetupPage({
                                                                         {dataPoints ? (
                                                                             <span className="text-[9px] text-muted-foreground font-mono mt-0.5 flex items-center gap-1">
                                                                                 <Clock className="h-2.5 w-2.5 text-primary" />
-                                                                                {dataPoints} Hari Bursa
+                                                                                {dataPoints} {t('stock_modal.trading_days', { days: dataPoints })}
                                                                             </span>
                                                                         ) : null}
                                                                     </div>
@@ -786,7 +788,7 @@ export default function PortfolioSetupPage({
                                                                                     ) : (
                                                                                         <TrendingDown className="h-3.5 w-3.5 shrink-0" />
                                                                                     )}
-                                                                                    <span>Expected Return</span>
+                                                                                    <span>{t('stock_modal.expected_return', 'Expected Return')}</span>
                                                                                 </span>
                                                                                 <Badge
                                                                                     variant="outline"
@@ -797,8 +799,8 @@ export default function PortfolioSetupPage({
                                                                                     }`}
                                                                                 >
                                                                                     {timeframePreset
-                                                                                            ? (timeframePreset === 'all' ? 'All' : timeframePreset)
-                                                                                        : (dataPoints ? `${dataPoints}D` : 'Custom')}
+                                                                                            ? (timeframePreset === 'all' ? (language === 'en' ? 'All' : 'Semua') : timeframePreset)
+                                                                                        : (dataPoints ? `${dataPoints}D` : t('basket.custom', 'Custom'))}
                                                                                 </Badge>
                                                                             </div>
 
@@ -822,7 +824,7 @@ export default function PortfolioSetupPage({
 
                                                                             {detailed?.metrics?.volatility !== undefined && (
                                                                                 <p className="text-[10px] text-muted-foreground leading-tight">
-                                                                                    Risiko volatilitas tahunan {detailed.metrics.volatility}%
+                                                                                    {t('basket.annual_volatility_note', { volatility: detailed.metrics.volatility })}
                                                                                 </p>
                                                                             )}
                                                                         </div>
@@ -852,11 +854,11 @@ export default function PortfolioSetupPage({
                                         <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                                         <div className="space-y-0.5">
                                             <span>
-                                                Tambahkan minimal 1 saham lagi ke keranjang agar dapat melakukan analisis.
+                                                {t('basket.min_2_stocks_desc', 'Tambahkan minimal 1 saham lagi ke keranjang agar dapat melakukan analisis.')}
                                             </span>
                                             {hasNegativeReturnStocks && (
                                                 <span className="block text-rose-700 dark:text-rose-400 mt-1">
-                                                    Perhatian: Saham ({negativeReturnStocks.map((s) => s.ticker.replace('.JK', '')).join(', ')}) memiliki return bernilai negatif.
+                                                    {t('basket.negative_return_desc', { tickers: negativeReturnStocks.map((s) => s.ticker.replace('.JK', '')).join(', ') })}
                                                 </span>
                                             )}
                                         </div>
@@ -868,7 +870,7 @@ export default function PortfolioSetupPage({
                                         <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                                         <div className="space-y-0.5">
                                             <span>
-                                                Tidak dapat melakukan analisis: masih terdapat saham dengan return negatif ({negativeReturnStocks.map((s) => s.ticker.replace('.JK', '')).join(', ')}). Harap sesuaikan parameter rentang waktu saham tersebut atau hapus dari keranjang.
+                                                {t('basket.negative_return_error_toast', { tickers: negativeReturnStocks.map((s) => s.ticker.replace('.JK', '')).join(', ') })}
                                             </span>
                                         </div>
                                     </div>
@@ -884,7 +886,7 @@ export default function PortfolioSetupPage({
                                 <div className="flex items-center justify-between min-h-[32px]">
                                     <CardTitle className="text-base font-bold flex items-center gap-2">
                                         <Sliders className="h-4 w-4 text-primary" />
-                                        <span>Optimasi Parameter</span>
+                                        <span>{t('basket.parameters_title', 'Optimasi Parameter')}</span>
                                     </CardTitle>
                                 </div>
                             </CardHeader>
@@ -893,7 +895,7 @@ export default function PortfolioSetupPage({
                                 {/* 1. Modal Investasi */}
                                 <div className="space-y-1.5">
                                     <Label className="text-xs font-semibold flex items-center justify-between">
-                                        <span>Total Modal Investasi (IDR)</span>
+                                        <span>{t('basket.initial_capital', 'Total Modal Investasi (IDR)')}</span>
                                         <Coins className="h-3.5 w-3.5 text-emerald-600" />
                                     </Label>
                                     <div className="relative">
@@ -911,14 +913,14 @@ export default function PortfolioSetupPage({
                                         />
                                     </div>
                                     <span className="text-[10px] text-muted-foreground block truncate">
-                                        Terbilang: {formatRupiah(initialCapital)}
+                                        {t('basket.in_words', 'Terbilang:')} {formatRupiah(initialCapital)}
                                     </span>
                                 </div>
 
                                 {/* 2. Risk Free Rate */}
                                 <div className="space-y-1.5">
                                     <Label className="text-xs font-semibold flex items-center justify-between">
-                                        <span>Risk-Free Rate (%)</span>
+                                        <span>{t('basket.risk_free_rate_label', 'Risk-Free Rate (%)')}</span>
                                         <Shield className="h-3.5 w-3.5 text-emerald-600" />
                                     </Label>
                                     <div className="relative">
@@ -933,11 +935,11 @@ export default function PortfolioSetupPage({
                                             required
                                         />
                                         <span className="absolute right-3 top-2.5 text-xs text-muted-foreground font-mono">
-                                            % / thn
+                                            {t('basket.per_year', '% / thn')}
                                         </span>
                                     </div>
                                     <span className="text-[10px] text-muted-foreground block">
-                                        Acuan suku bunga bebas risiko (SBN / BI Rate)
+                                        {t('basket.risk_free_rate_desc', 'Acuan suku bunga bebas risiko (SBN / BI Rate)')}
                                     </span>
                                 </div>
 
@@ -946,7 +948,7 @@ export default function PortfolioSetupPage({
                                     <div className="flex items-center justify-between">
                                         <span className="text-xs font-bold flex items-center gap-1.5 text-foreground">
                                             <ChartNetwork className="h-4 w-4 text-primary shrink-0" />
-                                            <span>Horison Analisis</span>
+                                            <span>{t('stock_modal.analysis_horizon', 'Horison Analisis')}</span>
                                         </span>
                                     </div>
 
@@ -969,7 +971,7 @@ export default function PortfolioSetupPage({
                                                 {isUpdatingTimeframe && activePreset === preset ? (
                                                     <Loader2 className="h-2.5 w-2.5 animate-spin mr-1" />
                                                 ) : null}
-                                                {preset === 'all' ? 'All' : preset}
+                                                {preset === 'all' ? (language === 'en' ? 'All' : 'Semua') : preset}
                                             </Button>
                                         ))}
                                     </div>
@@ -980,7 +982,7 @@ export default function PortfolioSetupPage({
                                     <div className="flex items-center justify-between">
                                         <span className="text-xs font-bold flex items-center gap-1.5 text-foreground">
                                             <Calendar className="h-4 w-4 text-primary shrink-0" />
-                                            <span>Rentang Waktu</span>
+                                            <span>{t('stock_modal.date_range', 'Rentang Waktu')}</span>
                                         </span>
                                     </div>
 
@@ -988,7 +990,7 @@ export default function PortfolioSetupPage({
                                     <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-2.5">
                                         <div className="grid grid-cols-2 gap-2 flex-1">
                                             <div className="space-y-1">
-                                                <Label className="text-[11px] font-semibold text-muted-foreground">Tanggal Mulai</Label>
+                                                <Label className="text-[11px] font-semibold text-muted-foreground">{t('stock_modal.start_date', 'Tanggal Mulai')}</Label>
                                                 <Input
                                                     type="date"
                                                     value={startDate}
@@ -1001,7 +1003,7 @@ export default function PortfolioSetupPage({
                                             </div>
 
                                             <div className="space-y-1">
-                                                <Label className="text-[11px] font-semibold text-muted-foreground">Tanggal Selesai</Label>
+                                                <Label className="text-[11px] font-semibold text-muted-foreground">{t('stock_modal.end_date', 'Tanggal Selesai')}</Label>
                                                 <Input
                                                     type="date"
                                                     value={endDate}
@@ -1023,7 +1025,7 @@ export default function PortfolioSetupPage({
                                                 disabled={isUpdatingTimeframe || basketStocks.length === 0}
                                                 onClick={handleApplyDateRange}
                                                 className="h-8 text-xs font-semibold gap-1.5 px-3 cursor-pointer w-full sm:w-auto border border-border/60 hover:bg-muted shadow-2xs flex items-center justify-center"
-                                                title="Terapkan rentang waktu ke seluruh saham di keranjang"
+                                                title={t('basket.apply_timeframe_title', 'Terapkan rentang waktu ke seluruh saham di keranjang')}
                                             >
                                                 <RefreshCw className={`h-3.5 w-3.5 ${isUpdatingTimeframe && !activePreset ? 'animate-spin text-primary' : ''}`} />
                                             </Button>
@@ -1034,17 +1036,17 @@ export default function PortfolioSetupPage({
                                 {/* 4. E-Commerce Order Summary Box */}
                                 <div className="p-3 rounded-lg bg-muted/40 border border-border/60 space-y-2 text-xs">
                                     <div className="flex items-center justify-between text-muted-foreground">
-                                        <span>Jumlah Saham Terpilih:</span>
-                                        <span className="font-mono font-bold text-foreground">{basketStocks.length} Saham</span>
+                                        <span>{t('basket.summary_selected_stocks', 'Jumlah Saham Terpilih:')}</span>
+                                        <span className="font-mono font-bold text-foreground">{basketStocks.length} {t('basket.stocks_unit', 'Saham')}</span>
                                     </div>
                                     {hasNegativeReturnStocks && (
                                         <div className="flex items-center justify-between text-rose-600 dark:text-rose-400 font-medium">
-                                            <span>Return Negatif:</span>
-                                            <span className="font-mono font-bold">{negativeReturnStocks.length} Saham</span>
+                                            <span>{t('basket.summary_negative_return', 'Return Negatif:')}</span>
+                                            <span className="font-mono font-bold">{negativeReturnStocks.length} {t('basket.stocks_unit', 'Saham')}</span>
                                         </div>
                                     )}
                                     <div className="flex items-center justify-between text-muted-foreground">
-                                        <span>Model Optimasi:</span>
+                                        <span>{t('basket.summary_ai_model', 'Model Optimasi AI:')}</span>
                                         <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400">NSGA-II + Markowitz</span>
                                     </div>
                                     {basketStocks.length > 0 && (
@@ -1081,12 +1083,12 @@ export default function PortfolioSetupPage({
                                         {isSubmitting ? (
                                             <>
                                                 <Loader2 className="h-4 w-4 animate-spin" />
-                                                <span>Memproses Optimasi</span>
+                                                <span>{t('basket.optimizing', 'Memproses Optimasi...')}</span>
                                             </>
                                         ) : (
                                             <>
                                                 <Play className="h-4 w-4 fill-white" />
-                                                <span>Analyze</span>
+                                                <span>{t('basket.run_optimization_short', 'Analyze')}</span>
                                             </>
                                         )}
                                     </Button>
@@ -1122,20 +1124,20 @@ export default function PortfolioSetupPage({
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 text-destructive">
                             <AlertCircle className="h-5 w-5" />
-                            Kosongkan Keranjang
+                            {t('basket.clear_modal_title', 'Kosongkan Keranjang?')}
                         </DialogTitle>
                         <DialogDescription>
-                            Apakah Anda yakin ingin mengosongkan seluruh isi keranjang portofolio? Semua pengaturan parameter Anda akan hilang.
+                            {t('basket.clear_modal_desc', 'Apakah Anda yakin ingin mengosongkan seluruh isi keranjang portofolio? Seluruh saham dan pengaturan parameter yang telah Anda pilih akan dihapus.')}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="flex justify-end gap-2 mt-4">
                         <DialogClose asChild>
                             <Button variant="outline" size="sm" className="cursor-pointer">
-                                Batal
+                                {t('common.cancel', 'Batal')}
                             </Button>
                         </DialogClose>
                         <Button variant="destructive" size="sm" onClick={executeClearAll} className="cursor-pointer">
-                            Ya, Kosongkan
+                            {t('basket.yes_clear', 'Ya, Kosongkan')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

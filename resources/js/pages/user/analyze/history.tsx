@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useTranslation } from '@/i18n/LanguageContext';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type PaginatedData } from '@/types';
 import { Deferred, Head, Link, router } from '@inertiajs/react';
@@ -42,21 +43,6 @@ import {
 import React, { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/user/dashboard',
-    },
-    {
-        title: 'Eksplorasi Saham',
-        href: '/user/saham',
-    },
-    {
-        title: 'Riwayat Portofolio',
-        href: '/user/analyze/history',
-    },
-];
-
 interface HistoryItem {
     id: number;
     user_id: number;
@@ -73,6 +59,23 @@ interface HistoryProps {
 }
 
 export default function OptimizationHistoryPage({ history }: HistoryProps) {
+    const { t, language } = useTranslation();
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: t('nav.dashboard', 'Dashboard'),
+            href: '/user/dashboard',
+        },
+        {
+            title: t('saham.title', 'Eksplorasi Saham'),
+            href: '/user/saham',
+        },
+        {
+            title: t('history.title', 'Riwayat Portofolio'),
+            href: '/user/analyze/history',
+        },
+    ];
+
     const list: HistoryItem[] = Array.isArray(history)
         ? history
         : (history && typeof history === 'object' && 'data' in history && Array.isArray(history.data)
@@ -100,7 +103,7 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
         e.preventDefault();
         if (!editingItem) return;
         if (!editTitle.trim()) {
-            toast.error('Judul portofolio tidak boleh kosong.');
+            toast.error(t('history.title_required', 'Judul portofolio tidak boleh kosong.'));
             return;
         }
 
@@ -111,12 +114,12 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
             {
                 preserveScroll: true,
                 onSuccess: () => {
-                    toast.success('Judul portofolio berhasil diperbarui.');
+                    toast.success(t('history.update_success', 'Judul portofolio berhasil diperbarui.'));
                     setIsEditModalOpen(false);
                     setEditingItem(null);
                 },
                 onError: (errors) => {
-                    toast.error(errors.title || 'Gagal memperbarui judul portofolio.');
+                    toast.error(errors.title || t('history.update_error', 'Gagal memperbarui judul portofolio.'));
                 },
                 onFinish: () => {
                     setIsUpdating(false);
@@ -136,12 +139,12 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
         router.delete(`/user/analyze/history/${deletingItem.id}`, {
             preserveScroll: true,
             onSuccess: () => {
-                toast.success('Riwayat portofolio berhasil dihapus.');
+                toast.success(t('history.delete_success', 'Riwayat portofolio berhasil dihapus.'));
                 setIsDeleteModalOpen(false);
                 setDeletingItem(null);
             },
             onError: () => {
-                toast.error('Gagal menghapus riwayat portofolio.');
+                toast.error(t('history.delete_error', 'Gagal menghapus riwayat portofolio.'));
             },
             onFinish: () => {
                 setIsDeleting(false);
@@ -170,12 +173,12 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
 
     const formatRupiah = (val: number | string | null | undefined) => {
         if (val === null || val === undefined || isNaN(Number(val))) return 'Rp -';
-        return `Rp ${Number(val).toLocaleString('id-ID')}`;
+        return `Rp ${Number(val).toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}`;
     };
 
     const formatDate = (dateStr: string) => {
         try {
-            return new Date(dateStr).toLocaleString('id-ID', {
+            return new Date(dateStr).toLocaleString(language === 'en' ? 'en-US' : 'id-ID', {
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric',
@@ -189,7 +192,7 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Riwayat Portofolio" />
+            <Head title={t('history.title', 'Riwayat Portofolio')} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4 sm:p-6 mx-auto w-full pb-20">
                 {/* 1. HERO HEADER SECTION */}
@@ -201,7 +204,7 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                         <div className="shrink-0">
                             <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary ring-1 ring-inset ring-primary/20 backdrop-blur-xs">
                                 <History className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                                Riwayat Portofolio
+                                {t('history.title', 'Riwayat Portofolio')}
                             </span>
                         </div>
 
@@ -210,7 +213,7 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                             <Button asChild size="sm" className="gap-2 shadow-xs cursor-pointer h-9 bg-emerald-600 hover:bg-emerald-700 text-white">
                                 <Link href="/user/analyze/keranjang">
                                     <Plus className="h-4 w-4" />
-                                    Analisis
+                                    {t('common.analyze', 'Analisis')}
                                 </Link>
                             </Button>
                         </div>
@@ -225,10 +228,12 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                                 <Layers className="h-4 w-4 sm:h-5 sm:w-5" />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Total Portofolio</span>
+                                <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">
+                                    {t('landing.hero.stat_total_portfolio', 'Total Portofolio')}
+                                </span>
                                 <Deferred data="history" fallback={<Skeleton className="h-5 w-20 my-0.5 rounded-sm" />}>
                                     <span className="text-xs sm:text-base font-extrabold font-mono text-foreground truncate block">
-                                        {stats.totalPortfolios} <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">Portofolio</span>
+                                        {stats.totalPortfolios} <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">{t('landing.hero.stat_total_portfolio_unit', 'Portofolio')}</span>
                                     </span>
                                 </Deferred>
                             </div>
@@ -241,7 +246,9 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                                 <Coins className="h-4 w-4 sm:h-5 sm:w-5" />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Akumulasi Modal</span>
+                                <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">
+                                    {t('history.accumulated_capital', 'Akumulasi Modal')}
+                                </span>
                                 <Deferred data="history" fallback={<Skeleton className="h-5 w-24 my-0.5 rounded-sm" />}>
                                     <span className="text-xs sm:text-base font-extrabold font-mono text-foreground block truncate" title={formatRupiah(stats.totalCapital)}>
                                         {formatRupiah(stats.totalCapital)}
@@ -257,10 +264,12 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                                 <Activity className="h-4 w-4 sm:h-5 sm:w-5" />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Rata-rata Emiten</span>
+                                <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">
+                                    {t('history.average_emitens', 'Rata-rata Emiten')}
+                                </span>
                                 <Deferred data="history" fallback={<Skeleton className="h-5 w-16 my-0.5 rounded-sm" />}>
                                     <span className="text-xs sm:text-base font-extrabold font-mono text-foreground truncate block">
-                                        {stats.avgTickers} <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">Saham</span>
+                                        {stats.avgTickers} <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">{t('landing.hero.stat_avg_tickers_unit', 'Saham')}</span>
                                     </span>
                                 </Deferred>
                             </div>
@@ -273,10 +282,12 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                                 <Zap className="h-4 w-4 sm:h-5 sm:w-5" />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Risk-Free Rate (Rf)</span>
+                                <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">
+                                    {t('landing.hero.stat_risk_free', 'Risk-Free Rate (Rf)')}
+                                </span>
                                 <Deferred data="history" fallback={<Skeleton className="h-5 w-16 my-0.5 rounded-sm" />}>
                                     <span className="text-xs sm:text-base font-extrabold font-mono text-foreground truncate block">
-                                        {stats.avgRiskFree}% <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">SBN/BI</span>
+                                        {stats.avgRiskFree}% <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">{t('landing.hero.stat_risk_free_unit', 'SBN/BI')}</span>
                                     </span>
                                 </Deferred>
                             </div>
@@ -290,7 +301,7 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-base font-bold flex items-center gap-2">
                                 <History className="h-4 w-4 text-primary" />
-                                <span>Daftar Portofolio</span>
+                                <span>{t('history.saved_portfolios', 'Daftar Portofolio')}</span>
                             </CardTitle>
                         </div>
                     </CardHeader>
@@ -321,14 +332,16 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                                     <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground mb-3">
                                         <History className="h-7 w-7" />
                                     </div>
-                                    <h3 className="text-sm font-bold text-foreground">Belum Ada Riwayat Portofolio</h3>
+                                    <h3 className="text-sm font-bold text-foreground">
+                                        {t('history.empty_history_title', 'Belum Ada Riwayat Portofolio')}
+                                    </h3>
                                     <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                                        Anda belum menjalankan optimasi portofolio. Silakan pilih minimal 2 saham dari menu Eksplorasi Saham.
+                                        {t('history.empty_history_desc', 'Anda belum menjalankan optimasi portofolio. Silakan pilih minimal 2 saham dari menu Eksplorasi Saham.')}
                                     </p>
                                     <Button asChild size="sm" className="mt-4 gap-1.5 text-xs cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white">
                                         <Link href="/user/analyze/keranjang">
                                             <TrendingUp className="h-3.5 w-3.5" />
-                                            <span>Mulai Analisis Saham</span>
+                                            <span>{t('history.start_analysis', 'Mulai Analisis Saham')}</span>
                                         </Link>
                                     </Button>
                                 </div>
@@ -337,10 +350,18 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                                     <Table className="min-w-[680px]">
                                         <TableHeader className="bg-muted/30">
                                             <TableRow className="hover:bg-transparent border-b border-border/50">
-                                                <TableHead className="text-xs font-bold w-44 py-3.5 px-4">Kode Referensi</TableHead>
-                                                <TableHead className="text-xs font-bold py-3.5 px-4">Judul & Emiten Saham</TableHead>
-                                                <TableHead className="text-xs font-bold text-right py-3.5 px-4">Modal Investasi</TableHead>
-                                                <TableHead className="text-xs font-bold text-right w-16 py-3.5 px-4">Aksi</TableHead>
+                                                <TableHead className="text-xs font-bold w-44 py-3.5 px-4">
+                                                    {t('landing.hero.col_ref_code', 'Kode Referensi')}
+                                                </TableHead>
+                                                <TableHead className="text-xs font-bold py-3.5 px-4">
+                                                    {t('landing.hero.col_title_tickers', 'Judul & Emiten Saham')}
+                                                </TableHead>
+                                                <TableHead className="text-xs font-bold text-right py-3.5 px-4">
+                                                    {t('landing.hero.col_capital', 'Modal Investasi')}
+                                                </TableHead>
+                                                <TableHead className="text-xs font-bold text-right w-16 py-3.5 px-4">
+                                                    {t('history.actions_header', 'Aksi')}
+                                                </TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -383,7 +404,7 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                                                                         openEditModal(item);
                                                                     }}
                                                                     className="opacity-0 group-hover:opacity-100 p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer"
-                                                                    title="Edit Judul"
+                                                                    title={t('history.edit_title_action', 'Edit Judul')}
                                                                 >
                                                                     <Edit className="h-3 w-3" />
                                                                 </button>
@@ -415,7 +436,7 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                                                             <DropdownMenu>
                                                                 <DropdownMenuTrigger asChild>
                                                                     <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
-                                                                        <span className="sr-only">Menu aksi</span>
+                                                                        <span className="sr-only">{t('landing.hero.action_menu', 'Menu aksi')}</span>
                                                                         <MoreHorizontal className="h-4 w-4" />
                                                                     </Button>
                                                                 </DropdownMenuTrigger>
@@ -425,7 +446,7 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                                                                         className="cursor-pointer"
                                                                     >
                                                                         <TrendingUp className="mr-2 h-4 w-4" />
-                                                                        <span>Detail Analisis</span>
+                                                                        <span>{t('history.analysis_detail_action', 'Detail Analisis')}</span>
                                                                     </DropdownMenuItem>
 
                                                                     <DropdownMenuItem
@@ -433,7 +454,7 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                                                                         className="cursor-pointer"
                                                                     >
                                                                         <Edit className="mr-2 h-4 w-4" />
-                                                                        <span>Edit Judul</span>
+                                                                        <span>{t('history.edit_title_action', 'Edit Judul')}</span>
                                                                     </DropdownMenuItem>
 
                                                                     <DropdownMenuItem
@@ -441,7 +462,7 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                                                                         className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950 cursor-pointer"
                                                                     >
                                                                         <Trash className="mr-2 h-4 w-4" />
-                                                                        <span>Hapus Portofolio</span>
+                                                                        <span>{t('history.delete_portfolio_action', 'Hapus Portofolio')}</span>
                                                                     </DropdownMenuItem>
                                                                 </DropdownMenuContent>
                                                             </DropdownMenu>
@@ -464,22 +485,22 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                     <form onSubmit={handleSaveEdit}>
                         <DialogHeader>
                             <DialogTitle className="flex items-center text-base font-bold text-foreground">
-                                Edit Judul Portofolio
+                                {t('history.edit_title_modal', 'Edit Judul Portofolio')}
                             </DialogTitle>
                             <DialogDescription className="text-xs text-muted-foreground">
-                                Ubah judul portofolio untuk referensi <strong className="font-mono text-foreground">{editingItem?.reference_code || `DNL${editingItem?.user_id}-${editingItem?.id}`}</strong>.
+                                {t('history.edit_desc_prefix', 'Ubah judul portofolio untuk referensi')} <strong className="font-mono text-foreground">{editingItem?.reference_code || `DNL${editingItem?.user_id}-${editingItem?.id}`}</strong>.
                             </DialogDescription>
                         </DialogHeader>
 
                         <div className="py-4 space-y-2">
                             <Label htmlFor="portfolio-title" className="text-xs font-medium text-muted-foreground">
-                                Judul Portofolio
+                                {t('history.portfolio_title_label', 'Judul Portofolio')}
                             </Label>
                             <Input
                                 id="portfolio-title"
                                 value={editTitle}
                                 onChange={(e) => setEditTitle(e.target.value)}
-                                placeholder="Contoh: Portofolio Bluechip LQ45 Q1"
+                                placeholder={t('history.portfolio_name_placeholder', 'Contoh: Portofolio Bluechip LQ45 Q1')}
                                 className="h-9 text-xs bg-background border-border/70 focus-visible:ring-1 focus-visible:ring-primary shadow-2xs"
                                 maxLength={255}
                                 autoFocus
@@ -489,7 +510,7 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                         <DialogFooter className="flex justify-end gap-2">
                             <DialogClose asChild>
                                 <Button type="button" variant="outline" size="sm" className="cursor-pointer" disabled={isUpdating}>
-                                    Batal
+                                    {t('common.cancel', 'Batal')}
                                 </Button>
                             </DialogClose>
                             <Button
@@ -501,10 +522,10 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                                 {isUpdating ? (
                                     <>
                                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                        <span>Menyimpan...</span>
+                                        <span>{t('common.saving', 'Menyimpan...')}</span>
                                     </>
                                 ) : (
-                                    <span>Simpan</span>
+                                    <span>{t('common.save', 'Simpan')}</span>
                                 )}
                             </Button>
                         </DialogFooter>
@@ -518,17 +539,17 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 text-destructive text-base font-bold">
                             <AlertCircle className="h-5 w-5" />
-                            Hapus Riwayat Portofolio
+                            {t('history.delete_modal_title', 'Hapus Riwayat Portofolio')}
                         </DialogTitle>
                         <DialogDescription className="text-xs text-muted-foreground pt-1">
-                            Apakah Anda yakin ingin menghapus portofolio <strong className="text-foreground">{deletingItem?.title}</strong> (<span className="font-mono">{deletingItem?.reference_code || `DNL${deletingItem?.user_id}-${deletingItem?.id}`}</span>)? Data analisis hasil optimasi ini akan dihapus secara permanen.
+                            {t('history.delete_confirm_prefix', 'Apakah Anda yakin ingin menghapus portofolio')} <strong className="text-foreground">{deletingItem?.title}</strong> (<span className="font-mono">{deletingItem?.reference_code || `DNL${deletingItem?.user_id}-${deletingItem?.id}`}</span>)? {t('history.delete_confirm_suffix', 'Data analisis hasil optimasi ini akan dihapus secara permanen.')}
                         </DialogDescription>
                     </DialogHeader>
 
                     <DialogFooter className="flex justify-end gap-2 mt-4">
                         <DialogClose asChild>
                             <Button type="button" variant="outline" size="sm" className="cursor-pointer" disabled={isDeleting}>
-                                Batal
+                                {t('common.cancel', 'Batal')}
                             </Button>
                         </DialogClose>
                         <Button
@@ -542,11 +563,11 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                             {isDeleting ? (
                                 <>
                                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                    <span>Menghapus...</span>
+                                    <span>{t('common.deleting', 'Menghapus...')}</span>
                                 </>
                             ) : (
                                 <>
-                                    <span>Ya, Hapus</span>
+                                    <span>{t('common.yes_delete', 'Ya, Hapus')}</span>
                                 </>
                             )}
                         </Button>

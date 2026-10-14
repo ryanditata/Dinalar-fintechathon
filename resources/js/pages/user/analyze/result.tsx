@@ -13,6 +13,7 @@ import { PortfolioCompareShareCard, PortfolioShareCard } from '@/components/Port
 import { useExportShare, copyTextToClipboard } from '@/hooks/useExportShare';
 import { generatePortfolioPDFReport } from '@/utils/pdfReportGenerator';
 import { toast } from 'sonner';
+import { useTranslation } from '@/i18n/LanguageContext';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type Stock } from '@/types';
 import { Head, Link } from '@inertiajs/react';
@@ -48,25 +49,6 @@ import {
     ZAxis,
     ReferenceLine,
 } from 'recharts';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/user/dashboard',
-    },
-    {
-        title: 'Eksplorasi Saham',
-        href: '/user/saham',
-    },
-    {
-        title: 'Riwayat Portofolio',
-        href: '/user/analyze/history',
-    },
-    {
-        title: 'Detail Portofolio',
-        href: '#',
-    },
-];
 
 interface AssetAllocation {
     ticker: string;
@@ -169,6 +151,27 @@ export default function OptimizationResultPage({
     isPublic = false,
     shareUrl,
 }: ResultProps) {
+    const { t, language } = useTranslation();
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: t('nav.dashboard', 'Dashboard'),
+            href: '/user/dashboard',
+        },
+        {
+            title: t('saham.title', 'Eksplorasi Saham'),
+            href: '/user/saham',
+        },
+        {
+            title: t('history.title', 'Riwayat Portofolio'),
+            href: '/user/analyze/history',
+        },
+        {
+            title: t('result.detail_title', 'Detail Portofolio'),
+            href: '#',
+        },
+    ];
+
     const [selectedProfile, setSelectedProfile] = useState<'sharpe' | 'min_variance' | 'max_return' | 'sortino'>('sharpe');
     const [clickedPoint, setClickedPoint] = useState<any>(null);
     const [hoveredPoint, setHoveredPoint] = useState<{ x: number; y: number } | null>(null);
@@ -217,7 +220,7 @@ export default function OptimizationResultPage({
     // Format IDR
     const formatRupiah = (val: number | string | null | undefined) => {
         if (val === null || val === undefined || isNaN(Number(val))) return 'Rp -';
-        return `Rp ${Number(val).toLocaleString('id-ID')}`;
+        return `Rp ${Number(val).toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}`;
     };
 
     // Format Percentage
@@ -230,7 +233,7 @@ export default function OptimizationResultPage({
     const formatDate = (dateStr?: string | null) => {
         if (!dateStr) return '-';
         try {
-            return new Date(dateStr).toLocaleDateString('id-ID', {
+            return new Date(dateStr).toLocaleDateString(language === 'en' ? 'en-US' : 'id-ID', {
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric',
@@ -248,14 +251,14 @@ export default function OptimizationResultPage({
     const getProfileLabel = (p: string) => {
         switch (p) {
             case 'min_variance':
-                return 'Konservatif (Risiko Rendah)';
+                return t('result.profile_label_min_variance', 'Konservatif (Risiko Rendah)');
             case 'max_return':
-                return 'Agresif (Return Maksimal)';
+                return t('result.profile_label_max_return', 'Agresif (Return Maksimal)');
             case 'sortino':
-                return 'Downside Optimal (Sortino)';
+                return t('result.profile_label_sortino', 'Downside Optimal (Sortino)');
             case 'sharpe':
             default:
-                return 'Seimbang (Optimal Sharpe)';
+                return t('result.profile_label_sharpe', 'Seimbang (Optimal Sharpe)');
         }
     };
 
@@ -282,10 +285,11 @@ export default function OptimizationResultPage({
                 stocks,
             });
             const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
-            toast.success(`Laporan PDF berhasil diunduh (Laporan-Portofolio-${selectedProfile}-${refCode}.pdf)`);
+            const filename = `Laporan-Portofolio-${selectedProfile}-${refCode}.pdf`;
+            toast.success(t('result.pdf_download_success', 'Laporan PDF berhasil diunduh ({file})', { file: filename }));
         } catch (error) {
             console.error('Failed to generate PDF report:', error);
-            toast.error('Gagal membuat dokumen PDF laporan. Silakan coba lagi.');
+            toast.error(t('result.pdf_download_error', 'Gagal membuat dokumen PDF laporan. Silakan coba lagi.'));
         }
     };
 
@@ -306,8 +310,11 @@ export default function OptimizationResultPage({
 
         const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
         const filename = `Portofolio-${targetProf}-${refCode}.png`;
-        const shareText = `Halo! Cek rekomendasi portofolio saham kuantitatif saya (${getProfileLabel(targetProf)}) dengan kode referensi ${refCode} di Dinalar AI.`;
-        await sharePortfolio(singleCardRef.current, filename, 'Rekomendasi Portofolio Saham', shareText);
+        const shareText = t('result.share_native_text', 'Halo! Cek rekomendasi portofolio saham kuantitatif saya ({profile}) dengan kode referensi {refCode} di Dinalar AI.', {
+            profile: getProfileLabel(targetProf),
+            refCode,
+        });
+        await sharePortfolio(singleCardRef.current, filename, t('result.share_title', 'Rekomendasi Portofolio Saham'), shareText);
     };
 
     const handleGeneratePublicLink = async () => {
@@ -332,7 +339,7 @@ export default function OptimizationResultPage({
             if (data.url) {
                 const copied = await copyTextToClipboard(data.url);
                 if (copied) {
-                    toast.success('Tautan publik berhasil disalin ke clipboard! Siapapun dapat melihat hasil portofolio ini tanpa perlu login.');
+                    toast.success(t('result.link_copied_clipboard', 'Tautan publik berhasil disalin ke clipboard! Siapapun dapat melihat hasil portofolio ini tanpa perlu login.'));
                 }
             } else {
                 throw new Error('URL tidak ditemukan');
@@ -342,9 +349,9 @@ export default function OptimizationResultPage({
             const fallbackUrl = `${window.location.origin}/shared/portfolio/${optimization.share_token || `DNL${optimization.user_id}-${optimization.id}`}`;
             const copied = await copyTextToClipboard(fallbackUrl);
             if (copied) {
-                toast.success('Tautan berhasil disalin ke clipboard!');
+                toast.success(t('result.link_copied_clipboard', 'Tautan berhasil disalin ke clipboard!'));
             } else {
-                toast.error('Gagal menyalin tautan ke clipboard. Silakan coba lagi.');
+                toast.error(t('result.link_copy_error', 'Gagal menyalin tautan ke clipboard. Silakan coba lagi.'));
             }
         } finally {
             setIsGeneratingShare(false);
@@ -403,37 +410,37 @@ export default function OptimizationResultPage({
 
         const totalLots = allocationsList.reduce((sum, item) => sum + item.lot, 0);
         const totalNominal = allocationsList.reduce((sum, item) => sum + item.nominal, 0);
+        const isEn = language === 'en';
 
         let stockLines = '';
         allocationsList.forEach((item, idx) => {
             stockLines += `${idx + 1}. *${item.ticker}* (${item.category})\n` +
-                `   ↳ Bobot: *${item.weight.toFixed(2)}%* | Nominal: *${formatRupiah(item.nominal)}*\n` +
-                `   ↳ Harga: *${item.lastClose > 0 ? `Rp ${item.lastClose.toLocaleString('id-ID')}` : '-'}* | Estimasi: *${item.lot > 0 ? `${item.lot.toLocaleString('id-ID')} Lot` : '-'}*\n`;
+                `   ↳ ${t('result.wa_weight', 'Bobot:')} *${item.weight.toFixed(2)}%* | ${t('result.wa_nominal', 'Nominal:')} *${formatRupiah(item.nominal)}*\n` +
+                `   ↳ ${t('result.wa_price', 'Harga:')} *${item.lastClose > 0 ? `Rp ${item.lastClose.toLocaleString(isEn ? 'en-US' : 'id-ID')}` : '-'}* | ${t('result.wa_estimate', 'Estimasi:')} *${item.lot > 0 ? `${item.lot.toLocaleString(isEn ? 'en-US' : 'id-ID')} ${t('result.lot_unit', 'Lot')}` : '-'}*\n`;
         });
 
         const dateRangeStr = optimization.start_date && optimization.end_date
             ? `${formatDate(optimization.start_date)} - ${formatDate(optimization.end_date)}`
             : formatDate(optimization.created_at);
 
-        const text = `📊 *HASIL ANALISIS PORTOFOLIO SAHAM DINALAR*\n\n` +
-            `• *Judul:* ${optimization.title || 'Portofolio Multi-Aset'}\n` +
-            `• *Profil:* ${getProfileLabel(selectedProfile)}\n` +
-            `• *Kode Ref:* ${refCode}\n` +
-            `• *Tanggal Analisis:* ${formatDate(optimization.created_at)}\n` +
-            `• *Rentang Waktu:* ${dateRangeStr}\n` +
-            `• *Modal Investasi:* ${formatRupiah(initialCapital)}\n` +
-            `• *Risk-Free Rate:* ${optimization.risk_free_rate}%\n\n` +
-            `📈 *METRIK PERFORMA:*\n` +
-            `• Expected Return: *+${returnVal}%* (Tahunan)\n` +
-            `• Volatilitas Risiko (σ): *${riskVal}%*\n` +
-            `• Sharpe Ratio: *${sharpeVal}*\n\n` +
-            `💼 *RINCIAN ALOKASI SAHAM:*\n` +
+        const text = `📊 *${t('result.wa_header', 'HASIL ANALISIS PORTOFOLIO SAHAM DINALAR')}*\n\n` +
+            `• *${t('result.wa_title', 'Judul:')}* ${optimization.title || t('result.default_title', 'Portofolio Multi-Aset')}\n` +
+            `• *${t('result.wa_profile', 'Profil:')}* ${getProfileLabel(selectedProfile)}\n` +
+            `• *${t('result.wa_ref_code', 'Kode Ref:')}* ${refCode}\n` +
+            `• *${t('result.wa_analysis_date', 'Tanggal Analisis:')}* ${formatDate(optimization.created_at)}\n` +
+            `• *${t('result.wa_time_range', 'Rentang Waktu:')}* ${dateRangeStr}\n` +
+            `• *${t('result.wa_investment_capital', 'Modal Investasi:')}* ${formatRupiah(initialCapital)}\n` +
+            `• *${t('result.wa_risk_free_rate', 'Risk-Free Rate:')}* ${optimization.risk_free_rate}%\n\n` +
+            `📈 *${t('result.wa_metrics_title', 'METRIK PERFORMA:')}*\n` +
+            `• ${t('result.wa_expected_return', 'Expected Return:')} *+${returnVal}%* (${t('result.wa_annual', 'Tahunan')})\n` +
+            `• ${t('result.wa_risk_volatility', 'Volatilitas Risiko (σ):')} *${riskVal}%*\n` +
+            `• ${t('result.wa_sharpe_ratio', 'Sharpe Ratio:')} *${sharpeVal}*\n\n` +
+            `💼 *${t('result.wa_allocation_title', 'RINCIAN ALOKASI SAHAM:')}*\n` +
             `${stockLines}\n` +
-            `📌 *TOTAL PEMBELIAN:*\n` +
-            `• Total Modal: *${formatRupiah(totalNominal)}* (100.00%)\n` +
-            `• Total Estimasi: *${totalLots.toLocaleString('id-ID')} Lot*\n\n` +
-            `Analisis otomatis dengan Algoritma NSGA-II & Markowitz Frontier.\n` +
-            `🌐 Kunjungi: https://dinalar.my.id`;
+            `📌 *${t('result.wa_total_purchase', 'TOTAL PEMBELIAN:')}*\n` +
+            `• ${t('result.wa_total_capital', 'Total Modal:')} *${formatRupiah(totalNominal)}* (100.00%)\n` +
+            `• ${t('result.wa_total_estimate', 'Total Estimasi:')} *${totalLots.toLocaleString(isEn ? 'en-US' : 'id-ID')} ${t('result.lot_unit', 'Lot')}*\n\n` +
+            `${t('result.wa_footer', 'Analisis otomatis dengan Algoritma NSGA-II & Markowitz Frontier.\n🌐 Kunjungi: https://dinalar.my.id')}`;
 
         shareToWhatsAppText(text);
     };
@@ -477,7 +484,7 @@ export default function OptimizationResultPage({
             markers.push({
                 x: Number(bestPortfolios.sharpe.risk),
                 y: Number(bestPortfolios.sharpe.return),
-                name: '⚖️ Seimbang (Optimal Sharpe)',
+                name: `⚖️ ${t('result.marker_sharpe', 'Seimbang (Sharpe)')}`,
                 color: '#10b981',
             });
         }
@@ -485,7 +492,7 @@ export default function OptimizationResultPage({
             markers.push({
                 x: Number(bestPortfolios.min_variance.risk),
                 y: Number(bestPortfolios.min_variance.return),
-                name: '🛡️ Risiko Rendah (MVP)',
+                name: `🛡️ ${t('result.marker_min_variance', 'Risiko Rendah (MVP)')}`,
                 color: '#06b6d4',
             });
         }
@@ -493,12 +500,12 @@ export default function OptimizationResultPage({
             markers.push({
                 x: Number(bestPortfolios.max_return.risk),
                 y: Number(bestPortfolios.max_return.return),
-                name: '🚀 Return Maksimal',
+                name: `🚀 ${t('result.marker_max_return', 'Return Maksimal')}`,
                 color: '#f59e0b',
             });
         }
         return markers;
-    }, [bestPortfolios]);
+    }, [bestPortfolios, t]);
 
     const mainContent = (
         <div className="flex flex-col gap-6 mx-auto w-full">
@@ -512,14 +519,14 @@ export default function OptimizationResultPage({
                             <div className="flex items-center gap-2 flex-wrap">
                                 <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary ring-1 ring-inset ring-primary/20 backdrop-blur-xs">
                                     <Sparkles className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                                    Hasil Optimasi Portofolio
+                                    {t('result.badge_title', 'Hasil Optimasi Portofolio')}
                                 </span>
                             </div>
                             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-                                Rekomendasi Portofolio
+                                {optimization.title || t('result.default_title', 'Rekomendasi Portofolio Multi-Aset')}
                             </h1>
                             <p className="text-xs sm:text-sm text-muted-foreground max-w-3xl">
-                                Hasil rekomendasi algoritma AI berdasarkan deret waktu historis {optimization.tickers?.length || 0} emiten saham terpilih.
+                                {t('result.hero_desc', 'Hasil rekomendasi algoritma AI berdasarkan deret waktu historis {count} emiten saham terpilih.', { count: optimization.tickers?.length || 0 })}
                             </p>
                         </div>
 
@@ -533,7 +540,7 @@ export default function OptimizationResultPage({
                                     className="w-full sm:w-auto justify-center gap-2 shadow-xs cursor-pointer text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
                                 >
                                     <Link href="/user/saham">
-                                        <span>Eksplorasi Saham Lain</span>
+                                        <span>{t('result.explore_other_stocks', 'Eksplorasi Saham Lain')}</span>
                                         <ArrowRight className="h-4 w-4" />
                                     </Link>
                                 </Button>
@@ -545,7 +552,7 @@ export default function OptimizationResultPage({
                                     className="w-full sm:w-auto justify-center gap-2 shadow-xs cursor-pointer text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
                                 >
                                     <Link href="/register">
-                                        <span>Buat Portofolio Anda Sendiri</span>
+                                        <span>{t('result.create_your_portfolio', 'Buat Portofolio Anda Sendiri')}</span>
                                         <ArrowRight className="h-4 w-4" />
                                     </Link>
                                 </Button>
@@ -556,30 +563,30 @@ export default function OptimizationResultPage({
                     {/* Metadata strip */}
                     <div className="relative z-10 mt-5 pt-4 pb-1 border-t border-border/40 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
                         <div>
-                            <span className="text-muted-foreground text-[11px] block">Modal Investasi:</span>
+                            <span className="text-muted-foreground text-[11px] block">{t('result.investment_capital', 'Modal Investasi')}:</span>
                             <span className="font-mono font-bold text-foreground">
                                 {formatRupiah(initialCapital)}
                             </span>
                         </div>
                         <div>
-                            <span className="text-muted-foreground text-[11px] block">Risk-Free Rate (Rf):</span>
+                            <span className="text-muted-foreground text-[11px] block">{t('result.risk_free_rate', 'Risk-Free Rate (Rf)')}:</span>
                             <span className="font-mono font-bold text-foreground">
                                 {optimization.risk_free_rate}%
                             </span>
                         </div>
                         <div>
-                            <span className="text-muted-foreground text-[11px] block">Daftar Saham:</span>
+                            <span className="text-muted-foreground text-[11px] block">{t('result.stock_list', 'Daftar Saham')}:</span>
                             <span className="font-mono font-bold text-foreground truncate block">
                                 {optimization.tickers?.map((t) => t.replace('.JK', '')).join(', ')}
                             </span>
                         </div>
                         <div>
-                            <span className="text-muted-foreground text-[11px] block">Rentang Waktu:</span>
+                            <span className="text-muted-foreground text-[11px] block">{t('result.time_range', 'Rentang Waktu')}:</span>
                             <span className="font-mono font-bold text-foreground truncate block" title={optimization.start_date && optimization.end_date ? `${formatDate(optimization.start_date)} - ${formatDate(optimization.end_date)}` : '-'}>
                                 {optimization.start_date && optimization.end_date
                                     ? `${formatDate(optimization.start_date)} - ${formatDate(optimization.end_date)}`
                                     : optimization.start_date
-                                        ? `Sejak ${formatDate(optimization.start_date)}`
+                                        ? t('result.since', 'Sejak {date}', { date: formatDate(optimization.start_date) })
                                         : '-'}
                             </span>
                         </div>
@@ -592,7 +599,7 @@ export default function OptimizationResultPage({
                         <div className="flex items-center gap-2">
                             <ShieldCheck className="h-5 w-5 text-primary" />
                             <h2 className="text-lg font-bold text-foreground">
-                                3 Profil Portofolio
+                                {t('result.profiles_title', '3 Profil Portofolio')}
                             </h2>
                         </div>
 
@@ -610,12 +617,12 @@ export default function OptimizationResultPage({
                                             {isExporting || isGeneratingShare ? (
                                                 <>
                                                     <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
-                                                    <span>Menyiapkan...</span>
+                                                    <span>{t('result.preparing', 'Menyiapkan...')}</span>
                                                 </>
                                             ) : (
                                                 <>
                                                     <Share2 className="h-3.5 w-3.5 text-primary" />
-                                                    <span>Export & Bagikan</span>
+                                                    <span>{t('result.share_export', 'Export & Bagikan')}</span>
                                                 </>
                                             )}
                                         </Button>
@@ -626,7 +633,7 @@ export default function OptimizationResultPage({
                                             className="cursor-pointer text-xs gap-2"
                                         >
                                             <ImageIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                                            <span>Simpan Gambar (PNG)</span>
+                                            <span>{t('result.opt_save_image', 'Simpan Gambar (PNG)')}</span>
                                         </DropdownMenuItem>
 
                                         <DropdownMenuItem
@@ -634,7 +641,7 @@ export default function OptimizationResultPage({
                                             className="cursor-pointer text-xs gap-2"
                                         >
                                             <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                                            <span>Unduh Laporan (PDF)</span>
+                                            <span>{t('result.opt_download_pdf', 'Unduh Laporan (PDF)')}</span>
                                         </DropdownMenuItem>
 
                                         <DropdownMenuItem
@@ -642,7 +649,7 @@ export default function OptimizationResultPage({
                                             className="cursor-pointer text-xs gap-2"
                                         >
                                             <Layers className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                                            <span>Bandingkan 3 Profil (PNG)</span>
+                                            <span>{t('result.opt_compare_profiles', 'Bandingkan 3 Profil (PNG)')}</span>
                                         </DropdownMenuItem>
 
                                         <DropdownMenuSeparator />
@@ -653,7 +660,7 @@ export default function OptimizationResultPage({
                                             className="cursor-pointer text-xs gap-2 text-emerald-600 dark:text-emerald-400 focus:text-emerald-600 dark:focus:text-emerald-400 focus:bg-emerald-50 dark:focus:bg-emerald-950"
                                         >
                                             <Share2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                                            <span>Bagikan Portofolio (Link)</span>
+                                            <span>{t('result.opt_share_link', 'Bagikan Portofolio (Link)')}</span>
                                         </DropdownMenuItem>
 
                                         <DropdownMenuItem
@@ -661,7 +668,7 @@ export default function OptimizationResultPage({
                                             className="cursor-pointer text-xs gap-2"
                                         >
                                             <MessageCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                                            <span>Kirim Ringkasan WhatsApp</span>
+                                            <span>{t('result.opt_share_whatsapp', 'Kirim Ringkasan WhatsApp')}</span>
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
@@ -683,7 +690,7 @@ export default function OptimizationResultPage({
                                     <div className="flex items-center justify-between">
                                         <Badge className="bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border-cyan-500/30 text-xs font-semibold gap-1 rounded-full">
                                             <Shield className="h-3 w-3" />
-                                            Risiko Rendah (MVP)
+                                            {t('result.profile_min_variance_tag', 'Risiko Rendah (MVP)')}
                                         </Badge>
 
                                         <div className="flex items-center gap-1">
@@ -696,7 +703,7 @@ export default function OptimizationResultPage({
                                                     handleExportPNG('min_variance');
                                                 }}
                                                 className="h-6 w-6 rounded-full text-muted-foreground hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-500/15 cursor-pointer transition-colors"
-                                                title="Quick Export Gambar Profil Konservatif"
+                                                title={t('result.download_min_variance_img', 'Unduh Gambar Profil Konservatif')}
                                             >
                                                 <Download className="h-3 w-3" />
                                             </Button>
@@ -708,28 +715,34 @@ export default function OptimizationResultPage({
 
                                     <div>
                                         <h3 className="text-base font-bold text-foreground">
-                                            Konservatif (Minimum Variance)
+                                            {t('result.profile_min_variance_name', 'Konservatif (Minimum Variance)')}
                                         </h3>
                                         <p className="text-xs text-muted-foreground mt-0.5">
-                                            Meminimalkan fluktuasi volatilitas risiko pasar.
+                                            {t('result.profile_min_variance_desc', 'Fokus meminimalkan volatilitas risiko pasar.')}
                                         </p>
                                     </div>
 
                                     <div className="pt-2 border-t border-border/50 grid grid-cols-3 gap-2 text-center font-mono">
                                         <div>
-                                            <span className="text-[10px] text-muted-foreground block font-sans">Return</span>
+                                            <span className="text-[10px] text-muted-foreground block font-sans">
+                                                {t('result.metric_return', 'Return')}
+                                            </span>
                                             <span className="font-bold text-xs sm:text-sm text-emerald-600 dark:text-emerald-400">
                                                 {formatPercent(bestPortfolios.min_variance.return)}
                                             </span>
                                         </div>
                                         <div>
-                                            <span className="text-[10px] text-muted-foreground block font-sans">Risiko (σ)</span>
+                                            <span className="text-[10px] text-muted-foreground block font-sans">
+                                                {t('result.metric_risk', 'Risiko (σ)')}
+                                            </span>
                                             <span className="font-bold text-xs sm:text-sm text-cyan-600 dark:text-cyan-400">
                                                 {formatPercent(bestPortfolios.min_variance.risk)}
                                             </span>
                                         </div>
                                         <div>
-                                            <span className="text-[10px] text-muted-foreground block font-sans">Sharpe</span>
+                                            <span className="text-[10px] text-muted-foreground block font-sans">
+                                                {t('result.metric_sharpe', 'Sharpe')}
+                                            </span>
                                             <span className="font-bold text-xs sm:text-sm text-foreground">
                                                 {bestPortfolios.min_variance.sharpe?.toFixed(2)}
                                             </span>
@@ -752,7 +765,7 @@ export default function OptimizationResultPage({
                                     <div className="flex items-center justify-between">
                                         <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 text-xs font-semibold gap-1 rounded-full">
                                             <Sparkles className="h-3 w-3" />
-                                            Seimbang (Pilihan Utama)
+                                            {t('result.profile_sharpe_tag', 'Seimbang (Pilihan Utama)')}
                                         </Badge>
 
                                         <div className="flex items-center gap-1">
@@ -765,7 +778,7 @@ export default function OptimizationResultPage({
                                                     handleExportPNG('sharpe');
                                                 }}
                                                 className="h-6 w-6 rounded-full text-muted-foreground hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-500/15 cursor-pointer transition-colors"
-                                                title="Quick Export Gambar Profil Seimbang"
+                                                title={t('result.download_sharpe_img', 'Unduh Gambar Profil Seimbang')}
                                             >
                                                 <Download className="h-3 w-3" />
                                             </Button>
@@ -777,28 +790,34 @@ export default function OptimizationResultPage({
 
                                     <div>
                                         <h3 className="text-base font-bold text-foreground">
-                                            Moderat (Optimal Sharpe Ratio)
+                                            {t('result.profile_sharpe_name', 'Moderat (Optimal Sharpe Ratio)')}
                                         </h3>
                                         <p className="text-xs text-muted-foreground mt-0.5">
-                                            Kombinasi rasio return-to-risk paling efisien.
+                                            {t('result.profile_sharpe_desc', 'Rasio return-to-risk optimal paling efisien.')}
                                         </p>
                                     </div>
 
                                     <div className="pt-2 border-t border-border/50 grid grid-cols-3 gap-2 text-center font-mono">
                                         <div>
-                                            <span className="text-[10px] text-muted-foreground block font-sans">Return</span>
+                                            <span className="text-[10px] text-muted-foreground block font-sans">
+                                                {t('result.metric_return', 'Return')}
+                                            </span>
                                             <span className="font-bold text-xs sm:text-sm text-emerald-600 dark:text-emerald-400">
                                                 {formatPercent(bestPortfolios.sharpe.return)}
                                             </span>
                                         </div>
                                         <div>
-                                            <span className="text-[10px] text-muted-foreground block font-sans">Risiko (σ)</span>
+                                            <span className="text-[10px] text-muted-foreground block font-sans">
+                                                {t('result.metric_risk', 'Risiko (σ)')}
+                                            </span>
                                             <span className="font-bold text-xs sm:text-sm text-foreground">
                                                 {formatPercent(bestPortfolios.sharpe.risk)}
                                             </span>
                                         </div>
                                         <div>
-                                            <span className="text-[10px] text-muted-foreground block font-sans">Sharpe</span>
+                                            <span className="text-[10px] text-muted-foreground block font-sans">
+                                                {t('result.metric_sharpe', 'Sharpe')}
+                                            </span>
                                             <span className="font-extrabold text-xs sm:text-sm text-emerald-600 dark:text-emerald-400">
                                                 {bestPortfolios.sharpe.sharpe?.toFixed(2)}
                                             </span>
@@ -821,7 +840,7 @@ export default function OptimizationResultPage({
                                     <div className="flex items-center justify-between">
                                         <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 text-xs font-semibold gap-1 rounded-full">
                                             <Zap className="h-3 w-3" />
-                                            Return Maksimal
+                                            {t('result.profile_max_return_tag', 'Return Maksimal')}
                                         </Badge>
 
                                         <div className="flex items-center gap-1">
@@ -834,7 +853,7 @@ export default function OptimizationResultPage({
                                                     handleExportPNG('max_return');
                                                 }}
                                                 className="h-6 w-6 rounded-full text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-500/15 cursor-pointer transition-colors"
-                                                title="Quick Export Gambar Profil Agresif"
+                                                title={t('result.download_max_return_img', 'Unduh Gambar Profil Agresif')}
                                             >
                                                 <Download className="h-3 w-3" />
                                             </Button>
@@ -846,16 +865,18 @@ export default function OptimizationResultPage({
 
                                     <div>
                                         <h3 className="text-base font-bold text-foreground">
-                                            Agresif (Max Expected Return)
+                                            {t('result.profile_max_return_name', 'Agresif (Max Expected Return)')}
                                         </h3>
                                         <p className="text-xs text-muted-foreground mt-0.5">
-                                            Memaksimalkan proyeksi imbal hasil frontier.
+                                            {t('result.profile_max_return_desc', 'Memaksimalkan proyeksi imbal hasil frontier.')}
                                         </p>
                                     </div>
 
                                     <div className="pt-2 border-t border-border/50 grid grid-cols-3 gap-2 text-center font-mono">
                                         <div>
-                                            <span className="text-[10px] text-muted-foreground block font-sans">Return</span>
+                                            <span className="text-[10px] text-muted-foreground block font-sans">
+                                                {t('result.metric_return', 'Return')}
+                                            </span>
                                             <span className="font-extrabold text-xs sm:text-sm text-amber-600 dark:text-amber-400">
                                                 {formatPercent(
                                                     bestPortfolios.max_return?.return ||
@@ -864,7 +885,9 @@ export default function OptimizationResultPage({
                                             </span>
                                         </div>
                                         <div>
-                                            <span className="text-[10px] text-muted-foreground block font-sans">Risiko (σ)</span>
+                                            <span className="text-[10px] text-muted-foreground block font-sans">
+                                                {t('result.metric_risk', 'Risiko (σ)')}
+                                            </span>
                                             <span className="font-bold text-xs sm:text-sm text-rose-600 dark:text-rose-400">
                                                 {formatPercent(
                                                     bestPortfolios.max_return?.risk ||
@@ -873,7 +896,9 @@ export default function OptimizationResultPage({
                                             </span>
                                         </div>
                                         <div>
-                                            <span className="text-[10px] text-muted-foreground block font-sans">Sharpe</span>
+                                            <span className="text-[10px] text-muted-foreground block font-sans">
+                                                {t('result.metric_sharpe', 'Sharpe')}
+                                            </span>
                                             <span className="font-bold text-xs sm:text-sm text-foreground">
                                                 {(
                                                     bestPortfolios.max_return?.sharpe ||
@@ -897,10 +922,10 @@ export default function OptimizationResultPage({
                                 <div>
                                     <CardTitle className="text-base font-bold flex items-center gap-2">
                                         <LineChart className="h-4 w-4 text-primary" />
-                                        <span>Kurva Pareto Efficient Frontier</span>
+                                        <span>{t('result.frontier_curve_desc', 'Kurva Pareto Efficient Frontier')}</span>
                                     </CardTitle>
                                     <CardDescription className="text-xs">
-                                        Plot Return Harapan (Y) vs Risiko Volatilitas (X)
+                                        {t('result.frontier_plot_desc', 'Plot Return Harapan (Y) vs Risiko Volatilitas (X)')}
                                     </CardDescription>
                                 </div>
                             </div>
@@ -912,7 +937,7 @@ export default function OptimizationResultPage({
                                     <ScatterChart
                                         margin={{ top: 20, right: 20, bottom: 20, left: 10 }}
                                         onMouseMove={(e: any) => {
-                                            if (e && e.activePayload && e.activePayload.length > 0) {
+                                             if (e && e.activePayload && e.activePayload.length > 0) {
                                                 setHoveredPoint({ x: e.activePayload[0].payload.x, y: e.activePayload[0].payload.y });
                                             } else {
                                                 setHoveredPoint(null);
@@ -928,11 +953,11 @@ export default function OptimizationResultPage({
                                         <XAxis
                                             type="number"
                                             dataKey="x"
-                                            name="Risiko (σ)"
+                                            name={t('result.risk_axis', 'Risiko (σ)')}
                                             unit="%"
                                             tick={{ fontSize: 10, fill: 'currentColor', opacity: 0.7 }}
                                             label={{
-                                                value: 'Risiko Volatilitas (σ %)',
+                                                value: t('result.risk_axis_label', 'Risiko Volatilitas (σ %)'),
                                                 position: 'insideBottom',
                                                 offset: -10,
                                                 fontSize: 11,
@@ -944,11 +969,11 @@ export default function OptimizationResultPage({
                                         <YAxis
                                             type="number"
                                             dataKey="y"
-                                            name="Return E(R)"
+                                            name={t('result.return_axis', 'Return E(R)')}
                                             unit="%"
                                             tick={{ fontSize: 10, fill: 'currentColor', opacity: 0.7 }}
                                             label={{
-                                                value: 'Expected Return (E(R) %)',
+                                                value: t('result.return_axis_label', 'Expected Return (E(R) %)'),
                                                 angle: -90,
                                                 position: 'insideLeft',
                                                 fontSize: 11,
@@ -977,23 +1002,23 @@ export default function OptimizationResultPage({
                                                         <div className="rounded-xl border border-border/80 bg-background/95 p-3 shadow-lg text-xs space-y-1 font-sans min-w-[180px]">
                                                             <div className="font-bold text-foreground flex items-center gap-1.5 pb-1">
                                                                 <span className="h-2 w-2 rounded-full bg-primary" />
-                                                                Detail Simulasi Portofolio
+                                                                {t('result.simulation_details', 'Detail Simulasi Portofolio')}
                                                             </div>
                                                             <div className="font-mono text-[11px] text-muted-foreground">
-                                                                Return E(R):{' '}
+                                                                {t('result.return_axis', 'Return E(R)')}:{' '}
                                                                 <strong className="text-emerald-600 dark:text-emerald-400">
                                                                     {data.y?.toFixed(2)}%
                                                                 </strong>
                                                             </div>
                                                             <div className="font-mono text-[11px] text-muted-foreground">
-                                                                Risiko (σ):{' '}
+                                                                {t('result.risk_axis', 'Risiko (σ)')}:{' '}
                                                                 <strong className="text-foreground">
                                                                     {data.x?.toFixed(2)}%
                                                                 </strong>
                                                             </div>
                                                             {data.sharpe !== undefined && (
                                                                 <div className="font-mono text-[11px] text-muted-foreground">
-                                                                    Sharpe Ratio:{' '}
+                                                                    {t('result.sharpe_ratio', 'Sharpe Ratio')}:{' '}
                                                                     <strong className="text-primary">
                                                                         {data.sharpe?.toFixed(2)}
                                                                     </strong>
@@ -1003,11 +1028,13 @@ export default function OptimizationResultPage({
                                                             {top3.length > 0 && (
                                                                 <>
                                                                     <div className="my-1.5 border-t border-border/50" />
-                                                                    <div className="text-[10px] text-muted-foreground font-semibold mb-1">Top 3 Saham:</div>
-                                                                    {top3.map((t, i) => (
+                                                                    <div className="text-[10px] text-muted-foreground font-semibold mb-1">
+                                                                        {t('result.top_3_stocks', 'Top 3 Saham:')}
+                                                                    </div>
+                                                                    {top3.map((tItem, i) => (
                                                                         <div key={i} className="flex justify-between font-mono text-[10px] py-0.5">
-                                                                            <span className="text-foreground font-bold">{t.ticker}</span>
-                                                                            <span className="text-primary">{t.weight.toFixed(2)}%</span>
+                                                                            <span className="text-foreground font-bold">{tItem.ticker}</span>
+                                                                            <span className="text-primary">{tItem.weight.toFixed(2)}%</span>
                                                                         </div>
                                                                     ))}
                                                                 </>
@@ -1040,7 +1067,7 @@ export default function OptimizationResultPage({
 
                                         {/* NSGA-II Scatter Points */}
                                         <Scatter
-                                            name="NSGA-II"
+                                            name={t('result.nsga_pareto', 'Populasi Pareto NSGA-II')}
                                             data={nsgaPoints}
                                             fill="#a855f7"
                                             className="cursor-pointer"
@@ -1060,7 +1087,7 @@ export default function OptimizationResultPage({
 
                                         {/* Markowitz Efficient Frontier Points */}
                                         <Scatter
-                                            name="Markowitz"
+                                            name={t('result.frontier_markowitz', 'Efficient Frontier (Markowitz)')}
                                             data={frontierPoints}
                                             fill="#10b981"
                                             className="cursor-pointer"
@@ -1081,7 +1108,7 @@ export default function OptimizationResultPage({
 
                                         {/* Individual Asset Points */}
                                         <Scatter
-                                            name="Saham Tunggal"
+                                            name={t('result.single_stock', 'Saham Tunggal')}
                                             data={assetPoints}
                                             fill="#64748b"
                                             shape="triangle"
@@ -1089,7 +1116,7 @@ export default function OptimizationResultPage({
 
                                         {/* Key Highlight Markers */}
                                         <Scatter
-                                            name="Portofolio Pilihan"
+                                            name={t('result.selected_portfolio', 'Portofolio Pilihan')}
                                             data={keyMarkers}
                                             fill="#e11d48"
                                             shape="cross"
@@ -1102,11 +1129,11 @@ export default function OptimizationResultPage({
                             <div className="flex items-center justify-center gap-3 sm:gap-4 flex-wrap text-[11px] text-muted-foreground pt-2.5 border-t border-border/40">
                                 <span className="flex items-center gap-1.5">
                                     <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shrink-0" />
-                                    <span>Efficient Frontier (Markowitz)</span>
+                                    <span>{t('result.frontier_markowitz', 'Efficient Frontier (Markowitz)')}</span>
                                 </span>
                                 <span className="flex items-center gap-1.5">
                                     <span className="h-2.5 w-2.5 rounded-full bg-purple-500 opacity-60 shrink-0" />
-                                    <span>Populasi Pareto NSGA-II</span>
+                                    <span>{t('result.nsga_pareto', 'Populasi Pareto NSGA-II')}</span>
                                 </span>
                             </div>
                         </CardContent>
@@ -1119,11 +1146,11 @@ export default function OptimizationResultPage({
                                 <div>
                                     <CardTitle className="text-base font-bold flex items-center gap-2">
                                         <PieIcon className="h-4 w-4 text-primary" />
-                                        <span> Alokasi Bobot Portofolio</span>
+                                        <span>{t('result.weight_allocation', 'Alokasi Bobot Portofolio')}</span>
                                     </CardTitle>
                                     <CardDescription className="text-xs">
-                                        Proporsi kepemilikan saham untuk profil{' '}
-                                        <strong className="text-foreground capitalize">{selectedProfile.replace('_', ' ')}</strong>
+                                        {t('result.weight_proportion', 'Proporsi kepemilikan saham untuk profil')}{' '}
+                                        <strong className="text-foreground capitalize">{getProfileLabel(selectedProfile)}</strong>
                                     </CardDescription>
                                 </div>
                             </div>
@@ -1181,10 +1208,10 @@ export default function OptimizationResultPage({
                                                                 {d.ticker}
                                                             </div>
                                                             <div className="font-mono text-primary font-bold">
-                                                                Bobot: {d.weightPercent?.toFixed(2)}%
+                                                                {t('result.weight_label', 'Bobot:')} {d.weightPercent?.toFixed(2)}%
                                                             </div>
                                                             <div className="font-mono text-muted-foreground text-[11px]">
-                                                                Nominal: {formatRupiah(d.nominalAmount)}
+                                                                {t('result.nominal_label', 'Nominal:')} {formatRupiah(d.nominalAmount)}
                                                             </div>
                                                         </div>
                                                     );
@@ -1232,9 +1259,9 @@ export default function OptimizationResultPage({
                 {/* 4. TABEL DETAIL ALOKASI NOMINAL RUPIAH & ESTIMASI LOT */}
                 <div className="space-y-6">
                     {[
-                        { id: 'min_variance', label: 'Konservatif (Risiko Rendah)', data: bestPortfolios.min_variance },
-                        { id: 'sharpe', label: 'Seimbang (Optimal Sharpe)', data: bestPortfolios.sharpe },
-                        { id: 'max_return', label: 'Agresif (Return Maksimal)', data: bestPortfolios.max_return }
+                        { id: 'min_variance', label: getProfileLabel('min_variance'), data: bestPortfolios.min_variance },
+                        { id: 'sharpe', label: getProfileLabel('sharpe'), data: bestPortfolios.sharpe },
+                        { id: 'max_return', label: getProfileLabel('max_return'), data: bestPortfolios.max_return }
                     ].filter((profile) => profile.id === selectedProfile).map((profile) => profile.data && (
                         <Card key={profile.id} className="border border-border/70 shadow-xs">
                             <CardHeader className="pb-3 border-b border-border/50">
@@ -1242,12 +1269,12 @@ export default function OptimizationResultPage({
                                     <div>
                                         <CardTitle className="text-base font-bold flex items-center gap-2">
                                             <Layers className="h-4 w-4 text-primary" />
-                                            <span>Alokasi {profile.label}</span>
+                                            <span>{t('result.allocation_details_title', 'Detail Alokasi Portofolio')}: {profile.label}</span>
                                         </CardTitle>
                                         <CardDescription className="text-xs">
-                                            Return: <span className="font-bold text-foreground">{formatPercent(profile.data.return)}</span> |
-                                            Risiko: <span className="font-bold text-foreground">{formatPercent(profile.data.risk)}</span> |
-                                            Sharpe: <span className="font-bold text-foreground">{profile.data.sharpe?.toFixed(3)}</span>
+                                            {t('result.metric_return', 'Return')}: <span className="font-bold text-foreground">{formatPercent(profile.data.return)}</span> |
+                                            {' '}{t('result.metric_risk', 'Risiko (σ)')}: <span className="font-bold text-foreground">{formatPercent(profile.data.risk)}</span> |
+                                            {' '}{t('result.metric_sharpe', 'Sharpe')}: <span className="font-bold text-foreground">{profile.data.sharpe?.toFixed(3)}</span>
                                         </CardDescription>
                                     </div>
                                 </div>
@@ -1258,12 +1285,12 @@ export default function OptimizationResultPage({
                                     <Table className="min-w-[640px]">
                                         <TableHeader className="bg-muted/30">
                                             <TableRow>
-                                                <TableHead className="text-xs font-bold py-3">Emiten Saham</TableHead>
-                                                <TableHead className="text-xs font-bold text-center py-3">Bursa</TableHead>
-                                                <TableHead className="text-xs font-bold text-right py-3">Bobot Alokasi (%)</TableHead>
-                                                <TableHead className="text-xs font-bold text-right py-3">Nominal Dana (IDR)</TableHead>
-                                                <TableHead className="text-xs font-bold text-right py-3">Harga Terakhir (IDR)</TableHead>
-                                                <TableHead className="text-xs font-bold text-right py-3">Estimasi Lot</TableHead>
+                                                <TableHead className="text-xs font-bold py-3">{t('result.ticker_column', 'Emiten Saham')}</TableHead>
+                                                <TableHead className="text-xs font-bold text-center py-3">{t('saham.exchange_label', 'Bursa')}</TableHead>
+                                                <TableHead className="text-xs font-bold text-right py-3">{t('result.weight_column', 'Bobot Alokasi')} (%)</TableHead>
+                                                <TableHead className="text-xs font-bold text-right py-3">{t('result.nominal_funds', 'Nominal Dana')} (IDR)</TableHead>
+                                                <TableHead className="text-xs font-bold text-right py-3">{t('stocks.price', 'Harga Terakhir')} (IDR)</TableHead>
+                                                <TableHead className="text-xs font-bold text-right py-3">{t('result.lots_column', 'Estimasi Lot')}</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -1318,11 +1345,11 @@ export default function OptimizationResultPage({
                                                             </TableCell>
 
                                                             <TableCell className="py-3 text-right font-mono text-xs text-muted-foreground">
-                                                                {lastClose > 0 ? `${lastClose.toLocaleString('id-ID')}` : '-'}
+                                                                {lastClose > 0 ? `${lastClose.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}` : '-'}
                                                             </TableCell>
 
                                                             <TableCell className="py-3 text-right font-mono font-extrabold text-xs text-emerald-600 dark:text-emerald-400">
-                                                                {lotEstimate > 0 ? `${lotEstimate.toLocaleString('id-ID')} Lot` : '-'}
+                                                                {lotEstimate > 0 ? `${lotEstimate.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')} ${t('result.lot_unit', 'Lot')}` : '-'}
                                                             </TableCell>
                                                         </TableRow>
                                                     );
@@ -1346,7 +1373,7 @@ export default function OptimizationResultPage({
                                                 <tfoot className="bg-muted/10 border-t border-border/50">
                                                     <TableRow>
                                                         <TableCell colSpan={2} className="py-3 font-bold text-center text-xs">
-                                                            Total
+                                                            {t('common.total', 'Total')}
                                                         </TableCell>
                                                         <TableCell className="py-3 font-mono font-bold text-right text-xs text-primary">
                                                             {totalWeight.toFixed(2)}%
@@ -1358,7 +1385,7 @@ export default function OptimizationResultPage({
                                                             -
                                                         </TableCell>
                                                         <TableCell className="py-3 font-mono font-extrabold text-right text-xs text-emerald-600 dark:text-emerald-400">
-                                                            {totalLots > 0 ? `${totalLots.toLocaleString('id-ID')} Lot` : '-'}
+                                                            {totalLots > 0 ? `${totalLots.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')} ${t('result.lot_unit', 'Lot')}` : '-'}
                                                         </TableCell>
                                                     </TableRow>
                                                 </tfoot>
@@ -1379,10 +1406,10 @@ export default function OptimizationResultPage({
                                 <div>
                                     <CardTitle className="text-base font-bold flex items-center gap-2">
                                         <Activity className="h-4 w-4 text-primary" />
-                                        <span>Distribusi 5-Points Quantile Model</span>
+                                        <span>{t('result.quantile_title', 'Distribusi 5-Points Quantile Model')}</span>
                                     </CardTitle>
                                     <CardDescription className="text-xs">
-                                        Sebaran kuantil metrik performa (Min, Q1, Median, Q3, Max) dari seluruh portofolio
+                                        {t('result.quantile_desc', 'Sebaran kuantil metrik performa (Min, Q1, Median, Q3, Max) dari seluruh portofolio')}
                                     </CardDescription>
                                 </div>
                             </div>
@@ -1393,7 +1420,7 @@ export default function OptimizationResultPage({
                                 <Table className="min-w-[550px]">
                                     <TableHeader className="bg-muted/30">
                                         <TableRow>
-                                            <TableHead className="text-xs font-bold py-3">Rasio Metrik</TableHead>
+                                            <TableHead className="text-xs font-bold py-3">{t('result.metric_col', 'Rasio Metrik')}</TableHead>
                                             <TableHead className="text-xs font-bold text-right py-3">Min (0%)</TableHead>
                                             <TableHead className="text-xs font-bold text-right py-3">Q1 (25%)</TableHead>
                                             <TableHead className="text-xs font-bold text-right py-3">Median (50%)</TableHead>
@@ -1449,7 +1476,7 @@ export default function OptimizationResultPage({
                 {!isPublic && history.length > 1 && (
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl border border-border/70 bg-muted/20 text-xs">
                         <span className="text-muted-foreground">
-                            Menampilkan <strong>{history.length}</strong> riwayat analisis portofolio terbaru Anda.
+                            {t('result.recent_history_desc', 'Menampilkan {count} riwayat analisis portofolio terbaru Anda.', { count: history.length })}
                         </span>
                         <div className="flex items-center gap-1.5 overflow-x-auto max-w-full w-full sm:w-auto pb-1 sm:pb-0">
                             {history.slice(0, 5).map((h) => (
@@ -1486,6 +1513,7 @@ export default function OptimizationResultPage({
                         profileType={selectedProfile}
                         optimization={optimization}
                         stocks={stocks}
+                        language={language}
                     />
 
                     {/* Kartu Komparasi 3 Profil Sekaligus */}
@@ -1494,6 +1522,7 @@ export default function OptimizationResultPage({
                             ref={compareCardRef}
                             optimization={optimization}
                             stocks={stocks}
+                            language={language}
                         />
                     </div>
                 </div>
@@ -1503,7 +1532,7 @@ export default function OptimizationResultPage({
     if (isPublic) {
         return (
             <div className="min-h-screen bg-background text-foreground flex flex-col justify-between">
-                <Head title="Portofolio Saham" />
+                <Head title={t('result.title', 'Portofolio Saham')} />
 
                 {/* Public Top Navbar */}
                 <header className="sticky top-0 z-50 border-b border-border/60 bg-background/95 backdrop-blur-md">
@@ -1513,10 +1542,10 @@ export default function OptimizationResultPage({
                         </Link>
                         <div className="flex items-center gap-2.5">
                             <Button asChild variant="ghost" size="sm" className="text-xs cursor-pointer">
-                                <Link href="/login">Masuk</Link>
+                                <Link href="/login">{t('nav.login', 'Masuk')}</Link>
                             </Button>
                             <Button asChild size="sm" className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer shadow-xs">
-                                <Link href="/register">Daftar Sekarang</Link>
+                                <Link href="/register">{t('landing.hero.cta_register', 'Daftar Sekarang')}</Link>
                             </Button>
                         </div>
                     </div>
@@ -1525,9 +1554,9 @@ export default function OptimizationResultPage({
                 {/* Public Top Marketing Banner */}
                 <div className="bg-emerald-500/10 border-b border-emerald-500/20 py-2.5 px-4 text-center text-xs text-emerald-800 dark:text-emerald-300 flex items-center justify-center gap-2 flex-wrap">
                     <Sparkles className="h-4 w-4 text-emerald-600 shrink-0" />
-                    <span>Hasil optimasi portofolio <strong>Dinalar AI</strong>. Buat portofolio investasi Anda sendiri secara gratis!</span>
+                    <span>{t('result.public_banner_text', 'Hasil optimasi portofolio Dinalar AI. Buat portofolio investasi Anda sendiri secara gratis!')}</span>
                     <Button asChild size="sm" variant="link" className="h-auto p-0 font-bold text-emerald-600 hover:text-emerald-700 text-xs cursor-pointer">
-                        <Link href="/register">Mulai Gratis &rarr;</Link>
+                        <Link href="/register">{t('result.public_banner_cta', 'Mulai Gratis →')}</Link>
                     </Button>
                 </div>
 
@@ -1545,7 +1574,7 @@ export default function OptimizationResultPage({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Hasil Portofolio" />
+            <Head title={t('result.title', 'Hasil Portofolio')} />
             <div className="p-4 sm:p-6 mx-auto w-full">
                 {mainContent}
             </div>
