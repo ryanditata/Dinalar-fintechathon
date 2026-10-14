@@ -19,18 +19,21 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: t('settings.nav_profile', 'Profile settings'),
+            title: t('settings.nav_profile', 'Profil'),
             href: '/settings/profile',
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={t('settings.nav_profile', 'Profile settings')} />
+            <Head title={t('settings.nav_profile', 'Profil')} />
 
             <SettingsLayout>
                 <div className="space-y-6">
-                    <HeadingSmall title="Profile information" description="Update your name and email address" />
+                    <HeadingSmall
+                        title={t('settings.profile_info_title', 'Informasi Profil')}
+                        description={t('settings.profile_info_desc', 'Perbarui nama lengkap dan alamat email akun Anda')}
+                    />
 
                     <Form
                         method="patch"
@@ -43,7 +46,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                         {({ processing, recentlySuccessful, errors }) => (
                             <>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="name">Name</Label>
+                                    <Label htmlFor="name">{t('profile.full_name', 'Nama Lengkap')}</Label>
 
                                     <Input
                                         id="name"
@@ -52,14 +55,14 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                                         name="name"
                                         required
                                         autoComplete="name"
-                                        placeholder="Full name"
+                                        placeholder={t('profile.full_name_placeholder', 'Nama lengkap Anda')}
                                     />
 
                                     <InputError className="mt-2" message={errors.name} />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="email">Email address</Label>
+                                    <Label htmlFor="email">{t('profile.email', 'Alamat Email')}</Label>
 
                                     <Input
                                         id="email"
@@ -69,7 +72,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                                         name="email"
                                         required
                                         autoComplete="username"
-                                        placeholder="Email address"
+                                        placeholder={t('profile.email_placeholder', 'email@contoh.com')}
                                     />
 
                                     <InputError className="mt-2" message={errors.email} />
@@ -78,27 +81,29 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                                 {mustVerifyEmail && auth.user.email_verified_at === null && (
                                     <div>
                                         <p className="-mt-4 text-sm text-muted-foreground">
-                                            Your email address is unverified.{' '}
+                                            {t('settings.email_unverified_prompt', 'Alamat email Anda belum diverifikasi.')}{' '}
                                             <Link
                                                 href={route('verification.send')}
                                                 method="post"
                                                 as="button"
-                                                className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                                                className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500 cursor-pointer"
                                             >
-                                                Click here to resend the verification email.
+                                                {t('settings.click_to_resend', 'Klik di sini untuk mengirim ulang email verifikasi.')}
                                             </Link>
                                         </p>
 
                                         {status === 'verification-link-sent' && (
                                             <div className="mt-2 text-sm font-medium text-green-600">
-                                                A new verification link has been sent to your email address.
+                                                {t('profile.verification_sent', 'Tautan verifikasi baru telah dikirim ke alamat email Anda.')}
                                             </div>
                                         )}
                                     </div>
                                 )}
 
                                 <div className="flex items-center gap-4">
-                                    <Button disabled={processing} className="bg-emerald-600 hover:bg-emerald-700 text-white">Save</Button>
+                                    <Button disabled={processing} className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer">
+                                        {t('common.save', 'Simpan')}
+                                    </Button>
 
                                     <Transition
                                         show={recentlySuccessful}
@@ -107,7 +112,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                                         leave="transition ease-in-out"
                                         leaveTo="opacity-0"
                                     >
-                                        <p className="text-sm text-neutral-600">Saved</p>
+                                        <p className="text-sm text-neutral-600 dark:text-neutral-400">{t('settings.saved', 'Tersimpan')}</p>
                                     </Transition>
                                 </div>
                             </>

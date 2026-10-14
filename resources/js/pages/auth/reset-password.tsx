@@ -5,6 +5,7 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslation } from '@/i18n/LanguageContext';
 import AuthLayout from '@/layouts/auth-layout';
 
 interface ResetPasswordProps {
@@ -13,9 +14,11 @@ interface ResetPasswordProps {
 }
 
 export default function ResetPassword({ token, email }: ResetPasswordProps) {
+    const { t } = useTranslation();
+
     return (
-        <AuthLayout title="Reset password" description="Please enter your new password below">
-            <Head title="Reset password" />
+        <AuthLayout title={t('auth.reset_title', 'Atur Ulang Kata Sandi')} description={t('auth.reset_subtitle', 'Buat kata sandi baru yang kuat dan aman untuk akun Dinalar Anda.')}>
+            <Head title={t('auth.reset_title', 'Atur Ulang Kata Sandi')} />
 
             <Form
                 method="post"
@@ -26,13 +29,13 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                 {({ processing, errors }) => (
                     <div className="grid gap-6">
                         <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">{t('auth.email_label', 'Alamat Email')}</Label>
                             <Input id="email" type="email" name="email" autoComplete="email" value={email} className="mt-1 block w-full" readOnly />
                             <InputError message={errors.email} className="mt-2" />
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">{t('auth.new_password_label', 'Kata Sandi Baru')}</Label>
                             <Input
                                 id="password"
                                 type="password"
@@ -40,27 +43,27 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
                                 autoFocus
-                                placeholder="Password"
+                                placeholder={t('profile.new_password_placeholder', 'Minimal 8 karakter')}
                             />
                             <InputError message={errors.password} />
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="password_confirmation">Confirm password</Label>
+                            <Label htmlFor="password_confirmation">{t('auth.confirm_new_password_label', 'Konfirmasi Kata Sandi Baru')}</Label>
                             <Input
                                 id="password_confirmation"
                                 type="password"
                                 name="password_confirmation"
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
-                                placeholder="Confirm password"
+                                placeholder={t('auth.confirm_new_password_placeholder', 'Ulangi kata sandi baru')}
                             />
                             <InputError message={errors.password_confirmation} className="mt-2" />
                         </div>
 
-                        <Button type="submit" className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white" disabled={processing}>
+                        <Button type="submit" className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer" disabled={processing}>
                             {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                            Reset password
+                            {processing ? t('auth.saving_new_password', 'Menyimpan Kata Sandi...') : t('auth.save_new_password_btn', 'Simpan Kata Sandi Baru')}
                         </Button>
                     </div>
                 )}

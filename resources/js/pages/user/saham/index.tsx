@@ -253,7 +253,7 @@ export default function UserStockIndex({
                         <div className="shrink-0">
                             <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary ring-1 ring-inset ring-primary/20 backdrop-blur-xs">
                                 <TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                                {t('saham.market_explorer', 'Market Explorer')}
+                                {t('saham.market_explorer', 'Eksplorasi Saham')}
                             </span>
                         </div>
 

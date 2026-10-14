@@ -20,18 +20,21 @@ export default function Password() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: t('settings.nav_password', 'Password settings'),
+            title: t('settings.nav_password', 'Kata Sandi'),
             href: '/settings/password',
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={t('settings.nav_password', 'Password settings')} />
+            <Head title={t('settings.nav_password', 'Kata Sandi')} />
 
             <SettingsLayout>
                 <div className="space-y-6">
-                    <HeadingSmall title="Update password" description="Ensure your account is using a long, random password to stay secure" />
+                    <HeadingSmall
+                        title={t('settings.update_password_title', 'Perbarui Kata Sandi')}
+                        description={t('settings.update_password_desc', 'Pastikan akun Anda menggunakan kata sandi yang panjang dan acak agar tetap aman')}
+                    />
 
                     <Form
                         method="put"
@@ -55,7 +58,7 @@ export default function Password() {
                         {({ errors, processing, recentlySuccessful }) => (
                             <>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="current_password">Current password</Label>
+                                    <Label htmlFor="current_password">{t('profile.current_password', 'Kata Sandi Saat Ini')}</Label>
 
                                     <Input
                                         id="current_password"
@@ -64,14 +67,14 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="current-password"
-                                        placeholder="Current password"
+                                        placeholder={t('profile.current_password_placeholder', 'Masukkan kata sandi saat ini')}
                                     />
 
                                     <InputError message={errors.current_password} />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="password">New password</Label>
+                                    <Label htmlFor="password">{t('profile.new_password', 'Kata Sandi Baru')}</Label>
 
                                     <Input
                                         id="password"
@@ -80,14 +83,14 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="New password"
+                                        placeholder={t('profile.new_password_placeholder', 'Minimal 8 karakter')}
                                     />
 
                                     <InputError message={errors.password} />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="password_confirmation">Confirm password</Label>
+                                    <Label htmlFor="password_confirmation">{t('profile.confirm_new_password', 'Konfirmasi Kata Sandi Baru')}</Label>
 
                                     <Input
                                         id="password_confirmation"
@@ -95,14 +98,16 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="Confirm password"
+                                        placeholder={t('profile.confirm_password_placeholder', 'Ulangi kata sandi baru')}
                                     />
 
                                     <InputError message={errors.password_confirmation} />
                                 </div>
 
                                 <div className="flex items-center gap-4">
-                                    <Button disabled={processing} className="bg-emerald-600 hover:bg-emerald-700 text-white">Save password</Button>
+                                    <Button disabled={processing} className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer">
+                                        {t('settings.save_password_btn', 'Simpan Kata Sandi')}
+                                    </Button>
 
                                     <Transition
                                         show={recentlySuccessful}
@@ -111,7 +116,7 @@ export default function Password() {
                                         leave="transition ease-in-out"
                                         leaveTo="opacity-0"
                                     >
-                                        <p className="text-sm text-neutral-600">Saved</p>
+                                        <p className="text-sm text-neutral-600 dark:text-neutral-400">{t('settings.saved', 'Tersimpan')}</p>
                                     </Transition>
                                 </div>
                             </>

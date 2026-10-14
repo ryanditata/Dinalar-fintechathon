@@ -58,8 +58,8 @@ const id = {
         view_results: 'Lihat Hasil',
     },
     saham: {
-        title: 'Daftar Saham',
-        market_explorer: 'Market Explorer',
+        title: 'Eksplorasi Saham',
+        market_explorer: 'Eksplorasi Saham',
         search_placeholder: 'Cari kode ticker atau nama emiten...',
         filter_all_sectors: 'Semua Sektor',
         sort_by: 'Urutkan Berdasarkan',

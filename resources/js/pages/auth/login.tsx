@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslation } from '@/i18n/LanguageContext';
 import AuthLayout from '@/layouts/auth-layout';
 import { Form, Head } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
@@ -15,13 +16,15 @@ interface LoginProps {
 }
 
 export default function Login({ status, canResetPassword }: LoginProps) {
+    const { t } = useTranslation();
+
     return (
-        <AuthLayout title="Log in to your account" description="Enter your email and password below to log in">
-            <Head title="Log in" />
+        <AuthLayout title={t('auth.login_title', 'Selamat Datang')} description={t('auth.login_subtitle', 'Masuk ke akun Anda untuk memantau dan mengoptimalkan portofolio saham.')}>
+            <Head title={t('nav.login', 'Masuk')} />
 
             <div className="flex flex-col gap-6">
                 {/* 1. Quick Google OAuth Button */}
-                <GoogleAuthButton text="Login with Google" />
+                <GoogleAuthButton text={t('auth.google_login', 'Masuk dengan Google')} />
 
                 {/* 2. Visual Divider */}
                 <div className="relative">
@@ -30,7 +33,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
                         <span className="bg-background px-2.5 text-muted-foreground font-medium text-[11px] tracking-wider">
-                            Atau lanjutkan dengan email
+                            {t('auth.continue_with_email', 'Atau lanjutkan dengan email')}
                         </span>
                     </div>
                 </div>
@@ -41,7 +44,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                         <>
                             <div className="grid gap-6">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="email">Email address</Label>
+                                    <Label htmlFor="email">{t('auth.email_label', 'Alamat Email')}</Label>
                                     <Input
                                         id="email"
                                         type="email"
@@ -50,17 +53,17 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                         autoFocus
                                         tabIndex={1}
                                         autoComplete="email"
-                                        placeholder="email@example.com"
+                                        placeholder={t('auth.email_placeholder', 'nama@email.com')}
                                     />
                                     <InputError message={errors.email} />
                                 </div>
 
                                 <div className="grid gap-2">
                                     <div className="flex items-center">
-                                        <Label htmlFor="password">Password</Label>
+                                        <Label htmlFor="password">{t('auth.password_label', 'Kata Sandi')}</Label>
                                         {canResetPassword && (
                                             <TextLink href={route('password.request')} className="ml-auto text-sm" tabIndex={5}>
-                                                Forgot password?
+                                                {t('auth.forgot_password', 'Lupa kata sandi?')}
                                             </TextLink>
                                         )}
                                     </div>
@@ -71,26 +74,26 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                         required
                                         tabIndex={2}
                                         autoComplete="current-password"
-                                        placeholder="Password"
+                                        placeholder={t('auth.password_placeholder', 'Masukkan kata sandi')}
                                     />
                                     <InputError message={errors.password} />
                                 </div>
 
                                 <div className="flex items-center space-x-3">
                                     <Checkbox id="remember" name="remember" tabIndex={3} className="hover:cursor-pointer"/>
-                                    <Label htmlFor="remember">Remember me</Label>
+                                    <Label htmlFor="remember" className="cursor-pointer">{t('auth.remember_me', 'Ingat saya di perangkat ini')}</Label>
                                 </div>
 
-                                <Button type="submit" className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white" tabIndex={4} disabled={processing}>
+                                <Button type="submit" className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer" tabIndex={4} disabled={processing}>
                                     {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                                    Log in
+                                    {processing ? t('auth.signing_in', 'Memproses...') : t('auth.sign_in_btn', 'Masuk ke Akun')}
                                 </Button>
                             </div>
 
                             <div className="text-center text-sm text-muted-foreground">
-                                Don't have an account?{' '}
+                                {t('auth.no_account_prompt', 'Belum memiliki akun?')}{' '}
                                 <TextLink href={route('register')} tabIndex={5}>
-                                    Sign up
+                                    {t('auth.register_now', 'Daftar Sekarang')}
                                 </TextLink>
                             </div>
                         </>
