@@ -14,6 +14,7 @@ export interface StockExploreCardProps {
     isAdded?: boolean;
     onActionClick?: () => void;
     onClick?: () => void;
+    showCurrencyPrefix?: boolean;
 }
 
 export function StockExploreCard({
@@ -26,17 +27,18 @@ export function StockExploreCard({
     isAdded = false,
     onActionClick,
     onClick,
+    showCurrencyPrefix = false,
 }: StockExploreCardProps) {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     const cleanTicker = ticker.replace('.JK', '');
     const numPrice = typeof price === 'number' ? price : Number(price) || 0;
+    const isUsMarket = bursa ? bursa !== 'IDX' : !ticker.endsWith('.JK');
 
     const formattedPrice =
         numPrice > 0
-            ? new Intl.NumberFormat('id-ID', {
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 2,
-              }).format(numPrice)
+            ? isUsMarket
+                ? `${showCurrencyPrefix ? '$' : ''}${numPrice.toLocaleString('en-US', { maximumFractionDigits: 2 })}`
+                : `${showCurrencyPrefix ? `${language === 'en' ? 'IDR ' : 'Rp '}` : ''}${numPrice.toLocaleString('id-ID')}`
             : price !== undefined && price !== null
             ? String(price)
             : '-';

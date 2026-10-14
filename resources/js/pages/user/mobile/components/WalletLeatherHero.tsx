@@ -65,8 +65,8 @@ export function WalletLeatherHero({
     const formattedAmount =
         typeof amount === 'number'
             ? isUs
-                ? amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                : amount.toLocaleString(language === 'en' ? 'en-US' : 'id-ID', { maximumFractionDigits: 2 })
+                ? amount.toLocaleString('en-US', { maximumFractionDigits: 2 })
+                : amount.toLocaleString('id-ID')
             : amount;
 
     const formatMetricPercent = (val: number | string | null | undefined, fallback: string) => {
@@ -201,7 +201,7 @@ export function WalletLeatherHero({
                     <div>
                         <div className="flex items-baseline text-white">
                             {/* Simbol Mata Uang Kecil Terangkat (Superscript) */}
-                            <span className="text-sm font-semibold text-emerald-200 mr-1.5 -translate-y-0.5">
+                            <span className={`text-sm font-semibold text-emerald-200 ${isUs ? 'mr-0.5' : 'mr-1.5'} -translate-y-0.5`}>
                                 {isUs ? '$' : (language === 'en' ? 'IDR' : 'Rp')}
                             </span>
                             <span className="text-[24px] font-bold tracking-tight font-sans tabular-nums text-white leading-none">

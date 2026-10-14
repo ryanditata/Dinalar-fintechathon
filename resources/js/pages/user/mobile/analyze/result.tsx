@@ -207,15 +207,14 @@ export default function MobileResultPage({
     const formatCurrency = (val: number | string | null | undefined, forceBursa?: string) => {
         const useUsd = forceBursa ? forceBursa !== 'IDX' : isUsMarket;
         if (val === null || val === undefined || isNaN(Number(val))) {
-            return useUsd ? '$ -' : `${language === 'en' ? 'IDR' : 'Rp'} -`;
+            return useUsd ? '$-' : `${language === 'en' ? 'IDR' : 'Rp'} -`;
         }
         const num = Number(val);
         if (useUsd) {
-            return `$ ${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            return `$${num.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
         }
         const currencyPrefix = language === 'en' ? 'IDR' : 'Rp';
-        const locale = language === 'en' ? 'en-US' : 'id-ID';
-        return `${currencyPrefix} ${num.toLocaleString(locale)}`;
+        return `${currencyPrefix} ${num.toLocaleString('id-ID')}`;
     };
 
     // Format Rupiah / Currency backward compatibility

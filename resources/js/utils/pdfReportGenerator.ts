@@ -37,13 +37,13 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
 
 // Helper Format Rupiah / Currency / USD
 const formatIdr = (val: number | string | null | undefined, lang: string = 'id', isUs: boolean = false): string => {
-    if (val === null || val === undefined || isNaN(Number(val))) return isUs ? '$ 0.00' : 'Rp 0';
+    if (val === null || val === undefined || isNaN(Number(val))) return isUs ? '$0' : 'Rp 0';
     const num = Number(val);
     if (isUs) {
-        return `$ ${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        return `$${num.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
     }
-    const locale = lang === 'en' ? 'en-US' : 'id-ID';
-    return `Rp ${Math.round(num).toLocaleString(locale)}`;
+    const prefix = lang === 'en' ? 'IDR' : 'Rp';
+    return `${prefix} ${Math.round(num).toLocaleString('id-ID')}`;
 };
 
 // Helper Format Date

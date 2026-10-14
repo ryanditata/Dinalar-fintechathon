@@ -153,9 +153,9 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
 
     const formatHistoryCapital = (capital: number, isUs: boolean) => {
         if (isUs) {
-            return `$ ${capital.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            return `$${capital.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
         }
-        return `${language === 'en' ? 'IDR' : 'Rp'} ${capital.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}`;
+        return `${language === 'en' ? 'IDR' : 'Rp'} ${capital.toLocaleString('id-ID')}`;
     };
 
     return (

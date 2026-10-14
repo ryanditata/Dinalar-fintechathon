@@ -16,6 +16,7 @@ export interface StockItemCardProps {
     actionLabel?: string;
     onActionClick?: () => void;
     onClick?: () => void;
+    showCurrencyPrefix?: boolean;
 }
 
 export function StockItemCard({
@@ -31,16 +32,20 @@ export function StockItemCard({
     actionLabel,
     onActionClick,
     onClick,
+    showCurrencyPrefix = false,
 }: StockItemCardProps) {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     const displayActionLabel = actionLabel ?? t('common.analyze', 'Analisis');
     const cleanTicker = ticker.replace('.JK', '');
     const isPositive = (changePercent ?? 0) >= 0;
     const numPrice = typeof price === 'number' ? price : Number(price) || 0;
+    const isUsMarket = bursa ? bursa !== 'IDX' : !ticker.endsWith('.JK');
 
     const formattedPrice =
         numPrice > 0
-            ? `${numPrice.toLocaleString('id-ID')}`
+            ? isUsMarket
+                ? `${showCurrencyPrefix ? '$' : ''}${numPrice.toLocaleString('en-US', { maximumFractionDigits: 2 })}`
+                : `${showCurrencyPrefix ? `${language === 'en' ? 'IDR ' : 'Rp '}` : ''}${numPrice.toLocaleString('id-ID')}`
             : price !== undefined && price !== null
             ? String(price)
             : '-';

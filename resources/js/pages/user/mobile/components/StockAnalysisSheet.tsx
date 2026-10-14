@@ -276,11 +276,18 @@ export function StockAnalysisSheet({
         fetchHistoricalAnalysis({ start: startDate, end: endDate });
     };
 
-    const formatRupiah = (val: number | string | null | undefined) => {
+    const isUsStock = stock ? (stock.bursa ? stock.bursa !== 'IDX' : !stock.ticker.endsWith('.JK')) : false;
+
+    const formatStockPrice = (val: number | string | null | undefined, showCurrencyPrefix: boolean = false) => {
         if (val === null || val === undefined || isNaN(Number(val))) return '-';
-        const localeStr = language === 'en' ? 'en-US' : 'id-ID';
-        return `${Number(val).toLocaleString(localeStr)}`;
+        const num = Number(val);
+        if (isUsStock) {
+            return `${showCurrencyPrefix ? '$' : ''}${num.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
+        }
+        return `${showCurrencyPrefix ? `${language === 'en' ? 'IDR ' : 'Rp '}` : ''}${num.toLocaleString('id-ID')}`;
     };
+
+    const formatRupiah = (val: number | string | null | undefined) => formatStockPrice(val, false);
 
     const formatDate = (dateStr?: string) => {
         if (!dateStr) return '-';
@@ -672,9 +679,7 @@ export function StockAnalysisSheet({
                         {lastPrice > 0 && (
                             <div className="text-right shrink-0">
                                 <div className="text-sm font-extrabold font-mono text-zinc-900 leading-tight">
-                                    {(stock.bursa && stock.bursa !== 'IDX') || (!stock.ticker.endsWith('.JK') && stock.bursa !== 'IDX')
-                                        ? `$ ${lastPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                                        : `${language === 'en' ? 'IDR ' : 'Rp '}${formatRupiah(lastPrice)}`}
+                                    {formatStockPrice(lastPrice)}
                                 </div>
                                 {changeVal !== null && changeVal !== undefined && (
                                     <span
@@ -830,7 +835,7 @@ export function StockAnalysisSheet({
                                                         domain={['auto', 'auto']}
                                                         tickLine={false}
                                                         width={45}
-                                                        tickFormatter={(v) => v.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}
+                                                        tickFormatter={(v) => (isUsStock ? v.toLocaleString('en-US', { maximumFractionDigits: 2 }) : v.toLocaleString('id-ID'))}
                                                     />
                                                     <Tooltip
                                                         content={({ active, payload }) => {
@@ -842,7 +847,7 @@ export function StockAnalysisSheet({
                                                                             {formatDate(d.date)}
                                                                         </div>
                                                                         <div className="font-bold text-zinc-900 text-[11px]">
-                                                                            {stock.bursa === 'NASDAQ' ? `$${formatRupiah(d.close_price)}` : `${language === 'en' ? 'IDR ' : 'Rp '}${formatRupiah(d.close_price)}`}
+                                                                            {formatStockPrice(d.close_price)}
                                                                         </div>
                                                                         <div
                                                                             className={`font-mono text-[10px] font-semibold ${d.daily_return >= 0 ? 'text-emerald-600' : 'text-rose-600'

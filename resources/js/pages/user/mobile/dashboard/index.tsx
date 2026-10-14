@@ -182,6 +182,7 @@ export default function MobileDashboard({
                                         changePercent={stock.change_percent}
                                         recentPrices={stock.recent_prices}
                                         analysisCount={stock.analysis_count}
+                                        showCurrencyPrefix={false}
                                         actionLabel={t('common.analyze')}
                                         onActionClick={() => {
                                             router.get('/user/saham', {
@@ -232,8 +233,14 @@ export default function MobileDashboard({
                                                     {item.title}
                                                 </span>
                                         <span className="text-[11px] font-bold text-emerald-600 font-sans">
-                                            {language === 'en' ? 'IDR' : 'Rp'} {item.initial_capital.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}
-                                            </span>
+                                            {(() => {
+                                                const isUs = Boolean(item.tickers && item.tickers.some((t) => !t.endsWith('.JK')));
+                                                if (isUs) {
+                                                    return `$${item.initial_capital.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
+                                                }
+                                                return `${language === 'en' ? 'IDR' : 'Rp'} ${item.initial_capital.toLocaleString('id-ID')}`;
+                                            })()}
+                                        </span>
                                         </div>
                                         <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
                                             {item.tickers.slice(0, 4).map((tTicker, i) => (

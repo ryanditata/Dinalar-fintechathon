@@ -35,7 +35,7 @@ export function PolylineTrendChart({
 }: PolylineTrendChartProps) {
     const { t, language } = useTranslation();
     const resolvedPrefix = valuePrefix !== undefined ? valuePrefix : (language === 'en' ? 'IDR ' : 'Rp ');
-    const localeStr = language === 'en' ? 'en-US' : 'id-ID';
+    const isUs = resolvedPrefix.includes('$');
 
     if (!data || data.length === 0) {
         return (
@@ -86,9 +86,13 @@ export function PolylineTrendChart({
                                     const val = item.value;
                                     const formattedVal =
                                         typeof val === 'number'
-                                            ? val.toLocaleString(localeStr, {
-                                                  maximumFractionDigits: 2,
-                                              })
+                                            ? isUs
+                                                ? val.toLocaleString('en-US', {
+                                                      maximumFractionDigits: 2,
+                                                  })
+                                                : val.toLocaleString('id-ID', {
+                                                      maximumFractionDigits: 2,
+                                                  })
                                             : val;
 
                                     return (

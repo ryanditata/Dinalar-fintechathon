@@ -288,8 +288,7 @@ export default function MobileKeranjangPage({
     const formatRupiah = (val: number | string | null | undefined) => {
         const currencyPrefix = language === 'en' ? 'IDR' : 'Rp';
         if (val === null || val === undefined || isNaN(Number(val))) return `${currencyPrefix} -`;
-        const localeStr = language === 'en' ? 'en-US' : 'id-ID';
-        return `${currencyPrefix} ${Number(val).toLocaleString(localeStr)}`;
+        return `${currencyPrefix} ${Number(val).toLocaleString('id-ID')}`;
     };
 
     // Helper format harga saham sesuai bursa (selain IDX menggunakan lambang dolar $)
@@ -299,7 +298,7 @@ export default function MobileKeranjangPage({
         const isUsMarket = bursa ? bursa !== 'IDX' : isBasketUsMarket;
 
         if (isUsMarket) {
-            return `$ ${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            return `$${num.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
         }
 
         return formatRupiah(num);
