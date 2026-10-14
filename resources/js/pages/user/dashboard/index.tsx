@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { LanguageToggle } from '@/components/LanguageToggle';
+import { useTranslation } from '@/i18n/LanguageContext';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Deferred, Head, Link, router, usePage } from '@inertiajs/react';
@@ -36,13 +38,6 @@ import {
     Zap,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/user/dashboard',
-    },
-];
 
 interface StockItem {
     id: number;
@@ -110,11 +105,19 @@ export default function UserDashboard({
     risk_free_rate = 6.0,
     last_updated,
 }: DashboardProps) {
+    const { t, language } = useTranslation();
     const pageProps = usePage<SharedData>().props;
     const { auth } = pageProps;
     const serverBasketCount = pageProps.basket_count;
     const serverBasketTickers = pageProps.basket_tickers;
     const [stockTab, setStockTab] = useState<'popular' | 'gainers' | 'losers'>('popular');
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: t('nav.dashboard', 'Dashboard'),
+            href: '/user/dashboard',
+        },
+    ];
 
     // Basket Stocks State from Database & SessionStorage
     const [basketStocks, setBasketStocks] = useState<string[]>(() => {
@@ -155,24 +158,24 @@ export default function UserDashboard({
     const getGreetingInfo = () => {
         const hour = new Date().getHours();
         if (hour >= 4 && hour < 11) {
-            return { text: 'Selamat Pagi', icon: Sunrise, color: 'text-amber-500' };
+            return { text: t('dashboard.greeting_morning', 'Selamat Pagi'), icon: Sunrise, color: 'text-amber-500' };
         }
         if (hour >= 11 && hour < 15) {
-            return { text: 'Selamat Siang', icon: Sun, color: 'text-amber-500' };
+            return { text: t('dashboard.greeting_afternoon', 'Selamat Siang'), icon: Sun, color: 'text-amber-500' };
         }
         if (hour >= 15 && hour < 18) {
-            return { text: 'Selamat Sore', icon: Sunset, color: 'text-orange-500' };
+            return { text: t('dashboard.greeting_evening', 'Selamat Sore'), icon: Sunset, color: 'text-orange-500' };
         }
-        return { text: 'Selamat Malam', icon: Moon, color: 'text-indigo-400' };
+        return { text: t('dashboard.greeting_night', 'Selamat Malam'), icon: Moon, color: 'text-indigo-400' };
     };
 
     const greeting = getGreetingInfo();
     const GreetingIcon = greeting.icon;
 
-    // Helper format Rupiah
+    // Helper format Rupiah / Angka sesuai bahasa
     const formatRupiah = (val: number | string | null | undefined) => {
         if (val === null || val === undefined || isNaN(Number(val))) return '-';
-        return `${Number(val).toLocaleString('id-ID')}`;
+        return `${Number(val).toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}`;
     };
 
     // Format Percentage
@@ -185,7 +188,7 @@ export default function UserDashboard({
     const formatDate = (dateStr?: string) => {
         if (!dateStr) return '-';
         try {
-            return new Date(dateStr).toLocaleDateString('id-ID', {
+            return new Date(dateStr).toLocaleDateString(language === 'en' ? 'en-US' : 'id-ID', {
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric',
@@ -205,7 +208,7 @@ export default function UserDashboard({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard" />
+            <Head title={t('nav.dashboard', 'Dashboard')} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4 sm:p-6 mx-auto w-full pb-20">
                 {/* 1. HERO HEADER SECTION */}
@@ -228,6 +231,8 @@ export default function UserDashboard({
                                 variant="outline"
                                 size="icon"
                                 className="relative h-9 w-9 shrink-0 overflow-visible border-emerald-600/20 bg-emerald-50 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/40 shadow-xs cursor-pointer"
+                                aria-label={t('dashboard.basket_aria', { count: serverBasketCount !== undefined ? serverBasketCount : basketStocks.length })}
+                                title={t('dashboard.basket_aria', { count: serverBasketCount !== undefined ? serverBasketCount : basketStocks.length })}
                             >
                                 <Link href="/user/analyze/keranjang">
                                     <ShoppingBag className="h-4 w-4" />
@@ -247,7 +252,7 @@ export default function UserDashboard({
                                 className="gap-2 shadow-xs cursor-pointer h-9 bg-emerald-600 hover:bg-emerald-700 text-white flex-1 sm:flex-initial justify-center"
                             >
                                 <Link href="/user/saham">
-                                    Jelajahi Saham
+                                    {t('dashboard.explore_stocks_btn', 'Jelajahi Saham')}
                                     <ArrowRight className="h-4 w-4" />
                                 </Link>
                             </Button>
@@ -259,7 +264,9 @@ export default function UserDashboard({
                 <div className="space-y-4">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="flex items-center gap-2">
-                            <h2 className="text-lg font-bold text-foreground">Pantauan Saham Bursa</h2>
+                            <h2 className="text-lg font-bold text-foreground">
+                                {t('dashboard.market_stocks_monitoring', 'Pantauan Saham Bursa')}
+                            </h2>
                         </div>
 
                         {/* Tabs Switcher */}
@@ -271,7 +278,7 @@ export default function UserDashboard({
                                         : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
-                                Saham Pilihan
+                                {t('dashboard.popular_choice', 'Saham Pilihan')}
                             </button>
                             <button
                                 onClick={() => setStockTab('gainers')}
@@ -280,7 +287,7 @@ export default function UserDashboard({
                                         : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
-                                Top Gainers
+                                {t('common.gainers', 'Top Gainers')}
                             </button>
                             <button
                                 onClick={() => setStockTab('losers')}
@@ -289,7 +296,7 @@ export default function UserDashboard({
                                         : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
-                                Top Losers
+                                {t('common.losers', 'Top Losers')}
                             </button>
                         </div>
                     </div>
@@ -318,9 +325,11 @@ export default function UserDashboard({
                     >
                         {activeStockList.length === 0 ? (
                         <Card className="border border-border/70 p-8 text-center">
-                            <p className="text-xs text-muted-foreground">Belum ada data saham populer tersimpan saat ini.</p>
+                            <p className="text-xs text-muted-foreground">
+                                {t('dashboard.no_popular_stocks', 'Belum ada data saham populer tersimpan saat ini.')}
+                            </p>
                             <Button asChild size="sm" variant="outline" className="mt-3 text-xs">
-                                <Link href="/user/saham">Eksplorasi Saham</Link>
+                                <Link href="/user/saham">{t('dashboard.explore_stocks', 'Eksplorasi Saham')}</Link>
                             </Button>
                         </Card>
                     ) : (
@@ -366,7 +375,7 @@ export default function UserDashboard({
                                                     className="text-[11px] h-7 px-2 cursor-pointer border-border/60 hover:bg-emerald-600 hover:text-white"
                                                     onClick={(e) => e.stopPropagation()}
                                                 >
-                                                    <Link href="/user/saham">Analisis</Link>
+                                                    <Link href="/user/saham">{t('common.analyze', 'Analisis')}</Link>
                                                 </Button>
                                             </div>
 
@@ -407,7 +416,9 @@ export default function UserDashboard({
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <h2 className="text-lg font-bold text-foreground">Overview</h2>
+                            <h2 className="text-lg font-bold text-foreground">
+                                {t('dashboard.overview', 'Overview')}
+                            </h2>
                         </div>
                     </div>
 
@@ -420,24 +431,28 @@ export default function UserDashboard({
                                     <History className="h-4 w-4 sm:h-5 sm:w-5" />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Portofolio Tersimpan</span>
+                                    <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">
+                                        {t('dashboard.total_optimizations', 'Portofolio Tersimpan')}
+                                    </span>
                                     <span className="text-xs sm:text-base font-extrabold font-mono text-foreground truncate block">
-                                        {total_user_optimizations} <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">Portofolio</span>
+                                        {total_user_optimizations} <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">{t('dashboard.portfolio_unit', 'Portofolio')}</span>
                                     </span>
                                 </div>
                             </Link>
                         </Card>
 
-                        {/* Card 2: Saham Dianalisis */}
+                        {/* Card 2: Total Saham */}
                         <Card className="border border-border/70 shadow-2xs bg-card/50 hover:border-emerald-500/40 transition-colors">
                             <Link href="/user/saham" className="p-3 sm:p-4 flex items-center gap-2.5 sm:gap-3 overflow-hidden block">
                                 <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                                     <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Total Saham</span>
+                                    <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">
+                                        {t('dashboard.total_stocks', 'Total Saham')}
+                                    </span>
                                     <span className="text-xs sm:text-base font-extrabold font-mono text-foreground truncate block">
-                                        {total_stocks_count} <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">Saham</span>
+                                        {total_stocks_count} <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">{t('dashboard.stocks_unit', 'Saham')}</span>
                                     </span>
                                 </div>
                             </Link>
@@ -450,7 +465,9 @@ export default function UserDashboard({
                                     <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Optimasi AI</span>
+                                    <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">
+                                        {t('dashboard.ai_optimization', 'Optimasi AI')}
+                                    </span>
                                     <span className="text-xs sm:text-sm font-extrabold text-foreground truncate block">
                                         NSGA-II + Markowitz
                                     </span>
@@ -468,7 +485,9 @@ export default function UserDashboard({
                                                 <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5" />
                                             </div>
                                             <div className="min-w-0 flex-1">
-                                                <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Risk-Free Rate (Rf)</span>
+                                                <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">
+                                                    {t('dashboard.risk_free_rate', 'Risk-Free Rate')} (Rf)
+                                                </span>
                                                 <span className="text-xs sm:text-base font-extrabold font-mono text-foreground truncate block">
                                                     {risk_free_rate}% <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">SBN/BI</span>
                                                 </span>
@@ -477,7 +496,7 @@ export default function UserDashboard({
                                     </Card>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    <p className="text-xs">Digunakan sebagai acuan dalam perhitungan Sharpe Ratio.</p>
+                                    <p className="text-xs">{t('dashboard.risk_free_tooltip', 'Digunakan sebagai acuan dalam perhitungan Sharpe Ratio.')}</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
@@ -491,19 +510,22 @@ export default function UserDashboard({
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                 <div>
                                     <CardTitle className="text-base font-bold flex items-center gap-2">
-                                        <span>Portofolio Terakhir Anda</span>
+                                        <span>{t('dashboard.portfolio', 'Portofolio Terakhir Anda')}</span>
                                         <span className="inline-flex items-center gap-1 font-mono font-extrabold text-xs px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
                                             {latest_portfolio.reference_code || `DNL${latest_portfolio.user_id}-${latest_portfolio.id}`}
                                         </span>
                                     </CardTitle>
                                     <CardDescription className="text-xs mt-0.5">
-                                        Riwayat portofolio terbaru pada {formatDate(latest_portfolio.created_at)} ({latest_portfolio.tickers?.length || 0} Saham)
+                                        {t('dashboard.recent_portfolio_desc', {
+                                            date: formatDate(latest_portfolio.created_at),
+                                            count: latest_portfolio.tickers?.length || 0,
+                                        })}
                                     </CardDescription>
                                 </div>
 
                                 <Button asChild size="sm" className="gap-1 text-xs cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white w-full sm:w-auto">
                                     <Link href={`/user/analyze/result/${latest_portfolio.id}`}>
-                                        <span>Detail</span>
+                                        <span>{t('dashboard.view_results', 'Detail')}</span>
                                         <ArrowRight className="h-3.5 w-3.5" />
                                     </Link>
                                 </Button>
@@ -513,12 +535,12 @@ export default function UserDashboard({
                         <CardContent className="p-4 sm:p-5">
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono">
                                 <div className="p-3 rounded-xl bg-background/80 border border-border/60 space-y-1">
-                                    <span className="text-[11px] text-muted-foreground font-sans block">Expected Return E(R)</span>
+                                    <span className="text-[11px] text-muted-foreground font-sans block">{t('dashboard.expected_return', 'Expected Return E(R)')}</span>
                                     <div className="flex items-baseline justify-between">
                                         <span className="text-lg font-extrabold text-emerald-600 dark:text-emerald-400">
                                             {formatPercent(latest_portfolio.best_portfolios.sharpe.return)}
                                         </span>
-                                        <span className="text-[10px] text-emerald-600 font-sans font-semibold">Tahunan</span>
+                                        <span className="text-[10px] text-emerald-600 font-sans font-semibold">{t('dashboard.annual', 'Tahunan')}</span>
                                     </div>
                                     <div className="w-full bg-muted rounded-full h-1.5 mt-2 overflow-hidden">
                                         <div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: `${Math.min(100, Math.max(10, (latest_portfolio.best_portfolios.sharpe.return || 0) * 3))}%` }} />
@@ -526,12 +548,12 @@ export default function UserDashboard({
                                 </div>
 
                                 <div className="p-3 rounded-xl bg-background/80 border border-border/60 space-y-1">
-                                    <span className="text-[11px] text-muted-foreground font-sans block">Volatilitas Risiko (σ)</span>
+                                    <span className="text-[11px] text-muted-foreground font-sans block">{t('dashboard.volatility_risk', 'Volatilitas Risiko (σ)')}</span>
                                     <div className="flex items-baseline justify-between">
                                         <span className="text-lg font-extrabold text-foreground">
                                             {formatPercent(latest_portfolio.best_portfolios.sharpe.risk)}
                                         </span>
-                                        <span className="text-[10px] text-muted-foreground font-sans font-semibold">Risiko Pasat</span>
+                                        <span className="text-[10px] text-muted-foreground font-sans font-semibold">{t('dashboard.market_risk', 'Risiko Pasar')}</span>
                                     </div>
                                     <div className="w-full bg-muted rounded-full h-1.5 mt-2 overflow-hidden">
                                         <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: `${Math.min(100, Math.max(10, (latest_portfolio.best_portfolios.sharpe.risk || 0) * 3))}%` }} />
@@ -539,12 +561,12 @@ export default function UserDashboard({
                                 </div>
 
                                 <div className="p-3 rounded-xl bg-background/80 border border-border/60 space-y-1">
-                                    <span className="text-[11px] text-muted-foreground font-sans block">Sharpe Ratio</span>
+                                    <span className="text-[11px] text-muted-foreground font-sans block">{t('dashboard.sharpe_ratio', 'Sharpe Ratio')}</span>
                                     <div className="flex items-baseline justify-between">
                                         <span className="text-lg font-extrabold text-primary">
                                             {latest_portfolio.best_portfolios.sharpe.sharpe?.toFixed(2) || '0.00'}
                                         </span>
-                                        <span className="text-[10px] text-primary font-sans font-semibold">Optimal</span>
+                                        <span className="text-[10px] text-primary font-sans font-semibold">{t('dashboard.optimal', 'Optimal')}</span>
                                     </div>
                                     <div className="w-full bg-muted rounded-full h-1.5 mt-2 overflow-hidden">
                                         <div className="bg-primary h-1.5 rounded-full" style={{ width: `${Math.min(100, Math.max(10, (latest_portfolio.best_portfolios.sharpe.sharpe || 0) * 50))}%` }} />
@@ -560,15 +582,17 @@ export default function UserDashboard({
                                 <Sparkles className="h-6 w-6" />
                             </div>
                             <div>
-                                <h3 className="text-base font-bold text-foreground">Belum Memiliki Portofolio Tersimpan</h3>
+                                <h3 className="text-base font-bold text-foreground">
+                                    {t('dashboard.no_portfolio_saved', 'Belum Memiliki Portofolio Tersimpan')}
+                                </h3>
                                 <p className="text-xs text-muted-foreground mt-1 max-w-md">
-                                    Mulai optimasi portofolio dengan memilih minimal 2 saham dari menu Eksplorasi Saham.
+                                    {t('dashboard.no_portfolio_desc', 'Mulai optimasi portofolio dengan memilih minimal 2 saham dari menu Eksplorasi Saham.')}
                                 </p>
                             </div>
                             <Button asChild size="sm" className="gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white">
                                 <Link href="/user/saham">
                                     <Search className="h-3.5 w-3.5" />
-                                    <span>Eksplorasi Saham Sekarang</span>
+                                    <span>{t('dashboard.explore_stocks_now', 'Eksplorasi Saham Sekarang')}</span>
                                 </Link>
                             </Button>
                         </div>
@@ -578,6 +602,7 @@ export default function UserDashboard({
         </AppLayout>
     );
 }
+
 
 // Helper formatting timestamp
 function lastDateFormatted(dateStr?: string) {
