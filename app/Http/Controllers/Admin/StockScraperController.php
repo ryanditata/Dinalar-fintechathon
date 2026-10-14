@@ -48,7 +48,7 @@ class StockScraperController extends Controller
             'tickers.*' => ['required', 'string'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
-            'bursa' => ['nullable', 'string', 'in:all,IDX,NYSE'],
+            'bursa' => ['nullable', 'string', 'in:all,IDX,NASDAQ,NYSE'],
             'sector' => ['nullable', 'string'],
         ], [
             'tickers.required' => 'Pilih minimal satu kode saham.',
@@ -89,23 +89,36 @@ class StockScraperController extends Controller
             }
         }
 
-        $scrapedData = []; // [ticker => ['category' => 'IDX'|'NYSE', 'prices' => ['YYYY-MM-DD' => price]]]
+        $scrapedData = []; // [ticker => ['category' => 'IDX'|'NASDAQ', 'prices' => ['YYYY-MM-DD' => price]]]
         $failedTickers = [];
 
         foreach ($rawTickers as $ticker) {
             $stock = $dbStocks[$ticker] ?? ($dbStocks[$ticker . '.JK'] ?? ($dbStocks[str_replace('.JK', '', $ticker)] ?? null));
-            $category = $stock && $stock->bursa ? $stock->bursa : 'IDX';
+
+            // Determine bursa category accurately
+            if ($stock && !empty($stock->bursa)) {
+                $category = ($stock->bursa === 'NYSE' || $stock->bursa === 'NASDAQ') ? 'NASDAQ' : $stock->bursa;
+            } elseif (str_ends_with(strtoupper($ticker), '.JK')) {
+                $category = 'IDX';
+            } elseif (!empty($validated['bursa']) && $validated['bursa'] !== 'all') {
+                $category = ($validated['bursa'] === 'NYSE' || $validated['bursa'] === 'NASDAQ') ? 'NASDAQ' : $validated['bursa'];
+            } else {
+                $category = 'NASDAQ';
+            }
 
             // Filter by requested bursa if specified
             if (!empty($validated['bursa']) && $validated['bursa'] !== 'all') {
-                if ($category !== $validated['bursa']) {
+                $reqBursa = ($validated['bursa'] === 'NYSE' || $validated['bursa'] === 'NASDAQ') ? 'NASDAQ' : $validated['bursa'];
+                if ($category !== $reqBursa) {
                     continue;
                 }
             }
 
-            $yahooTicker = $ticker;
-            if ($category === 'IDX' && !str_contains($yahooTicker, '.')) {
-                $yahooTicker .= '.JK';
+            // Yahoo Finance symbol formatting: IDX needs .JK, NASDAQ/global must not have .JK
+            if ($category === 'IDX') {
+                $yahooTicker = str_ends_with($ticker, '.JK') ? $ticker : ($ticker . '.JK');
+            } else {
+                $yahooTicker = str_replace('.JK', '', $ticker);
             }
 
             try {
@@ -172,15 +185,30 @@ class StockScraperController extends Controller
         }
 
         if (empty($scrapedData)) {
+            $msg = 'Gagal mengambil data dari Yahoo Finance untuk saham yang dipilih pada rentang tanggal tersebut.';
+            if (!empty($failedTickers)) {
+                $uniqueFailed = array_values(array_unique($failedTickers));
+                $msg .= ' Saham tidak ditemukan atau belum memiliki riwayat harga: ' . implode(', ', $uniqueFailed) . '.';
+            }
+
+            if ($request->expectsJson() || $request->isXmlHttpRequest() || str_contains($request->header('Accept', ''), 'json')) {
+                return response()->json([
+                    'message' => $msg,
+                    'errors' => [
+                        'tickers' => [$msg],
+                    ],
+                ], 422);
+            }
+
             return redirect()->back()->withErrors([
-                'tickers' => 'Gagal mengambil data dari Yahoo Finance untuk saham yang dipilih atau tidak ada riwayat harga pada rentang tanggal tersebut.',
+                'tickers' => $msg,
             ]);
         }
 
-        // Group scraped data by sheet category (IDX, NYSE)
+        // Group scraped data by sheet category (IDX, NASDAQ)
         $sheetGroups = [];
         foreach ($scrapedData as $ticker => $item) {
-            $cat = $item['category'] === 'NYSE' ? 'NYSE' : 'IDX';
+            $cat = ($item['category'] === 'NASDAQ' || $item['category'] === 'NYSE') ? 'NASDAQ' : 'IDX';
             $sheetGroups[$cat][$ticker] = $item['prices'];
         }
 
@@ -189,7 +217,7 @@ class StockScraperController extends Controller
         $spreadsheet->removeSheetByIndex(0); // Remove default sheet
 
         $sheetIndex = 0;
-        foreach (['IDX', 'NYSE'] as $targetCategory) {
+        foreach (['IDX', 'NASDAQ'] as $targetCategory) {
             if (empty($sheetGroups[$targetCategory])) {
                 continue;
             }
@@ -228,7 +256,7 @@ class StockScraperController extends Controller
                 $colIdx++;
             }
 
-            // Row 3: Bursa (Column A = Bursa, Column B..N = IDX / NYSE)
+            // Row 3: Bursa (Column A = Bursa, Column B..N = IDX / NASDAQ)
             $sheet->setCellValue([1, 3], 'Bursa');
             $colIdx = 2;
             foreach ($sheetTickers as $ticker) {
@@ -340,13 +368,14 @@ class StockScraperController extends Controller
         $formattedEnd = $endDate->format('Y-m-d');
         $fileName = "Data_Saham_{$tickerPart}_{$formattedStart}_sd_{$formattedEnd}.xlsx";
 
-        return new StreamedResponse(function () use ($spreadsheet) {
-            $writer = new Xlsx($spreadsheet);
-            $writer->save('php://output');
-        }, 200, [
+        $tempFile = tempnam(sys_get_temp_dir(), 'stock_export_');
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($tempFile);
+
+        return response()->download($tempFile, $fileName, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
-            'Cache-Control' => 'max-age=0',
-        ]);
+            'Access-Control-Expose-Headers' => 'Content-Disposition',
+            'Cache-Control' => 'no-cache, private',
+        ])->deleteFileAfterSend(true);
     }
 }

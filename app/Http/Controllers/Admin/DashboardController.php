@@ -24,10 +24,16 @@ class DashboardController extends Controller
             'idx_conventional_count' => Stock::where('bursa', 'IDX')
                 ->orWhere('bursa', 'IDX Conventional')
                 ->count(),
-            'nyse_count' => Stock::where('bursa', 'NYSE')
+            'nasdaq_count' => Stock::where('bursa', 'NASDAQ')
+                ->orWhere('bursa', 'NYSE')
                 ->orWhere('bursa', 'New York Stock Exchange')
                 ->count(),
-            'jii_count' => Stock::where('bursa', 'NYSE')
+            'nyse_count' => Stock::where('bursa', 'NASDAQ')
+                ->orWhere('bursa', 'NYSE')
+                ->orWhere('bursa', 'New York Stock Exchange')
+                ->count(),
+            'jii_count' => Stock::where('bursa', 'NASDAQ')
+                ->orWhere('bursa', 'NYSE')
                 ->orWhere('bursa', 'New York Stock Exchange')
                 ->count(),
             'active_stocks_count' => Stock::where('is_active', true)->count(),

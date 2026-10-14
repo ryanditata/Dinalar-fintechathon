@@ -346,7 +346,7 @@ export default function UserDashboard({
                                                         <Badge
                                                             variant="outline"
                                                             className={`text-[9px] py-0 px-1.5 font-semibold ${
-                                                                stock.bursa === 'NYSE'
+                                                                stock.bursa === 'NASDAQ'
                                                                     ? 'border-purple-500/30 text-purple-600 bg-purple-500/5'
                                                                     : 'border-blue-500/30 text-blue-600 bg-blue-500/5'
                                                             }`}

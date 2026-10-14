@@ -84,7 +84,8 @@ export interface StockStatistics {
     total_stocks: number;
     total_prices: number;
     idx_conventional_count: number;
-    nyse_count: number;
+    nasdaq_count?: number;
+    nyse_count?: number;
     jii_count?: number;
     active_stocks_count: number;
     last_price_date: string | null;

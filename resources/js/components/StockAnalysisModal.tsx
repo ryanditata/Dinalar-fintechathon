@@ -378,7 +378,7 @@ export default function StockAnalysisModal({
                                     <Badge
                                         variant="outline"
                                         className={`text-[10px] sm:text-[11px] py-0.5 px-2 font-semibold rounded-full ${
-                                            stock.bursa === 'NYSE'
+                                            stock.bursa === 'NASDAQ'
                                                 ? 'border-purple-500/30 text-purple-600 dark:text-purple-400 bg-purple-500/5'
                                                 : 'border-blue-500/30 text-blue-600 dark:text-blue-400 bg-blue-500/5'
                                         }`}
@@ -415,7 +415,7 @@ export default function StockAnalysisModal({
                             <div className="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-center gap-1.5 sm:gap-0.5 shrink-0 bg-muted/20 sm:bg-transparent p-2 sm:p-0 rounded-lg sm:rounded-none border border-border/50 sm:border-0">
                                 <div className="flex items-baseline gap-2">
                                     <span className="text-base sm:text-lg font-bold font-mono text-foreground">
-                                        {stock.bursa === 'NYSE' ? `${lastPrice.toFixed(2)}` : `${formatRupiah(lastPrice)}`}
+                                        {stock.bursa === 'NASDAQ' ? `${lastPrice.toFixed(2)}` : `${formatRupiah(lastPrice)}`}
                                     </span>
                                 </div>
                                 {changeVal !== null && changeVal !== undefined && (

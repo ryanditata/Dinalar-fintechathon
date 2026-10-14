@@ -684,7 +684,7 @@ export default function PortfolioSetupPage({
                                                                         <Badge
                                                                             variant="outline"
                                                                             className={`text-[9px] py-0 px-2 font-semibold rounded-full ${
-                                                                                stock.bursa === 'NYSE'
+                                                                                stock.bursa === 'NASDAQ'
                                                                                     ? 'border-purple-500/30 text-purple-600 dark:text-purple-400 bg-purple-500/10'
                                                                                     : 'border-blue-500/30 text-blue-600 dark:text-blue-400 bg-blue-500/10'
                                                                             }`}

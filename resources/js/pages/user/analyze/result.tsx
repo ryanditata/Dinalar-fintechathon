@@ -71,7 +71,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface AssetAllocation {
     ticker: string;
     companyName: string;
-    category: 'IDX' | 'NYSE' | string;
+    category: 'IDX' | 'NASDAQ' | string;
     weightPercent: number;
     nominalAmount: number;
     lastPrice: number;
@@ -1300,7 +1300,7 @@ export default function OptimizationResultPage({
                                                                 <Badge
                                                                     variant="outline"
                                                                     className={`text-[9px] py-0 px-1 font-semibold ${
-                                                                        stk?.bursa === 'NYSE'
+                                                                        stk?.bursa === 'NASDAQ'
                                                                             ? 'border-purple-500/30 text-purple-600 bg-purple-500/5'
                                                                             : 'border-blue-500/30 text-blue-600 bg-blue-500/5'
                                                                         }`}

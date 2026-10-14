@@ -73,7 +73,7 @@ interface Props {
 export default function UserStockIndex({
     stocks,
     filters = {},
-    bursa_list = ['IDX', 'NYSE'],
+    bursa_list = ['IDX', 'NASDAQ'],
     availableSectors,
     total_count,
     timeframe_limits,
@@ -351,12 +351,12 @@ export default function UserStockIndex({
                             >
                                 Semua
                             </button>
-                            {(bursa_list || ['IDX', 'NYSE']).map((bursa) => {
+                            {(bursa_list || ['IDX', 'NASDAQ']).map((bursa) => {
                                 const isSelected = selectedBursa === bursa;
                                 const colorClass =
                                     bursa === 'IDX'
                                         ? 'text-blue-600 dark:text-blue-400'
-                                        : bursa === 'NYSE'
+                                        : bursa === 'NASDAQ'
                                             ? 'text-purple-600 dark:text-purple-400'
                                             : 'text-foreground';
 
@@ -510,7 +510,7 @@ export default function UserStockIndex({
                                                 <Badge
                                                     variant="outline"
                                                     className={`text-[10px] py-0 px-1.5 font-semibold ${
-                                                        stock.bursa === 'NYSE'
+                                                        stock.bursa === 'NASDAQ'
                                                             ? 'border-purple-500/30 text-purple-600 dark:text-purple-400 bg-purple-500/5'
                                                             : 'border-blue-500/30 text-blue-600 dark:text-blue-400 bg-blue-500/5'
                                                     }`}

@@ -324,7 +324,7 @@ export default function StockFormModal({ open, onOpenChange, stock }: StockFormM
                                 </SelectTrigger>
                                 <SelectContent className="bg-background border border-border/70 shadow-md">
                                     <SelectItem value="IDX">IDX</SelectItem>
-                                    <SelectItem value="NYSE">NYSE</SelectItem>
+                                    <SelectItem value="NASDAQ">NASDAQ</SelectItem>
                                 </SelectContent>
                             </Select>
                             <InputError message={errors.bursa} />

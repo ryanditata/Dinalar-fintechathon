@@ -46,7 +46,7 @@ import { toast } from 'sonner';
 interface AssetAllocation {
     ticker: string;
     companyName: string;
-    category: 'IDX' | 'NYSE' | string;
+    category: 'IDX' | 'NASDAQ' | string;
     weightPercent: number;
     nominalAmount: number;
     lastPrice: number;
@@ -1501,7 +1501,7 @@ export default function MobileResultPage({
                                         </span>
                                         <span
                                             className={`text-[9px] font-semibold px-1.5 py-0.2 rounded-md border ${
-                                                alloc.category === 'NYSE'
+                                                alloc.category === 'NASDAQ'
                                                     ? 'border-purple-200 bg-purple-50 text-purple-700'
                                                     : 'border-blue-200 bg-blue-50 text-blue-700'
                                             }`}

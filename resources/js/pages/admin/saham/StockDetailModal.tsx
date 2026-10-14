@@ -262,7 +262,7 @@ export default function StockDetailModal({
                                         <Badge
                                             variant="secondary"
                                             className={`text-[11px] font-semibold rounded-full ${
-                                                stock.bursa.includes('NYSE')
+                                                stock.bursa.includes('NASDAQ') || stock.bursa.includes('NYSE')
                                                     ? 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/30'
                                                     : 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/30'
                                             }`}

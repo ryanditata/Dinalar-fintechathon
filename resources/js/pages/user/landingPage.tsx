@@ -123,8 +123,8 @@ export default function LandingPage() {
         {
             id: 3,
             refCode: 'DNL1-082',
-            title: t('landing.mock_history.item_3_title', 'Portofolio Saham Unggulan Global (NYSE)'),
-            tickers: ['JPM', 'KO', 'V', 'JNJ', 'PG'],
+            title: t('landing.mock_history.item_3_title', 'Portofolio Saham Unggulan Global (NASDAQ)'),
+            tickers: ['NVDA', 'AAPL', 'GOOGL', 'META', 'MSFT'],
             initialCapital: 25000000,
             riskFreeRate: 4.5,
             createdAt: t('landing.mock_history.item_3_date', '20 Agu 2026, 14:00'),
@@ -848,7 +848,7 @@ export default function LandingPage() {
                                                         <span className="h-2 w-2 rounded-full bg-purple-500 shrink-0" />
                                                         <span className="font-bold text-[#0B0C0B]">JPM</span>
                                                         <span className="text-[9px] font-sans font-semibold px-1 py-0 rounded-full bg-purple-500/10 text-purple-700 border border-purple-500/20">
-                                                            NYSE
+                                                            NASDAQ
                                                         </span>
                                                     </div>
                                                 </td>

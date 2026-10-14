@@ -18,7 +18,7 @@ class FetchDailyStockPrices extends Command
      */
     protected $signature = 'stocks:fetch-daily 
                             {--ticker= : Specific stock ticker to fetch (e.g. BBCA.JK)}
-                            {--bursa= : Filter stocks by bursa (e.g. IDX, NYSE)}
+                            {--bursa= : Filter stocks by bursa (e.g. IDX, NASDAQ)}
                             {--range=5d : Yahoo finance range (1d, 5d, 1mo)}';
 
     /**

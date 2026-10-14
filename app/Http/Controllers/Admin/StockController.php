@@ -98,11 +98,15 @@ class StockController extends Controller
             'total_stocks' => Stock::count(),
             'total_prices' => StockPrice::count(),
             'idx_conventional_count' => Stock::where('bursa', 'IDX')->orWhere('bursa', 'IDX Conventional')->count(),
-            'nyse_count' => Stock::where('bursa', 'NYSE')
+            'nasdaq_count' => Stock::where('bursa', 'NASDAQ')
+                ->orWhere('bursa', 'NYSE')
                 ->orWhere('bursa', 'New York Stock Exchange')
                 ->count(),
-            'jii_count' => Stock::where('bursa', 'NYSE')
-                ->orWhere('bursa', 'New York Stock Exchange')
+            'nyse_count' => Stock::where('bursa', 'NASDAQ')
+                ->orWhere('bursa', 'NYSE')
+                ->count(),
+            'jii_count' => Stock::where('bursa', 'NASDAQ')
+                ->orWhere('bursa', 'NYSE')
                 ->count(),
             'active_stocks_count' => Stock::where('is_active', true)->count(),
             'last_price_date' => StockPrice::max('date'),
@@ -129,14 +133,14 @@ class StockController extends Controller
         $validated = $request->validate([
             'ticker' => ['required', 'string', 'max:20', 'unique:stocks,ticker'],
             'name' => ['nullable', 'string', 'max:255'],
-            'bursa' => ['required', 'string', 'in:IDX,NYSE'],
+            'bursa' => ['required', 'string', 'in:IDX,NASDAQ,NYSE'],
             'sector' => ['nullable', 'string', 'in:' . implode(',', self::SECTORS)],
             'is_active' => ['boolean'],
         ], [
             'ticker.required' => 'Kode ticker saham wajib diisi.',
             'ticker.unique' => 'Kode ticker saham sudah terdaftar di sistem.',
             'bursa.required' => 'Bursa wajib dipilih.',
-            'bursa.in' => 'Bursa harus IDX atau NYSE.',
+            'bursa.in' => 'Bursa harus IDX atau NASDAQ.',
             'sector.in' => 'Sektor yang dipilih tidak valid.',
         ]);
 
@@ -166,14 +170,14 @@ class StockController extends Controller
                 Rule::unique('stocks', 'ticker')->ignore($stock->id),
             ],
             'name' => ['nullable', 'string', 'max:255'],
-            'bursa' => ['required', 'string', 'in:IDX,NYSE'],
+            'bursa' => ['required', 'string', 'in:IDX,NASDAQ,NYSE'],
             'sector' => ['nullable', 'string', 'in:' . implode(',', self::SECTORS)],
             'is_active' => ['boolean'],
         ], [
             'ticker.required' => 'Kode ticker saham wajib diisi.',
             'ticker.unique' => 'Kode ticker saham sudah digunakan oleh emiten lain.',
             'bursa.required' => 'Bursa wajib dipilih.',
-            'bursa.in' => 'Bursa harus IDX atau NYSE.',
+            'bursa.in' => 'Bursa harus IDX atau NASDAQ.',
             'sector.in' => 'Sektor yang dipilih tidak valid.',
         ]);
 
@@ -212,10 +216,11 @@ class StockController extends Controller
             // Target sheet names & standard category mappings
             $targetSheetMappings = [
                 'idx conventional' => 'IDX',
-                'jakarta islamic index' => 'NYSE',
-                'jii' => 'NYSE',
-                'nyse' => 'NYSE',
-                'new york stock exchange' => 'NYSE',
+                'jakarta islamic index' => 'NASDAQ',
+                'jii' => 'NASDAQ',
+                'nasdaq' => 'NASDAQ',
+                'nyse' => 'NASDAQ',
+                'new york stock exchange' => 'NASDAQ',
                 'idx' => 'IDX',
             ];
 
@@ -285,8 +290,8 @@ class StockController extends Controller
                         $stockBursa = $category;
                         if ($bursaRow && !empty($bursaRow[$col])) {
                             $b = strtoupper(trim((string)$bursaRow[$col]));
-                            if (in_array($b, ['IDX', 'NYSE'])) {
-                                $stockBursa = $b;
+                            if (in_array($b, ['IDX', 'NASDAQ', 'NYSE'])) {
+                                $stockBursa = ($b === 'NYSE') ? 'NASDAQ' : $b;
                             }
                         }
 
@@ -396,7 +401,7 @@ class StockController extends Controller
             DB::commit();
 
             if (empty($sheetsProcessed)) {
-                return redirect()->back()->with('error', 'Tidak ditemukan sheet "IDX" atau "NYSE" yang valid dalam file Excel.');
+                return redirect()->back()->with('error', 'Tidak ditemukan sheet "IDX" atau "NASDAQ" yang valid dalam file Excel.');
             }
 
             return redirect()->back()->with('success', "Import berhasil! Diproses {$totalPricesImported} data harga untuk {$totalStocksImported} emiten dari sheet: " . implode(', ', $sheetsProcessed) . '.');

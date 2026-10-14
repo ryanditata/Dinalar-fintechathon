@@ -644,7 +644,7 @@ export function StockAnalysisSheet({
                                     <Badge
                                         variant="outline"
                                         className={`text-[9px] py-0 px-1.5 font-semibold rounded-full ${
-                                            stock.bursa === 'NYSE'
+                                            stock.bursa === 'NASDAQ'
                                                 ? 'border-purple-500/30 text-purple-600 bg-purple-500/5'
                                                 : 'border-blue-500/30 text-blue-600 bg-blue-500/5'
                                         }`}
@@ -672,7 +672,7 @@ export function StockAnalysisSheet({
                         {lastPrice > 0 && (
                             <div className="text-right shrink-0">
                                 <div className="text-sm font-extrabold font-mono text-zinc-900 leading-tight">
-                                    {stock.bursa === 'NYSE' ? `${lastPrice.toFixed(2)}` : `${formatRupiah(lastPrice)}`}
+                                    {stock.bursa === 'NASDAQ' ? `${lastPrice.toFixed(2)}` : `${formatRupiah(lastPrice)}`}
                                 </div>
                                 {changeVal !== null && changeVal !== undefined && (
                                     <span
@@ -840,7 +840,7 @@ export function StockAnalysisSheet({
                                                                             {formatDate(d.date)}
                                                                         </div>
                                                                         <div className="font-bold text-zinc-900 text-[11px]">
-                                                                            {stock.bursa === 'NYSE' ? `$${formatRupiah(d.close_price)}` : `${language === 'en' ? 'IDR ' : 'Rp '}${formatRupiah(d.close_price)}`}
+                                                                            {stock.bursa === 'NASDAQ' ? `$${formatRupiah(d.close_price)}` : `${language === 'en' ? 'IDR ' : 'Rp '}${formatRupiah(d.close_price)}`}
                                                                         </div>
                                                                         <div
                                                                             className={`font-mono text-[10px] font-semibold ${d.daily_return >= 0 ? 'text-emerald-600' : 'text-rose-600'

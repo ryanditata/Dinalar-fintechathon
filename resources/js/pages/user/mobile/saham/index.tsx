@@ -32,7 +32,7 @@ interface Props {
 export default function MobileStockIndex({
     stocks,
     filters = {},
-    bursa_list = ['IDX', 'NYSE'],
+    bursa_list = ['IDX', 'NASDAQ'],
     availableSectors = [],
     total_count,
     timeframe_limits,
@@ -191,7 +191,7 @@ export default function MobileStockIndex({
                         )}
                     </form>
 
-                    {/* Bursa Pill Tabs (All, IDX, NYSE) */}
+                    {/* Bursa Pill Tabs (All, IDX, NASDAQ) */}
                     <div className="flex items-center gap-1.5 p-1 bg-zinc-200/70 rounded-xl">
                         <button
                             type="button"
@@ -203,16 +203,29 @@ export default function MobileStockIndex({
                         >
                             {t('common.all')}
                         </button>
-                        <button
-                            type="button"
-                            onClick={() => handleBursaFilter('IDX')}
-                            className={`flex-1 py-1.5 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${selectedBursa === 'IDX'
-                                    ? 'bg-white text-zinc-900 font-semibold shadow-xs'
-                                    : 'text-zinc-500 hover:text-zinc-900'
-                                }`}
-                        >
-                            IDX
-                        </button>
+                        {(bursa_list || ['IDX', 'NASDAQ']).map((bursa) => {
+                            const isSelected = selectedBursa === bursa;
+                            const colorClass =
+                                bursa === 'IDX'
+                                    ? 'text-blue-600'
+                                    : bursa === 'NASDAQ'
+                                        ? 'text-purple-600'
+                                        : 'text-zinc-900';
+
+                            return (
+                                <button
+                                    key={bursa}
+                                    type="button"
+                                    onClick={() => handleBursaFilter(bursa)}
+                                    className={`flex-1 py-1.5 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${isSelected
+                                            ? `bg-white ${colorClass} font-semibold shadow-xs`
+                                            : 'text-zinc-500 hover:text-zinc-900'
+                                        }`}
+                                >
+                                    {bursa}
+                                </button>
+                            );
+                        })}
                     </div>
 
                     {/* Sektor Badges (Horizontal Scroll) */}

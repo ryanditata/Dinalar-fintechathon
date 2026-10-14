@@ -64,6 +64,14 @@ export default function StockScraperPage({ defaultStartDate, defaultEndDate }: P
         const query = searchQuery.toLowerCase().trim();
 
         const filtered = masterStockList.filter((item) => {
+            // Filter by bursa if selected
+            if (selectedBursa === 'IDX' && !item.ticker.endsWith('.JK')) {
+                return false;
+            }
+            if (selectedBursa === 'NASDAQ' && item.ticker.endsWith('.JK')) {
+                return false;
+            }
+
             if (!query) return true;
             return (
                 item.ticker.toLowerCase().includes(query) ||
@@ -78,7 +86,7 @@ export default function StockScraperPage({ defaultStartDate, defaultEndDate }: P
                 return b.ticker.localeCompare(a.ticker);
             }
         });
-    }, [searchQuery, sortOrder]);
+    }, [searchQuery, sortOrder, selectedBursa]);
 
     const handleToggleTicker = (ticker: string) => {
         setSelectedTickers((prev) =>
@@ -150,9 +158,29 @@ export default function StockScraperPage({ defaultStartDate, defaultEndDate }: P
                 return;
             }
 
+            // Check Content-Type to make sure server did not return HTML or JSON error
+            const contentType = response.headers.get('content-type') || '';
+            if (contentType.includes('text/html') || contentType.includes('application/json')) {
+                let errorMsg = 'Gagal mengunduh file Excel dari server.';
+                try {
+                    const errorJson = await response.json();
+                    errorMsg = errorJson?.errors?.tickers?.[0] || errorJson?.message || errorMsg;
+                } catch {
+                    // Ignore parsing error
+                }
+                toast.error(errorMsg);
+                setIsScraping(false);
+                return;
+            }
+
             // Extract filename from header
             const disposition = response.headers.get('Content-Disposition');
-            let filename = `Data_Saham_${startDate}_sd_${endDate}.xlsx`;
+            const tickerLabel = selectedTickers.length === 1
+                ? selectedTickers[0].replace('.JK', '')
+                : (selectedTickers.length <= 3
+                    ? selectedTickers.map((t) => t.replace('.JK', '')).join('_')
+                    : `${selectedTickers.length}_Saham`);
+            let filename = `Data_Saham_${tickerLabel}_${startDate}_sd_${endDate}.xlsx`;
             if (disposition && disposition.indexOf('filename=') !== -1) {
                 const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
                 if (matches != null && matches[1]) {
@@ -161,6 +189,12 @@ export default function StockScraperPage({ defaultStartDate, defaultEndDate }: P
             }
 
             const blob = await response.blob();
+            if (blob.size === 0) {
+                toast.error('File yang diunduh kosong atau gagal diproses.');
+                setIsScraping(false);
+                return;
+            }
+
             const downloadUrl = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = downloadUrl;
@@ -276,7 +310,16 @@ export default function StockScraperPage({ defaultStartDate, defaultEndDate }: P
                                             }`}
                                     >
                                         <div className="truncate">
-                                            <div className="font-mono text-xs">{stock.ticker}</div>
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="font-mono text-xs">{stock.ticker}</span>
+                                                <span className={`text-[9px] px-1 py-0.2 rounded font-semibold ${
+                                                    stock.ticker.endsWith('.JK')
+                                                        ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
+                                                        : 'bg-purple-500/10 text-purple-600 dark:text-purple-400'
+                                                }`}>
+                                                    {stock.ticker.endsWith('.JK') ? 'IDX' : 'NASDAQ'}
+                                                </span>
+                                            </div>
                                             <div className="text-[10px] text-muted-foreground truncate max-w-[90px]">
                                                 {stock.name}
                                             </div>
@@ -384,7 +427,7 @@ export default function StockScraperPage({ defaultStartDate, defaultEndDate }: P
                                 <SelectContent>
                                     <SelectItem value="all">Semua Bursa</SelectItem>
                                     <SelectItem value="IDX">IDX</SelectItem>
-                                    <SelectItem value="NYSE">NYSE</SelectItem>
+                                    <SelectItem value="NASDAQ">NASDAQ</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

@@ -310,7 +310,7 @@ export default function StockIndex({ stocks, filters, statistics, availableSecto
                             <div className="flex items-center gap-2 text-sm font-semibold">
                                 <span className="text-blue-600">IDX: {statistics.idx_conventional_count}</span>
                                 <span>•</span>
-                                <span className="text-purple-600">NYSE: {statistics.nyse_count ?? statistics.jii_count}</span>
+                                <span className="text-purple-600">NASDAQ: {statistics.nasdaq_count ?? statistics.nyse_count ?? statistics.jii_count}</span>
                             </div>
                             <p className="text-xs text-muted-foreground mt-1">
                                 Bursa Terdaftar
@@ -394,13 +394,13 @@ export default function StockIndex({ stocks, filters, statistics, availableSecto
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => setSelectedBursa('NYSE')}
-                                        className={`px-2 sm:px-2.5 py-1.5 rounded-md font-medium transition-colors cursor-pointer ${selectedBursa === 'NYSE'
+                                        onClick={() => setSelectedBursa('NASDAQ')}
+                                        className={`px-2 sm:px-2.5 py-1.5 rounded-md font-medium transition-colors cursor-pointer ${selectedBursa === 'NASDAQ'
                                             ? 'bg-background text-purple-600 shadow-xs'
                                             : 'text-muted-foreground hover:text-foreground'
                                             }`}
                                     >
-                                        NYSE
+                                        NASDAQ
                                     </button>
                                 </div>
                             </div>
@@ -511,9 +511,9 @@ export default function StockIndex({ stocks, filters, statistics, availableSecto
                                                     <Badge variant="outline" className="rounded-full border-blue-300 text-blue-700 bg-blue-50/60 dark:bg-blue-950/50 dark:text-blue-300">
                                                         IDX
                                                     </Badge>
-                                                ) : stock.bursa?.includes('NYSE') ? (
+                                                ) : (stock.bursa?.includes('NASDAQ') || stock.bursa?.includes('NYSE')) ? (
                                                     <Badge variant="outline" className="rounded-full border-purple-300 text-purple-700 bg-purple-50/60 dark:bg-purple-950/50 dark:text-purple-300">
-                                                        NYSE
+                                                        NASDAQ
                                                     </Badge>
                                                 ) : (
                                                     <Badge variant="secondary">
@@ -762,7 +762,7 @@ export default function StockIndex({ stocks, filters, statistics, availableSecto
                         </div>
                         <ul className="list-disc list-inside space-y-0.5 ml-1 text-muted-foreground dark:text-blue-300">
                             <li>
-                                <strong>Nama Sheet:</strong> <code className="bg-blue-100 dark:bg-blue-900/60 px-1 py-0.5 rounded text-blue-800 dark:text-blue-200">IDX</code> dan <code className="bg-purple-100 dark:bg-purple-900/60 px-1 py-0.5 rounded text-purple-800 dark:text-purple-200">NYSE</code>
+                                <strong>Nama Sheet:</strong> <code className="bg-blue-100 dark:bg-blue-900/60 px-1 py-0.5 rounded text-blue-800 dark:text-blue-200">IDX</code> dan <code className="bg-purple-100 dark:bg-purple-900/60 px-1 py-0.5 rounded text-purple-800 dark:text-purple-200">NASDAQ</code>
                             </li>
                             <li>
                                 <strong>Format Header:</strong> Baris 1 = <code>Date / Ticker</code>. Baris 2–4: <code>Name</code>, <code>Bursa</code>, dan <code>Sector</code> (kompatibel penuh dengan hasil export Scraper).
