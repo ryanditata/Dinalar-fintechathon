@@ -35,11 +35,15 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
     };
 }
 
-// Helper Format Rupiah
-const formatIdr = (val: number | string | null | undefined, lang: string = 'id'): string => {
-    if (val === null || val === undefined || isNaN(Number(val))) return 'Rp 0';
+// Helper Format Rupiah / Currency / USD
+const formatIdr = (val: number | string | null | undefined, lang: string = 'id', isUs: boolean = false): string => {
+    if (val === null || val === undefined || isNaN(Number(val))) return isUs ? '$ 0.00' : 'Rp 0';
+    const num = Number(val);
+    if (isUs) {
+        return `$ ${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
     const locale = lang === 'en' ? 'en-US' : 'id-ID';
-    return `Rp ${Math.round(Number(val)).toLocaleString(locale)}`;
+    return `Rp ${Math.round(num).toLocaleString(locale)}`;
 };
 
 // Helper Format Date
@@ -151,6 +155,9 @@ export async function generatePortfolioPDFReport({
 
     const initialCapital = Number(optimization.initial_capital || 0);
     const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
+    const isUsMarket =
+        Object.values(stocks).some((s) => (s.bursa ? s.bursa !== 'IDX' : !s.ticker?.endsWith('.JK'))) ||
+        (optimization.tickers && optimization.tickers.some((t) => !t.endsWith('.JK')));
 
     // ==========================================
     // 1. TOP HEADER & BRANDING BAR
@@ -230,7 +237,7 @@ export async function generatePortfolioPDFReport({
     doc.text(isEn ? 'Investment Capital:' : 'Modal Investasi:', col2X, currentY + 18);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(15, 23, 42);
-    doc.text(formatIdr(initialCapital, language), rightMarginX, currentY + 18, { align: 'right' });
+    doc.text(formatIdr(initialCapital, language, isUsMarket), rightMarginX, currentY + 18, { align: 'right' });
 
     // Row 2: Risk-Free Rate
     doc.setFont('helvetica', 'normal');
@@ -334,19 +341,22 @@ export async function generatePortfolioPDFReport({
             const cleanTicker = rawTicker.replace('.JK', '');
             const stk = stocks[rawTicker] || stocks[cleanTicker];
             const lastClose = stk?.latest_price ? Number(stk.latest_price.close_price) : 0;
-            const lotEstimate =
-                activePortfolio?.lot_estimation?.[rawTicker] ??
-                activePortfolio?.lot_estimation?.[cleanTicker] ??
-                (lastClose > 0 ? Math.floor(alloc.nominal_idr / (lastClose * 100)) : 0);
+            const isNonIdx = stk?.bursa ? stk.bursa !== 'IDX' : (!rawTicker.endsWith('.JK') || isUsMarket);
+            const lotEstimate = isNonIdx
+                ? (lastClose > 0 ? Math.floor(alloc.nominal_idr / lastClose) : 0)
+                : (activePortfolio?.lot_estimation?.[rawTicker] ??
+                   activePortfolio?.lot_estimation?.[cleanTicker] ??
+                   (lastClose > 0 ? Math.floor(alloc.nominal_idr / (lastClose * 100)) : 0));
 
             return {
                 ticker: cleanTicker,
                 name: stk?.name || cleanTicker,
-                category: stk?.bursa || 'IDX',
+                category: stk?.bursa || (isNonIdx ? 'NASDAQ' : 'IDX'),
                 weight: Number(alloc.weight_percent.toFixed(2)),
                 nominal: Math.round(alloc.nominal_idr),
                 lastClose,
                 lot: lotEstimate,
+                isNonIdx,
             };
         })
         .filter((item) => item.weight > 0.05)
@@ -442,10 +452,10 @@ export async function generatePortfolioPDFReport({
         item.name,
         item.category,
         `${item.weight.toFixed(2)}%`,
-        formatIdr(item.nominal, language),
-        item.lastClose > 0 ? formatIdr(item.lastClose, language) : '-',
+        formatIdr(item.nominal, language, isUsMarket),
+        item.lastClose > 0 ? formatIdr(item.lastClose, language, isUsMarket) : '-',
         item.lot > 0
-            ? `${item.lot.toLocaleString(isEn ? 'en-US' : 'id-ID')} ${isEn ? (item.lot > 1 ? 'Lots' : 'Lot') : 'Lot'}`
+            ? `${item.lot.toLocaleString(isEn ? 'en-US' : 'id-ID')} ${item.isNonIdx ? (isEn ? (item.lot > 1 ? 'Shares' : 'Share') : 'Lembar') : (isEn ? (item.lot > 1 ? 'Lots' : 'Lot') : 'Lot')}`
             : '-',
     ]);
 
@@ -457,10 +467,10 @@ export async function generatePortfolioPDFReport({
             isEn ? 'Optimal Portfolio' : 'Portofolio Optimal',
             '-',
             `${totalWeight.toFixed(2)}%`,
-            formatIdr(totalNominal, language),
+            formatIdr(totalNominal, language, isUsMarket),
             '-',
             totalLots > 0
-                ? `${totalLots.toLocaleString(isEn ? 'en-US' : 'id-ID')} ${isEn ? (totalLots > 1 ? 'Lots' : 'Lot') : 'Lot'}`
+                ? `${totalLots.toLocaleString(isEn ? 'en-US' : 'id-ID')} ${isUsMarket ? (isEn ? (totalLots > 1 ? 'Shares' : 'Share') : 'Lembar') : (isEn ? (totalLots > 1 ? 'Lots' : 'Lot') : 'Lot')}`
                 : '-',
         ],
     ];
@@ -473,7 +483,7 @@ export async function generatePortfolioPDFReport({
             isEn ? 'Company Name' : 'Nama Emiten',
             isEn ? 'Exchange' : 'Bursa',
             isEn ? 'Weight (%)' : 'Bobot (%)',
-            'Nominal (IDR)',
+            isUsMarket ? 'Nominal (USD)' : 'Nominal (IDR)',
             isEn ? 'Last Price' : 'Harga Terakhir',
             isEn ? 'Estimate' : 'Estimasi',
         ]],

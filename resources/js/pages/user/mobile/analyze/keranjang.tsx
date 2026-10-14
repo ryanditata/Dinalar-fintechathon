@@ -227,9 +227,62 @@ export default function MobileKeranjangPage({
         });
     }, [basketStocks, detailedBasketStocks]);
 
+    // Helper mendapatkan bursa dari sebuah saham
+    const getStockBursa = (stock: Stock): string => {
+        const clean = stock.ticker.replace('.JK', '');
+        const detailed = detailedBasketStocks[stock.ticker] || detailedBasketStocks[clean];
+        const rawBursa = stock.bursa || (detailed as any)?.bursa;
+        if (rawBursa) {
+            return rawBursa === 'NYSE' ? 'NASDAQ' : rawBursa;
+        }
+        return stock.ticker.endsWith('.JK') ? 'IDX' : 'NASDAQ';
+    };
+
+    // Deteksi bursa unik dari seluruh saham di keranjang
+    const uniqueBursas = useMemo(() => {
+        const bursas = new Set<string>();
+        basketStocks.forEach((stock) => {
+            const b = getStockBursa(stock);
+            if (b) bursas.add(b);
+        });
+        return Array.from(bursas);
+    }, [basketStocks, detailedBasketStocks]);
+
+    const hasMixedBursa = uniqueBursas.length > 1;
+
+    // Rincian saham per bursa untuk tampilan banner peringatan
+    const stocksByBursa = useMemo(() => {
+        const groups: Record<string, string[]> = {};
+        basketStocks.forEach((stock) => {
+            const b = getStockBursa(stock);
+            if (!groups[b]) groups[b] = [];
+            groups[b].push(stock.ticker.replace('.JK', ''));
+        });
+        return groups;
+    }, [basketStocks, detailedBasketStocks]);
+
     const hasNegativeReturn = negativeReturnStocks.length > 0;
     const hasMinStocks = basketStocks.length >= 2;
-    const canOptimize = hasMinStocks && !hasNegativeReturn && !isSubmitting;
+    const canOptimize = hasMinStocks && !hasNegativeReturn && !hasMixedBursa && !isSubmitting;
+
+    // Cek apakah seluruh saham di keranjang berasal dari bursa US / selain IDX
+    const isBasketUsMarket = useMemo(() => {
+        if (basketStocks.length === 0) return false;
+        return basketStocks.every((s) => getStockBursa(s) !== 'IDX');
+    }, [basketStocks, detailedBasketStocks]);
+
+    // Sinkronisasi nominal modal investasi saat bursa berganti
+    useEffect(() => {
+        if (isBasketUsMarket) {
+            if (initialCapital >= 1000000) {
+                setInitialCapital(10000); // Default $10,000 untuk pasar saham global/US
+            }
+        } else if (basketStocks.length > 0) {
+            if (initialCapital > 0 && initialCapital < 100000) {
+                setInitialCapital(10000000); // Default Rp 10.000.000 untuk IDX
+            }
+        }
+    }, [isBasketUsMarket]);
 
     // Helper format Rupiah / Currency
     const formatRupiah = (val: number | string | null | undefined) => {
@@ -237,6 +290,19 @@ export default function MobileKeranjangPage({
         if (val === null || val === undefined || isNaN(Number(val))) return `${currencyPrefix} -`;
         const localeStr = language === 'en' ? 'en-US' : 'id-ID';
         return `${currencyPrefix} ${Number(val).toLocaleString(localeStr)}`;
+    };
+
+    // Helper format harga saham sesuai bursa (selain IDX menggunakan lambang dolar $)
+    const formatStockPrice = (val: number | string | null | undefined, bursa?: string) => {
+        if (val === null || val === undefined || isNaN(Number(val))) return '-';
+        const num = Number(val);
+        const isUsMarket = bursa ? bursa !== 'IDX' : isBasketUsMarket;
+
+        if (isUsMarket) {
+            return `$ ${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+        return formatRupiah(num);
     };
 
     // Helper format tanggal (Contoh: 16 Sep 2026)
@@ -447,6 +513,11 @@ export default function MobileKeranjangPage({
             return;
         }
 
+        if (hasMixedBursa) {
+            toast.error(t('basket.mixed_bursa_error_toast', { bursas: uniqueBursas.join(', ') }));
+            return;
+        }
+
         if (hasNegativeReturn) {
             const list = negativeReturnStocks.map((s) => s.ticker.replace('.JK', '')).join(', ');
             toast.error(t('basket.negative_return_error_toast', { tickers: list }));
@@ -566,6 +637,8 @@ export default function MobileKeranjangPage({
                                     const lastPrice = stock.latest_price
                                         ? Number(stock.latest_price.close_price)
                                         : 0;
+                                    const stockBursa = getStockBursa(stock);
+                                    const isUsStock = stockBursa !== 'IDX';
 
                                     const expectedReturn: number | undefined =
                                         detailed?.metrics?.expected_return !== undefined && detailed?.metrics?.expected_return !== null
@@ -615,8 +688,14 @@ export default function MobileKeranjangPage({
                                                             <h4 className="text-[15px] font-bold text-zinc-900 leading-tight">
                                                                 {clean}
                                                             </h4>
-                                                            <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-zinc-100 text-zinc-500">
-                                                                {stock.bursa || 'IDX'}
+                                                            <span
+                                                                className={`text-[9px] font-semibold px-1.5 py-0.2 rounded ${
+                                                                    isUsStock
+                                                                        ? 'bg-purple-50 text-purple-600'
+                                                                        : 'bg-blue-50 text-blue-600'
+                                                                }`}
+                                                            >
+                                                                {stockBursa}
                                                             </span>
                                                         </div>
                                                         <p className="text-[11px] text-zinc-500 truncate mt-0.5">
@@ -648,10 +727,10 @@ export default function MobileKeranjangPage({
                                                 <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/80 flex flex-col justify-between">
                                                     <div>
                                                         <span className="text-[10px] text-zinc-400 font-medium block">
-                                                            {t('stocks.price')}
+                                                            {t('saham.price', 'Harga Terakhir')}
                                                         </span>
                                                         <span className="text-[13px] font-bold text-zinc-900 font-mono tabular-nums">
-                                                            {lastPrice > 0 ? formatRupiah(lastPrice) : '-'}
+                                                            {lastPrice > 0 ? formatStockPrice(lastPrice, stockBursa) : '-'}
                                                         </span>
                                                     </div>
                                                     <div className="pt-1.5">
@@ -761,6 +840,21 @@ export default function MobileKeranjangPage({
                     </section>
 
                 {/* 2. Banner Peringatan */}
+                {/* Peringatan Bursa Berbeda */}
+                {hasMixedBursa && (
+                    <div className="mx-1 p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-start gap-2.5">
+                        <AlertCircle className="size-4 shrink-0 text-amber-600 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                            <span className="font-bold block text-amber-900">
+                                {t('basket.mixed_bursa_title')}
+                            </span>
+                            <p className="mt-0.5 text-amber-700 leading-relaxed text-[11px]">
+                                {t('basket.mixed_bursa_desc', { bursas: uniqueBursas.join(', ') })}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
                 {hasNegativeReturn && (
                     <div className="mx-1 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2.5">
                         <AlertCircle className="size-4 shrink-0 text-rose-600 mt-0.5" />
@@ -809,16 +903,16 @@ export default function MobileKeranjangPage({
                                 </label>
                             </div>
                             <div className="relative">
-                                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-zinc-900 font-mono">
-                                    {language === 'en' ? 'IDR' : 'Rp'}
+                                <span className={`absolute ${isBasketUsMarket ? 'left-3' : 'left-3.5'} top-1/2 -translate-y-1/2 text-sm font-bold text-zinc-900 font-mono`}>
+                                    {isBasketUsMarket ? '$' : (language === 'en' ? 'IDR' : 'Rp')}
                                 </span>
                                 <input
                                     type="number"
-                                    min={1000000}
-                                    step={500000}
+                                    min={isBasketUsMarket ? 100 : 1000000}
+                                    step={isBasketUsMarket ? 100 : 500000}
                                     value={initialCapital}
                                     onChange={(e) => setInitialCapital(Number(e.target.value) || 0)}
-                                    className="w-full h-11 pl-11 pr-3 rounded-xl bg-zinc-100 border border-zinc-200 text-sm font-bold text-zinc-900 font-sans tabular-nums focus:outline-none focus:border-emerald-500 focus:bg-white transition-all"
+                                    className={`w-full h-11 ${isBasketUsMarket ? 'pl-8' : 'pl-11'} pr-3 rounded-xl bg-zinc-100 border border-zinc-200 text-sm font-bold text-zinc-900 font-sans tabular-nums focus:outline-none focus:border-emerald-500 focus:bg-white transition-all`}
                                     required
                                 />
                             </div>

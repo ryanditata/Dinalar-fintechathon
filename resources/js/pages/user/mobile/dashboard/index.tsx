@@ -109,6 +109,7 @@ export default function MobileDashboard({
                     expectedReturn={latest_portfolio?.best_portfolios?.sharpe?.return}
                     volatility={latest_portfolio?.best_portfolios?.sharpe?.risk}
                     sharpeRatio={latest_portfolio?.best_portfolios?.sharpe?.sharpe}
+                    tickers={latest_portfolio?.tickers}
                 />
 
                 {/* 3. Quick Action Tiles x3 (Pasar Saham, Keranjang, Riwayat AI) */}
@@ -221,35 +222,35 @@ export default function MobileDashboard({
 
                         <div className="space-y-2">
                             {recent_optimizations.slice(0, 3).map((item) => (
-                                <Link
-                                    key={item.id}
-                                    href={`/user/analyze/result/${item.id}`}
-                                    className="block p-3 rounded-xl bg-zinc-50 border border-zinc-200 hover:border-emerald-500 transition-all"
-                                >
-                                    <div className="flex items-center justify-between text-xs">
+                                    <Link
+                                        key={item.id}
+                                        href={`/user/analyze/result/${item.id}`}
+                                        className="block p-3 rounded-xl bg-zinc-50 border border-zinc-200 hover:border-emerald-500 transition-all"
+                                    >
+                                        <div className="flex items-center justify-between text-xs">
                                         <span className="font-semibold text-zinc-900 truncate max-w-[400px]">
-                                            {item.title}
-                                        </span>
+                                                    {item.title}
+                                                </span>
                                         <span className="text-[11px] font-bold text-emerald-600 font-sans">
                                             {language === 'en' ? 'IDR' : 'Rp'} {item.initial_capital.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}
-                                        </span>
-                                    </div>
-                                    <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
-                                        {item.tickers.slice(0, 4).map((tTicker, i) => (
-                                            <span
-                                                key={i}
+                                            </span>
+                                        </div>
+                                        <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                                            {item.tickers.slice(0, 4).map((tTicker, i) => (
+                                                <span
+                                                    key={i}
                                                 className="text-[10px] px-1.5 py-0.5 rounded-full bg-white text-zinc-500 border border-zinc-200 font-mono"
-                                            >
-                                                {tTicker.replace('.JK', '')}
-                                            </span>
-                                        ))}
-                                        {item.tickers.length > 4 && (
-                                            <span className="text-[10px] text-zinc-500">
-                                                +{item.tickers.length - 4} {t('common.more')}
-                                            </span>
-                                        )}
-                                    </div>
-                                </Link>
+                                                >
+                                                    {tTicker.replace('.JK', '')}
+                                                </span>
+                                            ))}
+                                            {item.tickers.length > 4 && (
+                                                <span className="text-[10px] text-zinc-500">
+                                                    +{item.tickers.length - 4} {t('common.more')}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </Link>
                             ))}
                         </div>
                     </section>

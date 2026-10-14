@@ -65,11 +65,15 @@ const PALETTE = [
 ];
 
 // Helper format Rupiah / Currency
-const formatIdr = (val: number | string | null | undefined, lang: string = 'id') => {
+const formatIdr = (val: number | string | null | undefined, lang: string = 'id', isUs: boolean = false) => {
+    if (val === null || val === undefined || isNaN(Number(val))) return isUs ? '$ 0.00' : (lang === 'en' ? 'IDR 0' : 'Rp 0');
+    const num = Number(val);
+    if (isUs) {
+        return `$ ${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
     const prefix = lang === 'en' ? 'IDR' : 'Rp';
-    if (val === null || val === undefined || isNaN(Number(val))) return `${prefix} 0`;
     const locale = lang === 'en' ? 'en-US' : 'id-ID';
-    return `${prefix} ${Number(val).toLocaleString(locale)}`;
+    return `${prefix} ${num.toLocaleString(locale)}`;
 };
 
 // Helper format Date
@@ -95,6 +99,10 @@ export const PortfolioShareCard = forwardRef<HTMLDivElement, SingleShareCardProp
         const { language: ctxLang } = useTranslation();
         const activeLang = langProp || ctxLang || 'id';
         const isEn = activeLang === 'en';
+
+        const isUsMarket =
+            Object.values(stocks).some((s) => (s.bursa ? s.bursa !== 'IDX' : !s.ticker?.endsWith('.JK'))) ||
+            (optimization.tickers && optimization.tickers.some((t) => !t.endsWith('.JK')));
 
         const initialCapital = Number(optimization.initial_capital || 0);
         const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
@@ -163,16 +171,19 @@ export const PortfolioShareCard = forwardRef<HTMLDivElement, SingleShareCardProp
                 const clean = ticker.replace('.JK', '');
                 const stockData = stocks[ticker] || stocks[clean];
                 const lastClose = stockData?.latest_price?.close_price ? Number(stockData.latest_price.close_price) : 0;
-                const lot =
-                    profile.lot_estimation?.[ticker] ??
-                    profile.lot_estimation?.[clean] ??
-                    (lastClose > 0 ? Math.floor(alloc.nominal_idr / (lastClose * 100)) : 0);
+                const isNonIdx = stockData?.bursa ? stockData.bursa !== 'IDX' : (!ticker.endsWith('.JK') || isUsMarket);
+                const lot = isNonIdx
+                    ? (lastClose > 0 ? Math.floor(alloc.nominal_idr / lastClose) : 0)
+                    : (profile.lot_estimation?.[ticker] ??
+                       profile.lot_estimation?.[clean] ??
+                       (lastClose > 0 ? Math.floor(alloc.nominal_idr / (lastClose * 100)) : 0));
 
                 return {
                     ticker: clean,
                     weightPercent: Number(alloc.weight_percent.toFixed(2)),
                     nominal: Math.round(alloc.nominal_idr),
                     lot,
+                    isNonIdx,
                 };
             })
             .filter((a) => a.weightPercent > 0.05)
@@ -346,7 +357,7 @@ export const PortfolioShareCard = forwardRef<HTMLDivElement, SingleShareCardProp
                             {isEn ? 'Stock Asset Allocation Breakdown' : 'Rincian Alokasi Aset Saham'}
                         </span>
                         <span style={{ fontSize: '12px', fontWeight: 700, color: '#10b981', fontFamily: '"JetBrains Mono", monospace' }}>
-                            {isEn ? 'Capital:' : 'Modal:'} {formatIdr(initialCapital, activeLang)}
+                            {isEn ? 'Capital:' : 'Modal:'} {formatIdr(initialCapital, activeLang, isUsMarket)}
                         </span>
                     </div>
 
@@ -404,10 +415,10 @@ export const PortfolioShareCard = forwardRef<HTMLDivElement, SingleShareCardProp
                                         </span>
                                     </div>
                                     <div style={{ textAlign: 'right', fontFamily: '"JetBrains Mono", monospace' }}>
-                                        <span style={{ fontWeight: 700, color: '#f1f5f9' }}>{formatIdr(item.nominal, activeLang)}</span>
+                                        <span style={{ fontWeight: 700, color: '#f1f5f9' }}>{formatIdr(item.nominal, activeLang, isUsMarket)}</span>
                                         {item.lot > 0 && (
                                             <span style={{ color: '#10b981', fontSize: '10px', marginLeft: '6px' }}>
-                                                ~{item.lot.toLocaleString(isEn ? 'en-US' : 'id-ID')} {isEn ? (item.lot > 1 ? 'lots' : 'lot') : 'lot'}
+                                                ~{item.lot.toLocaleString(isEn ? 'en-US' : 'id-ID')} {item.isNonIdx ? (isEn ? (item.lot > 1 ? 'shares' : 'share') : 'lembar') : (isEn ? (item.lot > 1 ? 'lots' : 'lot') : 'lot')}
                                             </span>
                                         )}
                                     </div>
@@ -495,6 +506,10 @@ export const PortfolioCompareShareCard = forwardRef<HTMLDivElement, CompareShare
         const best = optimization.best_portfolios || {};
         const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
 
+        const isUsMarket =
+            Object.values(stocks).some((s) => (s.bursa ? s.bursa !== 'IDX' : !s.ticker?.endsWith('.JK'))) ||
+            (optimization.tickers && optimization.tickers.some((t) => !t.endsWith('.JK')));
+
         const profilesList = [
             {
                 key: 'min_variance',
@@ -561,7 +576,7 @@ export const PortfolioCompareShareCard = forwardRef<HTMLDivElement, CompareShare
 
                     <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: '13px', fontWeight: 700, color: '#f8fafc' }}>
-                            {isEn ? 'Capital:' : 'Modal:'} {formatIdr(initialCapital, activeLang)}
+                            {isEn ? 'Capital:' : 'Modal:'} {formatIdr(initialCapital, activeLang, isUsMarket)}
                         </div>
                         <div style={{ fontSize: '11px', color: '#64748b' }}>
                             Risk-Free Rate: {optimization.risk_free_rate}%
@@ -599,16 +614,19 @@ export const PortfolioCompareShareCard = forwardRef<HTMLDivElement, CompareShare
                                 const clean = ticker.replace('.JK', '');
                                 const stockData = stocks[ticker] || stocks[clean];
                                 const lastClose = stockData?.latest_price?.close_price ? Number(stockData.latest_price.close_price) : 0;
-                                const lot =
-                                    pData.lot_estimation?.[ticker] ??
-                                    pData.lot_estimation?.[clean] ??
-                                    (lastClose > 0 ? Math.floor(alloc.nominal_idr / (lastClose * 100)) : 0);
+                                const isNonIdx = stockData?.bursa ? stockData.bursa !== 'IDX' : (!ticker.endsWith('.JK') || isUsMarket);
+                                const lot = isNonIdx
+                                    ? (lastClose > 0 ? Math.floor(alloc.nominal_idr / lastClose) : 0)
+                                    : (pData.lot_estimation?.[ticker] ??
+                                       pData.lot_estimation?.[clean] ??
+                                       (lastClose > 0 ? Math.floor(alloc.nominal_idr / (lastClose * 100)) : 0));
 
                                 return {
                                     ticker: clean,
                                     weightPercent: Number(alloc.weight_percent.toFixed(1)),
                                     nominal: Math.round(alloc.nominal_idr),
                                     lot,
+                                    isNonIdx,
                                 };
                             })
                             .filter((a) => a.weightPercent > 0.05)
@@ -721,7 +739,7 @@ export const PortfolioCompareShareCard = forwardRef<HTMLDivElement, CompareShare
                                                 {a.ticker} <span style={{ color: '#10b981', fontSize: '10px' }}>({a.weightPercent}%)</span>
                                             </span>
                                             <span style={{ color: '#94a3b8' }}>
-                                                {formatIdr(a.nominal, activeLang)}
+                                                {formatIdr(a.nominal, activeLang, isUsMarket)}
                                             </span>
                                         </div>
                                     ))}

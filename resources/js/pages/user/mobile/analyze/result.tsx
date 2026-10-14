@@ -188,13 +188,42 @@ export default function MobileResultPage({
                     : bestPortfolios.sharpe || bestPortfolios.min_variance;
     }, [clickedPoint, selectedProfile, bestPortfolios, initialCapital, t]);
 
+    // Helper deteksi apakah portofolio menangani bursa selain IDX (misal NASDAQ / US)
+    const isUsMarket = useMemo(() => {
+        const stockList = Object.values(stocks);
+        if (stockList.length > 0) {
+            return stockList.some((s) => {
+                const b = s.bursa === 'NYSE' ? 'NASDAQ' : s.bursa;
+                return b ? b !== 'IDX' : !s.ticker?.endsWith('.JK');
+            });
+        }
+        if (optimization?.tickers && optimization.tickers.length > 0) {
+            return optimization.tickers.some((ticker) => !ticker.endsWith('.JK'));
+        }
+        return false;
+    }, [stocks, optimization]);
+
     // Formatters
-    const formatRupiah = (val: number | string | null | undefined) => {
+    const formatCurrency = (val: number | string | null | undefined, forceBursa?: string) => {
+        const useUsd = forceBursa ? forceBursa !== 'IDX' : isUsMarket;
+        if (val === null || val === undefined || isNaN(Number(val))) {
+            return useUsd ? '$ -' : `${language === 'en' ? 'IDR' : 'Rp'} -`;
+        }
+        const num = Number(val);
+        if (useUsd) {
+            return `$ ${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
         const currencyPrefix = language === 'en' ? 'IDR' : 'Rp';
-        if (val === null || val === undefined || isNaN(Number(val))) return `${currencyPrefix} -`;
         const locale = language === 'en' ? 'en-US' : 'id-ID';
-        return `${currencyPrefix} ${Number(val).toLocaleString(locale)}`;
+        return `${currencyPrefix} ${num.toLocaleString(locale)}`;
     };
+
+    // Format Rupiah / Currency backward compatibility
+    const formatRupiah = (val: number | string | null | undefined) => formatCurrency(val);
+
+    const shareOrLotUnit = isUsMarket
+        ? t('result.shares_unit', language === 'en' ? 'Shares' : 'Lembar')
+        : t('result.lot_unit', 'Lot');
 
     const formatPercent = (val: number | null | undefined) => {
         if (val === null || val === undefined || isNaN(Number(val))) return '0.00%';
@@ -595,19 +624,22 @@ export default function MobileResultPage({
                 const cleanTicker = rawTicker.replace('.JK', '');
                 const stk = stocks[rawTicker] || stocks[cleanTicker];
                 const lastClose = stk?.latest_price ? Number(stk.latest_price.close_price) : 0;
-                const lotEstimate =
-                    activeProfData?.lot_estimation?.[rawTicker] ??
-                    activeProfData?.lot_estimation?.[cleanTicker] ??
-                    (lastClose > 0 ? Math.floor(alloc.nominal_idr / (lastClose * 100)) : 0);
+                const isNonIdx = stk?.bursa ? stk.bursa !== 'IDX' : (!rawTicker.endsWith('.JK') || isUsMarket);
+                const lotEstimate = isNonIdx
+                    ? (lastClose > 0 ? Math.floor(alloc.nominal_idr / lastClose) : 0)
+                    : (activeProfData?.lot_estimation?.[rawTicker] ??
+                       activeProfData?.lot_estimation?.[cleanTicker] ??
+                       (lastClose > 0 ? Math.floor(alloc.nominal_idr / (lastClose * 100)) : 0));
 
                 return {
                     ticker: cleanTicker,
                     name: stk?.name || cleanTicker,
-                    category: stk?.bursa || 'IDX',
+                    category: stk?.bursa || (isNonIdx ? 'NASDAQ' : 'IDX'),
                     weight: alloc.weight_percent,
                     nominal: alloc.nominal_idr,
                     lastClose,
                     lot: lotEstimate,
+                    isNonIdx,
                 };
             })
             .filter((item) => item.weight > 0.05)
@@ -618,13 +650,12 @@ export default function MobileResultPage({
 
         let stockLines = '';
         const numLocale = language === 'en' ? 'en-US' : 'id-ID';
-        const lotUnit = t('result.lot_unit', 'Lot');
+        const lotUnit = shareOrLotUnit;
 
         allocationsList.forEach((item, idx) => {
-            const currencyPrefix = language === 'en' ? 'IDR' : 'Rp';
             stockLines += `${idx + 1}. *${item.ticker}* (${item.category})\n` +
-                `   ↳ ${t('result.wa_weight', 'Bobot:')} *${item.weight.toFixed(2)}%* | ${t('result.wa_nominal', 'Nominal:')} *${formatRupiah(item.nominal)}*\n` +
-                `   ↳ ${t('result.wa_price', 'Harga:')} *${item.lastClose > 0 ? `${currencyPrefix} ${item.lastClose.toLocaleString(numLocale)}` : '-'}* | ${t('result.wa_estimate', 'Estimasi:')} *${item.lot > 0 ? `${item.lot.toLocaleString(numLocale)} ${lotUnit}` : '-'}*\n`;
+                `   ↳ ${t('result.wa_weight', 'Bobot:')} *${item.weight.toFixed(2)}%* | ${t('result.wa_nominal', 'Nominal:')} *${formatCurrency(item.nominal, item.category)}*\n` +
+                `   ↳ ${t('result.wa_price', 'Harga:')} *${item.lastClose > 0 ? formatCurrency(item.lastClose, item.category) : '-'}* | ${t('result.wa_estimate', 'Estimasi:')} *${item.lot > 0 ? `${item.lot.toLocaleString(numLocale)} ${lotUnit}` : '-'}*\n`;
         });
 
         const dateRangeStr = optimization.start_date && optimization.end_date
@@ -632,6 +663,9 @@ export default function MobileResultPage({
             : formatDate(optimization.created_at);
 
         const totalLotsText = `${totalLots.toLocaleString(numLocale)} ${lotUnit}`;
+        const totalEstimateLabel = isUsMarket
+            ? (language === 'en' ? 'Total Estimated Shares:' : 'Total Estimasi Lembar:')
+            : t('result.wa_total_estimate', 'Total Estimasi:');
 
         const text = `📊 *${t('result.wa_header', 'HASIL ANALISIS PORTOFOLIO SAHAM DINALAR')}*\n\n` +
             `• *${t('result.wa_title', 'Judul:')}* ${optimization.title || t('result.default_title', 'Portofolio Multi-Aset')}\n` +
@@ -639,7 +673,7 @@ export default function MobileResultPage({
             `• *${t('result.wa_ref_code', 'Kode Ref:')}* ${refCode}\n` +
             `• *${t('result.wa_analysis_date', 'Tanggal Analisis:')}* ${formatDate(optimization.created_at)}\n` +
             `• *${t('result.wa_time_range', 'Rentang Waktu:')}* ${dateRangeStr}\n` +
-            `• *${t('result.wa_investment_capital', 'Modal Investasi:')}* ${formatRupiah(initialCapital)}\n` +
+            `• *${t('result.wa_investment_capital', 'Modal Investasi:')}* ${formatCurrency(initialCapital)}\n` +
             `• *${t('result.wa_risk_free_rate', 'Risk-Free Rate:')}* ${optimization.risk_free_rate}%\n\n` +
             `📈 *${t('result.wa_metrics_title', 'METRIK PERFORMA:')}*\n` +
             `• ${t('result.wa_expected_return', 'Expected Return:')} *+${returnVal}%* (${t('result.wa_annual', 'Tahunan')})\n` +
@@ -648,8 +682,8 @@ export default function MobileResultPage({
             `💼 *${t('result.wa_allocation_title', 'RINCIAN ALOKASI SAHAM:')}*\n` +
             `${stockLines}\n` +
             `📌 *${t('result.wa_total_purchase', 'TOTAL PEMBELIAN:')}*\n` +
-            `• ${t('result.wa_total_capital', 'Total Modal:')} *${formatRupiah(totalNominal)}* (100.00%)\n` +
-            `• ${t('result.wa_total_estimate', 'Total Estimasi:')} *${totalLotsText}*\n\n` +
+            `• ${t('result.wa_total_capital', 'Total Modal:')} *${formatCurrency(totalNominal)}* (100.00%)\n` +
+            `• ${totalEstimateLabel} *${totalLotsText}*\n\n` +
             `${t('result.wa_footer', 'Analisis otomatis dengan Algoritma NSGA-II & Markowitz Frontier.\n🌐 Kunjungi: https://dinalar.my.id')}`;
 
         shareToWhatsAppText(text);
@@ -772,25 +806,28 @@ export default function MobileResultPage({
                 const cleanTicker = rawTicker.replace('.JK', '');
                 const stk = stocks[rawTicker] || stocks[cleanTicker];
                 const lastClose = stk?.latest_price ? Number(stk.latest_price.close_price) : 0;
-                const lotEstimate =
-                    activePortfolio?.lot_estimation?.[rawTicker] ??
-                    activePortfolio?.lot_estimation?.[cleanTicker] ??
-                    (lastClose > 0 ? Math.floor(alloc.nominal_idr / (lastClose * 100)) : 0);
+                const isNonIdx = stk?.bursa ? stk.bursa !== 'IDX' : (!rawTicker.endsWith('.JK') || isUsMarket);
+                const lotEstimate = isNonIdx
+                    ? (lastClose > 0 ? Math.floor(alloc.nominal_idr / lastClose) : 0)
+                    : (activePortfolio?.lot_estimation?.[rawTicker] ??
+                       activePortfolio?.lot_estimation?.[cleanTicker] ??
+                       (lastClose > 0 ? Math.floor(alloc.nominal_idr / (lastClose * 100)) : 0));
 
                 return {
                     ticker: cleanTicker,
                     name: stk?.name || cleanTicker,
-                    category: stk?.bursa || 'IDX',
+                    category: stk?.bursa || (isNonIdx ? 'NASDAQ' : 'IDX'),
                     weight: alloc.weight_percent,
                     nominal: alloc.nominal_idr,
                     lastClose,
                     lot: lotEstimate,
+                    isNonIdx,
                     color: COLORS[idx % COLORS.length],
                 };
             })
             .filter((item) => item.weight > 0.05)
             .sort((a, b) => b.weight - a.weight);
-    }, [activePortfolio, stocks, initialCapital]);
+    }, [activePortfolio, stocks, initialCapital, isUsMarket]);
 
     const totalWeight = allocationList.reduce((sum, item) => sum + item.weight, 0);
     const totalNominal = allocationList.reduce((sum, item) => sum + item.nominal, 0);
@@ -1473,7 +1510,7 @@ export default function MobileResultPage({
                     )}
                 </section>
 
-                {/* 4. Detail Alokasi Saham & Estimasi Lot */}
+                {/* 4. Detail Alokasi Saham & Estimasi {isUsMarket ? 'Lembar' : 'Lot'} */}
                 <section className="mx-1 rounded-[24px] bg-white p-4 border border-zinc-200 shadow-xs space-y-3">
                     <div className="flex items-center justify-between border-b border-zinc-100 pb-2">
                         <div className="flex items-center gap-2">
@@ -1518,22 +1555,22 @@ export default function MobileResultPage({
                                     {alloc.name}
                                 </p>
 
-                                {/* Nominal and Lot Row */}
+                                {/* Nominal and Lot / Shares Row */}
                                 <div className="grid grid-cols-2 gap-2 pt-1.5 border-t border-zinc-200/60 font-mono text-xs">
                                     <div>
                                         <span className="text-[10px] text-zinc-400 block font-sans">{t('result.nominal_funds', 'Nominal Dana')}</span>
                                         <span className="font-bold text-zinc-900">
-                                            {formatRupiah(alloc.nominal)}
+                                            {formatCurrency(alloc.nominal, alloc.category)}
                                         </span>
                                     </div>
                                     <div className="text-right">
                                         <span className="text-[10px] text-zinc-400 block font-sans">{t('result.estimated_purchase', 'Estimasi Pembelian')}</span>
                                         <span className="font-bold text-emerald-600 font-mono">
-                                            {alloc.lot > 0 ? `${alloc.lot.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')} ${t('result.lot_unit', 'Lot')}` : '-'}
+                                            {alloc.lot > 0 ? `${alloc.lot.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')} ${shareOrLotUnit}` : '-'}
                                         </span>
                                         {alloc.lastClose > 0 && (
                                             <span className="text-[9px] text-zinc-400 block">
-                                                (@ {language === 'en' ? 'IDR' : 'Rp'} {alloc.lastClose.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')})
+                                                (@ {formatCurrency(alloc.lastClose, alloc.category)})
                                             </span>
                                         )}
                                     </div>
@@ -1547,13 +1584,15 @@ export default function MobileResultPage({
                         <div className="flex items-center justify-between text-xs">
                             <span className="font-sans font-semibold text-emerald-800">{t('result.total_capital_allocation', 'Total Alokasi Modal:')}</span>
                             <span className="font-bold text-emerald-900">
-                                {formatRupiah(totalNominal)} ({totalWeight.toFixed(2)}%)
+                                {formatCurrency(totalNominal)} ({totalWeight.toFixed(2)}%)
                             </span>
                         </div>
                         <div className="flex items-center justify-between text-xs pt-1 border-t border-emerald-200/60">
-                            <span className="font-sans font-semibold text-emerald-800">{t('result.total_estimated_lots', 'Total Estimasi Lot:')}</span>
+                            <span className="font-sans font-semibold text-emerald-800">
+                                {isUsMarket ? t('result.total_estimated_shares', 'Total Estimasi Lembar:') : t('result.total_estimated_lots', 'Total Estimasi Lot:')}
+                            </span>
                             <span className="font-bold text-emerald-900">
-                                {totalLots > 0 ? `${totalLots.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')} ${t('result.lot_unit', 'Lot')}` : '-'}
+                                {totalLots > 0 ? `${totalLots.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')} ${shareOrLotUnit}` : '-'}
                             </span>
                         </div>
                     </div>
@@ -1813,7 +1852,9 @@ export default function MobileResultPage({
                                         {t('result.opt_share_whatsapp', 'Kirim Ringkasan ke WhatsApp')}
                                     </span>
                                     <span className="text-[10px] text-zinc-400 block truncate">
-                                        {t('result.opt_share_whatsapp_desc', 'Pesan terformat lengkap dengan estimasi lot')}
+                                        {isUsMarket
+                                            ? t('result.opt_share_whatsapp_desc_shares', 'Pesan terformat lengkap dengan estimasi lembar saham')
+                                            : t('result.opt_share_whatsapp_desc', 'Pesan terformat lengkap dengan estimasi lot')}
                                     </span>
                                 </div>
                             </button>

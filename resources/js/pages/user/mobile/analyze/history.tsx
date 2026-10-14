@@ -151,6 +151,13 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
         return num.toFixed(2);
     };
 
+    const formatHistoryCapital = (capital: number, isUs: boolean) => {
+        if (isUs) {
+            return `$ ${capital.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+        return `${language === 'en' ? 'IDR' : 'Rp'} ${capital.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}`;
+    };
+
     return (
         <MobileAppLayout>
             <Head title={t('history.title')} />
@@ -184,6 +191,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                         <div className="space-y-2.5 pt-1">
                         {list.length > 0 ? (
                             list.map((item) => {
+                                const isUsItem = Boolean(item.tickers && item.tickers.some((t) => !t.endsWith('.JK')));
                                 const profile =
                                     item.best_portfolios?.sharpe ||
                                     item.best_portfolios?.max_sharpe ||
@@ -205,9 +213,9 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                         {/* Main Row (Padding 12) */}
                                         <div className="p-3.5 space-y-2.5">
                                             <div className="flex items-center justify-between text-xs">
-                                                <span className="font-mono text-[11px] font-semibold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                                                    {item.reference_code || `DNL-REF-${item.id}`}
-                                                </span>
+                                                    <span className="font-mono text-[11px] font-semibold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                                                        {item.reference_code || `DNL-REF-${item.id}`}
+                                                    </span>
                                                 <span className="text-zinc-500 flex items-center gap-1 font-medium">
                                                     <Clock className="size-3" />
                                                     {formatDate(item.created_at)}
@@ -232,7 +240,7 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                                                     </div>
 
                                                     <div className="text-[13px] font-bold text-zinc-900 font-sans shrink-0">
-                                                        {language === 'en' ? 'IDR' : 'Rp'} {item.initial_capital.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}
+                                                        {formatHistoryCapital(item.initial_capital, isUsItem)}
                                                     </div>
                                                 </div>
                                             </div>

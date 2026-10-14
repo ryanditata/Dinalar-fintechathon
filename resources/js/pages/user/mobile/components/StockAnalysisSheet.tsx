@@ -672,7 +672,9 @@ export function StockAnalysisSheet({
                         {lastPrice > 0 && (
                             <div className="text-right shrink-0">
                                 <div className="text-sm font-extrabold font-mono text-zinc-900 leading-tight">
-                                    {stock.bursa === 'NASDAQ' ? `${lastPrice.toFixed(2)}` : `${formatRupiah(lastPrice)}`}
+                                    {(stock.bursa && stock.bursa !== 'IDX') || (!stock.ticker.endsWith('.JK') && stock.bursa !== 'IDX')
+                                        ? `$ ${lastPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                                        : `${language === 'en' ? 'IDR ' : 'Rp '}${formatRupiah(lastPrice)}`}
                                 </div>
                                 {changeVal !== null && changeVal !== undefined && (
                                     <span

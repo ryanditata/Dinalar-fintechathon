@@ -11,6 +11,10 @@ interface WalletLeatherHeroProps {
     expectedReturn?: number | string | null;
     volatility?: number | string | null;
     sharpeRatio?: number | string | null;
+    tickers?: string[];
+    isUsMarket?: boolean;
+    bursa?: string;
+    currency?: string;
 }
 
 export function WalletLeatherHero({
@@ -22,8 +26,23 @@ export function WalletLeatherHero({
     expectedReturn,
     volatility,
     sharpeRatio,
+    tickers,
+    isUsMarket,
+    bursa,
+    currency,
 }: WalletLeatherHeroProps) {
     const { t, language } = useTranslation();
+
+    const isUs =
+        isUsMarket !== undefined
+            ? isUsMarket
+            : bursa
+                ? bursa !== 'IDX'
+                : tickers && tickers.length > 0
+                    ? tickers.some((t) => !t.endsWith('.JK'))
+                    : currency === 'USD' || currency === '$';
+
+    const marketBadge = bursa || (isUs ? 'NASDAQ' : 'IDX');
 
     const displayLabel = label ?? t('dashboard.ai_portfolio_capital');
     const [hideAmount, setHideAmount] = useState<boolean>(() => {
@@ -45,7 +64,9 @@ export function WalletLeatherHero({
 
     const formattedAmount =
         typeof amount === 'number'
-            ? amount.toLocaleString('en-US', { maximumFractionDigits: 2 })
+            ? isUs
+                ? amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                : amount.toLocaleString(language === 'en' ? 'en-US' : 'id-ID', { maximumFractionDigits: 2 })
             : amount;
 
     const formatMetricPercent = (val: number | string | null | undefined, fallback: string) => {
@@ -104,7 +125,18 @@ export function WalletLeatherHero({
 
                 <div className="flex items-center justify-between text-[10px] text-emerald-900/70 font-mono tracking-widest uppercase">
                     <span>{cardHolder}</span>
-                    <span className="font-bold text-emerald-950">AI OPTIMIZED</span>
+                    <div className="flex items-center gap-1.5">
+                        <span
+                            className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded border leading-none ${
+                                isUs
+                                    ? 'bg-purple-900/15 text-purple-950 border-purple-950/20'
+                                    : 'bg-emerald-900/15 text-emerald-950 border-emerald-950/20'
+                            }`}
+                        >
+                            {marketBadge}
+                        </span>
+                        <span className="font-bold text-emerald-950">AI OPTIMIZED</span>
+                    </div>
                 </div>
             </div>
 
@@ -170,7 +202,7 @@ export function WalletLeatherHero({
                         <div className="flex items-baseline text-white">
                             {/* Simbol Mata Uang Kecil Terangkat (Superscript) */}
                             <span className="text-sm font-semibold text-emerald-200 mr-1.5 -translate-y-0.5">
-                                {language === 'en' ? 'IDR' : 'Rp'}
+                                {isUs ? '$' : (language === 'en' ? 'IDR' : 'Rp')}
                             </span>
                             <span className="text-[24px] font-bold tracking-tight font-sans tabular-nums text-white leading-none">
                                 {hideAmount ? '••••••••' : formattedAmount}

@@ -278,7 +278,7 @@ class PortfolioController extends Controller
         $validated = $request->validate([
             'tickers' => 'required|array|min:2',
             'tickers.*' => 'required|string',
-            'initial_capital' => 'nullable|numeric|min:100000',
+            'initial_capital' => 'nullable|numeric|min:100',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',
             'horizon_preset' => 'nullable|string',
@@ -304,6 +304,18 @@ class PortfolioController extends Controller
 
         if ($stocks->count() < 2) {
             return back()->withErrors(['tickers' => 'Minimal 2 saham yang valid diperlukan untuk optimasi.']);
+        }
+
+        // Validasi bursa saham harus seragam
+        $bursas = $stocks->map(function ($s) {
+            $b = $s->bursa ?: (str_ends_with($s->ticker, '.JK') ? 'IDX' : 'NASDAQ');
+            return ($b === 'NYSE') ? 'NASDAQ' : $b;
+        })->unique();
+
+        if ($bursas->count() > 1) {
+            return back()->withErrors([
+                'tickers' => 'Seluruh saham dalam portofolio harus berasal dari bursa yang sama (misal seluruhnya IDX atau seluruhnya NASDAQ). Terdeteksi bursa: ' . $bursas->implode(', ') . '.',
+            ]);
         }
 
         // Fetch historical prices aligned within date range
