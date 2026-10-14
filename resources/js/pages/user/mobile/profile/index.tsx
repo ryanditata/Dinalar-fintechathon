@@ -142,7 +142,7 @@ export default function MobileProfilePage() {
                                 </span>
                             </div>
                         </div>
-                        <LanguageToggle />
+                        <LanguageToggle theme="light" />
                     </div>
 
                     <button

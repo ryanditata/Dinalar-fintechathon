@@ -7,9 +7,20 @@ import SparklineChart from '@/components/SparklineChart';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useTranslation } from '@/i18n/LanguageContext';
+import { LanguageToggle } from '@/components/LanguageToggle';
+import { useAppearance } from '@/hooks/use-appearance';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
     Activity,
     ArrowRight,
+    Check,
+    ChevronDown,
     ChevronRight,
     Clock,
     Coins,
@@ -21,128 +32,25 @@ import {
     Menu,
     MessageCircle,
     Minus,
+    Monitor,
+    Moon,
     MoreHorizontal,
     PieChart as PieIcon,
     Plus,
     Share2,
     ShieldCheck,
     Sparkles,
+    Sun,
     Tag,
     TrendingUp,
     X,
     Zap,
 } from 'lucide-react';
 
-const MOCK_HISTORY_LIST = [
-    {
-        id: 1,
-        refCode: 'DNL1-084',
-        title: 'Portofolio Bluechip LQ45 Optimal Sharpe',
-        tickers: ['BBCA', 'BBRI', 'TLKM', 'ASII', 'ICBP'],
-        initialCapital: 50000000,
-        riskFreeRate: 6.25,
-        createdAt: '22 Agu 2026, 10:30',
-        expectedReturn: '+24.85%',
-        risk: '11.40%',
-    },
-    {
-        id: 2,
-        refCode: 'DNL1-083',
-        title: 'Kombinasi Sektor Finansial & Konsumer',
-        tickers: ['BMRI', 'BBNI', 'UNVR', 'INDF'],
-        initialCapital: 35000000,
-        riskFreeRate: 6.25,
-        createdAt: '21 Agu 2026, 16:15',
-        expectedReturn: '+19.60%',
-        risk: '9.80%',
-    },
-    {
-        id: 3,
-        refCode: 'DNL1-082',
-        title: 'Portofolio Saham Unggulan Global (NYSE)',
-        tickers: ['JPM', 'KO', 'V', 'JNJ', 'PG'],
-        initialCapital: 25000000,     
-        riskFreeRate: 4.5,      
-        createdAt: '20 Agu 2026, 14:00',
-        expectedReturn: '+14.80%',
-        risk: '11.50%',
-    },
-    {
-        id: 4,
-        refCode: 'DNL1-081',
-        title: 'Strategi Defensif Dividen Tinggi (Minimum Variance)',
-        tickers: ['BBCA', 'ASII', 'PGAS', 'PTBA'],
-        initialCapital: 75000000,
-        riskFreeRate: 6.25,
-        createdAt: '19 Agu 2026, 09:45',
-        expectedReturn: '+16.50%',
-        risk: '8.20%',
-    },
-];
-
 interface FAQItem {
     question: string;
     answer: string;
 }
-
-const FAQ_LIST: FAQItem[] = [
-    {
-        question: 'Apa itu Dinalar dan bagaimana cara kerjanya?',
-        answer:
-            'Dinalar adalah platform optimasi portofolio saham kuantitatif berbasis Artificial Intelligence. Dinalar menggunakan kombinasi Teori Portofolio Modern Markowitz dan algoritma genetika NSGA-II (Non-dominated Sorting Genetic Algorithm II) untuk menghitung alokasi bobot saham optimal yang memaksimalkan proyeksi imbal hasil (Expected Return) sekaligus meminimalkan risiko volatilitas pasar.',
-    },
-    {
-        question: 'Apakah hasil analisis menyertakan rekomendasi nominal dan jumlah lot saham?',
-        answer:
-            'Ya, Dinalar secara otomatis mengonversi bobot persentase optimal menjadi estimasi nominal Rupiah (IDR) dan jumlah lot pembelian nyata berdasarkan harga penutupan pasar bursa saham (IDX) terkini serta modal awal yang Anda masukkan.',
-    },
-    {
-        question: 'Apa perbedaan antara profil Konservatif, Moderat, dan Agresif?',
-        answer:
-            'Profil Konservatif (Minimum Variance) memprioritaskan volatilitas risiko terendah. Profil Moderat (Optimal Sharpe Ratio) memberikan rasio imbal hasil per unit risiko paling efisien. Sedangkan profil Agresif (Max Return) berfokus mengejar potensi keuntungan tertinggi pada frontier efisien.',
-    },
-    {
-        question: 'Apakah laporan hasil optimasi bisa diunduh atau dibagikan?',
-        answer:
-            'Ya, Anda dapat mengunduh Laporan Resmi berformat PDF vektor beresolusi tinggi, mengekspor infografis kartu portofolio berformat PNG, menyalin ringkasan teks WhatsApp, maupun membagikan tautan publik aman yang dapat diakses siapa saja tanpa perlu login.',
-    },
-    {
-        question: 'Berapa modal minimal untuk melakukan analisis portofolio di Dinalar?',
-        answer:
-            'Tidak ada batasan modal minimal. Anda bebas memasukkan modal investasi simulasi mulai dari Rp 1.000.000 hingga miliaran rupiah sesuai dengan rencana alokasi dana investasi Anda.',
-    },
-    {
-        question: 'Apakah platform Dinalar memungut biaya atau komisi transaksi?',
-        answer:
-            'Dinalar adalah platform analisis kuantitatif independen dan tidak memungut komisi transaksi broker apa pun. Anda dapat mendaftar dan menggunakan seluruh fitur optimasi portofolio secara gratis.',
-    },
-];
-
-const STATS_DATA = [
-    {
-        value: '100%',
-        label: 'Matematika Tanpa Bias Emosi',
-        desc: 'Keputusan alokasi aset murni berbasis kalkulasi kovariansi dan frontier efisien.',
-    },
-    {
-        value: '3.33s',
-        label: 'Kecepatan Solusi Pareto',
-        desc: 'Menghasilkan puluhan kombinasi portofolio optimal dalam hitungan detik.',
-    },
-    {
-        value: '3 Pilihan',
-        label: 'Profil Risiko Terukur',
-        desc: 'Pilihan strategi terarah: Minimum Variance, Optimal Sharpe Ratio, dan Max Expected Return.',
-    },
-];
-
-const SAMPLE_STOCKS = [
-    { ticker: 'BBCA', name: 'Bank Central Asia Tbk', weight: 35, returnVal: '+18.4%', riskVal: '11.2%' },
-    { ticker: 'BBRI', name: 'Bank Rakyat Indonesia Tbk', weight: 25, returnVal: '+22.1%', riskVal: '14.5%' },
-    { ticker: 'TLKM', name: 'Telkom Indonesia Tbk', weight: 20, returnVal: '+14.2%', riskVal: '9.8%' },
-    { ticker: 'ASII', name: 'Astra International Tbk', weight: 12, returnVal: '+16.0%', riskVal: '13.0%' },
-    { ticker: 'ICBP', name: 'Indofood CBP Sukses Makmur', weight: 8, returnVal: '+12.5%', riskVal: '8.4%' },
-];
 
 const fadeInUp: Variants = {
     hidden: { opacity: 0, y: 32 },
@@ -179,10 +87,125 @@ export default function LandingPage() {
     const user = auth?.user;
     const dashboardUrl = user?.role === 'admin' ? '/admin/dashboard' : '/user/dashboard';
 
+    const { language, t } = useTranslation();
+    const { appearance, updateAppearance } = useAppearance();
+    const currency = language === 'en' ? 'IDR' : 'Rp';
+    const formatNumber = (num: number) => num.toLocaleString(language === 'en' ? 'en-US' : 'id-ID');
+
     const [openFaq, setOpenFaq] = useState<number | null>(0);
     const [activeTabProfile, setActiveTabProfile] = useState<'conservative' | 'moderate' | 'aggressive'>('moderate');
     const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
     const [activeSection, setActiveSection] = useState<string>('hero');
+
+    const mockHistoryList = [
+        {
+            id: 1,
+            refCode: 'DNL1-084',
+            title: t('landing.mock_history.item_1_title', 'Portofolio Bluechip LQ45 Optimal Sharpe'),
+            tickers: ['BBCA', 'BBRI', 'TLKM', 'ASII', 'ICBP'],
+            initialCapital: 50000000,
+            riskFreeRate: 6.25,
+            createdAt: t('landing.mock_history.item_1_date', '22 Agu 2026, 10:30'),
+            expectedReturn: '+24.85%',
+            risk: '11.40%',
+        },
+        {
+            id: 2,
+            refCode: 'DNL1-083',
+            title: t('landing.mock_history.item_2_title', 'Kombinasi Sektor Finansial & Konsumer'),
+            tickers: ['BMRI', 'BBNI', 'UNVR', 'INDF'],
+            initialCapital: 35000000,
+            riskFreeRate: 6.25,
+            createdAt: t('landing.mock_history.item_2_date', '21 Agu 2026, 16:15'),
+            expectedReturn: '+19.60%',
+            risk: '9.80%',
+        },
+        {
+            id: 3,
+            refCode: 'DNL1-082',
+            title: t('landing.mock_history.item_3_title', 'Portofolio Saham Unggulan Global (NYSE)'),
+            tickers: ['JPM', 'KO', 'V', 'JNJ', 'PG'],
+            initialCapital: 25000000,
+            riskFreeRate: 4.5,
+            createdAt: t('landing.mock_history.item_3_date', '20 Agu 2026, 14:00'),
+            expectedReturn: '+14.80%',
+            risk: '11.50%',
+        },
+        {
+            id: 4,
+            refCode: 'DNL1-081',
+            title: t('landing.mock_history.item_4_title', 'Strategi Defensif Dividen Tinggi (Minimum Variance)'),
+            tickers: ['BBCA', 'ASII', 'PGAS', 'PTBA'],
+            initialCapital: 75000000,
+            riskFreeRate: 6.25,
+            createdAt: t('landing.mock_history.item_4_date', '19 Agu 2026, 09:45'),
+            expectedReturn: '+16.50%',
+            risk: '8.20%',
+        },
+    ];
+
+    const faqList: FAQItem[] = [
+        {
+            question: t('landing.faq.q1', 'Apa itu Dinalar dan bagaimana cara kerjanya?'),
+            answer: t(
+                'landing.faq.a1',
+                'Dinalar adalah platform optimasi portofolio saham kuantitatif berbasis Artificial Intelligence. Dinalar menggunakan kombinasi Teori Portofolio Modern Markowitz dan algoritma genetika NSGA-II (Non-dominated Sorting Genetic Algorithm II) untuk menghitung alokasi bobot saham optimal yang memaksimalkan proyeksi imbal hasil (Expected Return) sekaligus meminimalkan risiko volatilitas pasar.'
+            ),
+        },
+        {
+            question: t('landing.faq.q2', 'Apakah hasil analisis menyertakan rekomendasi nominal dan jumlah lot saham?'),
+            answer: t(
+                'landing.faq.a2',
+                'Ya, Dinalar secara otomatis mengonversi bobot persentase optimal menjadi estimasi nominal Rupiah (IDR) dan jumlah lot pembelian nyata berdasarkan harga penutupan pasar bursa saham (IDX) terkini serta modal awal yang Anda masukkan.'
+            ),
+        },
+        {
+            question: t('landing.faq.q3', 'Apa perbedaan antara profil Konservatif, Moderat, dan Agresif?'),
+            answer: t(
+                'landing.faq.a3',
+                'Profil Konservatif (Minimum Variance) memprioritaskan volatilitas risiko terendah. Profil Moderat (Optimal Sharpe Ratio) memberikan rasio imbal hasil per unit risiko paling efisien. Sedangkan profil Agresif (Max Return) berfokus mengejar potensi keuntungan tertinggi pada frontier efisien.'
+            ),
+        },
+        {
+            question: t('landing.faq.q4', 'Apakah laporan hasil optimasi bisa diunduh atau dibagikan?'),
+            answer: t(
+                'landing.faq.a4',
+                'Ya, Anda dapat mengunduh Laporan Resmi berformat PDF vektor beresolusi tinggi, mengekspor infografis kartu portofolio berformat PNG, menyalin ringkasan teks WhatsApp, maupun membagikan tautan publik aman yang dapat diakses siapa saja tanpa perlu login.'
+            ),
+        },
+        {
+            question: t('landing.faq.q5', 'Berapa modal minimal untuk melakukan analisis portofolio di Dinalar?'),
+            answer: t(
+                'landing.faq.a5',
+                'Tidak ada batasan modal minimal. Anda bebas memasukkan modal investasi simulasi mulai dari Rp 1.000.000 hingga miliaran rupiah sesuai dengan rencana alokasi dana investasi Anda.'
+            ),
+        },
+        {
+            question: t('landing.faq.q6', 'Apakah platform Dinalar memungut biaya atau komisi transaksi?'),
+            answer: t(
+                'landing.faq.a6',
+                'Dinalar adalah platform analisis kuantitatif independen dan tidak memungut komisi transaksi broker apa pun. Anda dapat mendaftar dan menggunakan seluruh fitur optimasi portofolio secara gratis.'
+            ),
+        },
+    ];
+
+    const statsData = [
+        {
+            value: '100%',
+            label: t('landing.features.stat_1_title', 'Matematika Tanpa Bias Emosi'),
+            desc: t('landing.features.stat_1_desc', 'Keputusan alokasi aset murni berbasis kalkulasi kovariansi dan frontier efisien.'),
+        },
+        {
+            value: '3.33s',
+            label: t('landing.features.stat_2_title', 'Kecepatan Solusi Pareto'),
+            desc: t('landing.features.stat_2_desc', 'Menghasilkan puluhan kombinasi portofolio optimal dalam hitungan detik.'),
+        },
+        {
+            value: t('landing.features.stat_3_val', '3 Pilihan'),
+            label: t('landing.features.stat_3_title', 'Profil Risiko Terukur'),
+            desc: t('landing.features.stat_3_desc', 'Pilihan strategi terarah: Minimum Variance, Optimal Sharpe Ratio, dan Max Expected Return.'),
+        },
+    ];
 
     // Smooth scroll using Lenis
     useEffect(() => {
@@ -241,20 +264,20 @@ export default function LandingPage() {
     };
 
     const NAV_ITEMS = [
-        { id: 'hero', label: 'Home' },
-        { id: 'features', label: 'Fitur Utama' },
-        { id: 'how-it-works', label: 'Cara Kerja' },
-        { id: 'showcase', label: 'Simulasi' },
-        { id: 'faq', label: 'FAQ' },
+        { id: 'hero', label: t('landing.nav.home', 'Home') },
+        { id: 'features', label: t('landing.nav.features', 'Fitur Utama') },
+        { id: 'how-it-works', label: t('landing.nav.how_it_works', 'Cara Kerja') },
+        { id: 'showcase', label: t('landing.nav.showcase', 'Simulasi') },
+        { id: 'faq', label: t('landing.nav.faq', 'FAQ') },
     ];
 
     return (
         <div className="min-h-screen bg-[#0A0B0A] text-white selection:bg-emerald-600 selection:text-white font-sans antialiased overflow-x-hidden">
             <Head>
-                <title>Dinalar - AI Stock Portfolio Optimization Platform</title>
+                <title>{t('landing.meta_title', 'Dinalar - AI Stock Portfolio Optimization Platform')}</title>
                 <meta
                     name="description"
-                    content="Platform optimasi portofolio saham berbasis Artificial Intelligence. Maksimalkan return dan kendalikan risiko saham pilihan Anda."
+                    content={t('landing.meta_description', 'Platform optimasi portofolio saham berbasis Artificial Intelligence. Maksimalkan return dan kendalikan risiko saham pilihan Anda.')}
                 />
             </Head>
 
@@ -299,13 +322,13 @@ export default function LandingPage() {
                             href={user ? dashboardUrl : '/login'}
                             className="px-4 py-2 sm:px-5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 transition-colors shadow-xs"
                         >
-                            <span>{user ? 'Dashboard' : 'Login'}</span>
+                            <span>{user ? t('landing.nav.dashboard', 'Dashboard') : t('landing.nav.login', 'Login')}</span>
                         </Link>
 
                         {/* Hamburger Button for Mobile */}
                         <button
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            aria-label="Toggle Menu"
+                            aria-label={t('landing.nav.toggle_menu', 'Toggle Menu')}
                             className="md:hidden p-2 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors focus:outline-none cursor-pointer"
                         >
                             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -342,12 +365,16 @@ export default function LandingPage() {
                         </nav>
 
                         <div className="pt-3 border-t border-white/10 flex flex-col gap-2.5">
+                            <div className="flex items-center justify-between px-1 py-1">
+                                <span className="text-xs text-white/60">Bahasa / Language</span>
+                                <LanguageToggle theme="dark" />
+                            </div>
                             <Link
                                 href={user ? dashboardUrl : '/login'}
                                 className="w-full py-2.5 px-4 rounded-lg text-sm font-medium text-center bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition-colors"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
-                                {user ? 'Dashboard' : 'Login'}
+                                {user ? t('landing.nav.dashboard', 'Dashboard') : t('landing.nav.login', 'Login')}
                             </Link>
                         </div>
                     </div>
@@ -378,17 +405,17 @@ export default function LandingPage() {
                         <motion.div variants={fadeInUp} className="relative">
                             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.08]">
                                 <span className="bg-gradient-to-b from-white via-white/95 to-white/70 bg-clip-text text-transparent block">
-                                    Optimasi Portofolio Saham
+                                    {t('landing.hero.title_1', 'Optimasi Portofolio Saham')}
                                 </span>
                                 <span className="mt-1 sm:mt-2 block bg-gradient-to-b from-white via-emerald-200 to-emerald-400 bg-clip-text text-transparent drop-shadow-[0_10px_35px_rgba(16,185,129,0.45)]">
-                                    dengan Kecerdasan Buatan
+                                    {t('landing.hero.title_2', 'dengan Kecerdasan Buatan')}
                                 </span>
                             </h1>
                         </motion.div>
 
                         {/* Subtitle (Matching Reference Image Clean Typography) */}
                         <motion.p variants={fadeInUp} className="text-sm sm:text-base md:text-lg text-white/70 max-w-2xl mx-auto leading-relaxed">
-                            Alokasikan modal investasi saham secara matematis. Maksimalkan proyeksi imbal hasil dan kendalikan risiko volatilitas secara presisi tanpa bias emosional.
+                            {t('landing.hero.subtitle', 'Alokasikan modal investasi saham secara matematis. Maksimalkan proyeksi imbal hasil dan kendalikan risiko volatilitas secara presisi tanpa bias emosional.')}
                         </motion.p>
 
                         {/* CTA Buttons (Matching Reference Image Glowing Pill CTA) */}
@@ -397,7 +424,7 @@ export default function LandingPage() {
                                 href={user ? dashboardUrl : '/register'}
                                 className="w-full sm:w-auto px-7 py-2.5 rounded-full font-semibold text-sm sm:text-base bg-white hover:bg-white/90 text-[#0A0B0A] shadow-[0_0_25px_rgba(255,255,255,0.4),0_0_60px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2 transition-all cursor-pointer"
                             >
-                                <span>{user ? 'Buka Dashboard' : 'Optimasi Portofolio Sekarang'}</span>
+                                <span>{user ? t('landing.hero.cta_dashboard', 'Buka Dashboard') : t('landing.hero.cta_register', 'Optimasi Portofolio Sekarang')}</span>
                                 <ArrowRight className="w-4 h-4 text-[#0A0B0A]" />
                             </Link>
                             <button
@@ -405,7 +432,7 @@ export default function LandingPage() {
                                 className="w-full sm:w-auto px-6 py-2.5 rounded-full font-medium text-sm sm:text-base hover:bg-white/10 text-white/90 border border-white/20 hover:border-emerald-500/50 flex items-center justify-center gap-2 transition-all cursor-pointer"
                             >
                                 <Compass className="w-4 h-4 text-emerald-400" />
-                                <span>Pelajari Fitur</span>
+                                <span>{t('landing.hero.cta_features', 'Pelajari Fitur')}</span>
                             </button>
                         </motion.div>
 
@@ -413,15 +440,15 @@ export default function LandingPage() {
                         <motion.div variants={fadeInUp} className="pt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-white/60">
                             <div className="flex items-center gap-1.5">
                                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                                <span>Data Resmi Bursa Efek Indonesia</span>
+                                <span>{t('landing.hero.trust_idx', 'Data Resmi Bursa Efek Indonesia')}</span>
                             </div>
                             <div className="flex items-center gap-1.5">
                                 <PieIcon className="w-4 h-4 text-emerald-400" />
-                                <span>Alokasi Portofolio & Estimasi Lot</span>
+                                <span>{t('landing.hero.trust_allocation', 'Alokasi Portofolio & Estimasi Lot')}</span>
                             </div>
                             <div className="flex items-center gap-1.5">
                                 <Share2 className="w-4 h-4 text-emerald-400" />
-                                <span>Export & Bagikan Laporan</span>
+                                <span>{t('landing.hero.trust_export', 'Export & Bagikan Laporan')}</span>
                             </div>
                         </motion.div>
                     </motion.div>
@@ -457,7 +484,7 @@ export default function LandingPage() {
                                     <div className="shrink-0">
                                         <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary ring-1 ring-inset ring-primary/20 backdrop-blur-xs">
                                             <History className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                                            Riwayat Portofolio
+                                            {t('landing.hero.preview_history_badge', 'Riwayat Portofolio')}
                                         </span>
                                     </div>
 
@@ -466,7 +493,7 @@ export default function LandingPage() {
                                         <Button asChild size="sm" className="gap-2 shadow-xs cursor-pointer h-9 bg-emerald-600 hover:bg-emerald-700 text-white">
                                             <div>
                                                 <Plus className="h-4 w-4" />
-                                                Analisis
+                                                {t('landing.hero.preview_analyze_btn', 'Analisis')}
                                             </div>
                                         </Button>
                                     </div>
@@ -481,9 +508,11 @@ export default function LandingPage() {
                                             <Layers className="h-4 w-4 sm:h-5 sm:w-5" />
                                         </div>
                                         <div className="min-w-0 flex-1">
-                                            <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Total Portofolio</span>
+                                            <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">
+                                                {t('landing.hero.stat_total_portfolio', 'Total Portofolio')}
+                                            </span>
                                             <span className="text-xs sm:text-base font-extrabold font-mono text-foreground truncate block">
-                                                4 <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">Portofolio</span>
+                                                4 <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">{t('landing.hero.stat_total_portfolio_unit', 'Portofolio')}</span>
                                             </span>
                                         </div>
                                     </div>
@@ -495,9 +524,11 @@ export default function LandingPage() {
                                             <Coins className="h-4 w-4 sm:h-5 sm:w-5" />
                                         </div>
                                         <div className="min-w-0 flex-1">
-                                            <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Akumulasi Modal</span>
+                                            <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">
+                                                {t('landing.hero.stat_accumulated_capital', 'Akumulasi Modal')}
+                                            </span>
                                             <span className="text-xs sm:text-base font-extrabold font-mono text-foreground block truncate">
-                                                Rp 185.000.000
+                                                {currency} {formatNumber(185000000)}
                                             </span>
                                         </div>
                                     </div>
@@ -509,9 +540,11 @@ export default function LandingPage() {
                                             <Activity className="h-4 w-4 sm:h-5 sm:w-5" />
                                         </div>
                                         <div className="min-w-0 flex-1">
-                                            <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Rata-rata Emiten</span>
+                                            <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">
+                                                {t('landing.hero.stat_avg_tickers', 'Rata-rata Emiten')}
+                                            </span>
                                             <span className="text-xs sm:text-base font-extrabold font-mono text-foreground truncate block">
-                                                4.5 <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">Saham</span>
+                                                4.5 <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">{t('landing.hero.stat_avg_tickers_unit', 'Saham')}</span>
                                             </span>
                                         </div>
                                     </div>
@@ -523,9 +556,11 @@ export default function LandingPage() {
                                             <Zap className="h-4 w-4 sm:h-5 sm:w-5" />
                                         </div>
                                         <div className="min-w-0 flex-1">
-                                            <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">Risk-Free Rate (Rf)</span>
+                                            <span className="text-[10px] sm:text-[11px] text-muted-foreground block font-medium truncate">
+                                                {t('landing.hero.stat_risk_free', 'Risk-Free Rate (Rf)')}
+                                            </span>
                                             <span className="text-xs sm:text-base font-extrabold font-mono text-foreground truncate block">
-                                                6.25% <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">SBN/BI</span>
+                                                6.25% <span className="text-[10px] sm:text-xs text-muted-foreground font-sans font-normal">{t('landing.hero.stat_risk_free_unit', 'SBN/BI')}</span>
                                             </span>
                                         </div>
                                     </div>
@@ -538,7 +573,7 @@ export default function LandingPage() {
                                     <div className="flex items-center justify-between">
                                         <CardTitle className="text-base font-bold flex items-center gap-2">
                                             <History className="h-4 w-4 text-primary" />
-                                            <span>Daftar Portofolio</span>
+                                            <span>{t('landing.hero.table_title', 'Daftar Portofolio')}</span>
                                         </CardTitle>
                                     </div>
                                 </CardHeader>
@@ -548,14 +583,14 @@ export default function LandingPage() {
                                         <Table className="min-w-[680px]">
                                             <TableHeader className="bg-muted/30">
                                                 <TableRow className="hover:bg-transparent border-b border-border/50">
-                                                    <TableHead className="text-xs font-bold w-44 py-3.5 px-4">Kode Referensi</TableHead>
-                                                    <TableHead className="text-xs font-bold py-3.5 px-4">Judul & Emiten Saham</TableHead>
-                                                    <TableHead className="text-xs font-bold text-right py-3.5 px-4">Modal Investasi</TableHead>
-                                                    <TableHead className="text-xs font-bold text-right w-16 py-3.5 px-4">Aksi</TableHead>
+                                                    <TableHead className="text-xs font-bold w-44 py-3.5 px-4">{t('landing.hero.col_ref_code', 'Kode Referensi')}</TableHead>
+                                                    <TableHead className="text-xs font-bold py-3.5 px-4">{t('landing.hero.col_title_tickers', 'Judul & Emiten Saham')}</TableHead>
+                                                    <TableHead className="text-xs font-bold text-right py-3.5 px-4">{t('landing.hero.col_capital', 'Modal Investasi')}</TableHead>
+                                                    <TableHead className="text-xs font-bold text-right w-16 py-3.5 px-4">{t('landing.hero.col_action', 'Aksi')}</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {MOCK_HISTORY_LIST.map((item) => (
+                                                {mockHistoryList.map((item) => (
                                                     <TableRow
                                                         key={item.id}
                                                         className="group cursor-pointer hover:bg-muted/40 active:scale-[0.999] transition-all border-b border-border/40"
@@ -582,12 +617,12 @@ export default function LandingPage() {
                                                                 </span>
                                                             </div>
                                                             <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                                                                {item.tickers.map((t, idx) => (
+                                                                {item.tickers.map((tTicker, idx) => (
                                                                     <span
                                                                         key={idx}
                                                                         className="inline-flex items-center text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-muted/60 text-foreground hover:text-emerald-700 border border-border/50 hover:bg-emerald-500/15 hover:border-emerald-500/30 transition-colors"
                                                                     >
-                                                                        {t}
+                                                                        {tTicker}
                                                                     </span>
                                                                 ))}
                                                             </div>
@@ -596,7 +631,7 @@ export default function LandingPage() {
                                                         {/* Kolom 3: Modal Investasi */}
                                                         <TableCell className="py-4 px-4 align-top text-right whitespace-nowrap">
                                                             <span className="font-mono font-extrabold text-sm text-foreground block">
-                                                                Rp {item.initialCapital.toLocaleString('id-ID')}
+                                                                {currency} {formatNumber(item.initialCapital)}
                                                             </span>
                                                             <span className="text-[10px] text-muted-foreground block font-sans">
                                                                 Rf: {item.riskFreeRate}%
@@ -606,7 +641,7 @@ export default function LandingPage() {
                                                         {/* Kolom 4: Action Dropdown Menu (Style Admin Saham) */}
                                                         <TableCell className="py-4 px-4 align-middle text-right">
                                                             <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
-                                                                <span className="sr-only">Menu aksi</span>
+                                                                <span className="sr-only">{t('landing.hero.action_menu', 'Menu aksi')}</span>
                                                                 <MoreHorizontal className="h-4 w-4" />
                                                             </Button>
                                                         </TableCell>
@@ -625,8 +660,8 @@ export default function LandingPage() {
                                 <Cpu className="w-5 h-5" />
                             </div>
                             <div>
-                                <span className="text-[10px] font-semibold text-muted-foreground dark:text-white/60 block uppercase tracking-wider">NSGA-II Engine</span>
-                                <span className="text-xs font-bold text-foreground dark:text-white font-mono">100 Generations Evaluated</span>
+                                <span className="text-[10px] font-semibold text-muted-foreground dark:text-white/60 block uppercase tracking-wider">{t('landing.hero.engine_nsga_badge', 'NSGA-II Engine')}</span>
+                                <span className="text-xs font-bold text-foreground dark:text-white font-mono">{t('landing.hero.engine_nsga_desc', '100 Generations Evaluated')}</span>
                             </div>
                         </div>
 
@@ -635,8 +670,8 @@ export default function LandingPage() {
                                 <TrendingUp className="w-5 h-5" />
                             </div>
                             <div>
-                                <span className="text-[10px] font-semibold text-muted-foreground dark:text-white/60 block uppercase tracking-wider">Markowitz Frontier</span>
-                                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono">Maximized Efficiency</span>
+                                <span className="text-[10px] font-semibold text-muted-foreground dark:text-white/60 block uppercase tracking-wider">{t('landing.hero.frontier_markowitz_badge', 'Markowitz Frontier')}</span>
+                                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono">{t('landing.hero.frontier_markowitz_desc', 'Maximized Efficiency')}</span>
                             </div>
                         </div>
                     </motion.div>
@@ -657,10 +692,10 @@ export default function LandingPage() {
                         className="text-center max-w-3xl mx-auto mb-16 sm:mb-20 space-y-3"
                     >
                         <h2 className="text-3xl sm:text-5xl font-extrabold text-[#0B0C0B] tracking-tight">
-                            Mengapa Menggunakan <span className="text-emerald-600">Dinalar AI</span>?
+                            {t('landing.features.title_prefix', 'Mengapa Menggunakan')} <span className="text-emerald-600">{t('landing.features.title_highlight', 'Dinalar AI')}</span>?
                         </h2>
                         <p className="text-base text-[#6B706C]">
-                            Tinggalkan tebakan dan intuisi semata. Berinvestasi secara terstruktur dengan kekuatan algoritma optimasi multiobjektif institusional.
+                            {t('landing.features.subtitle', 'Tinggalkan tebakan dan intuisi semata. Berinvestasi secara terstruktur dengan kekuatan algoritma optimasi multiobjektif institusional.')}
                         </p>
                     </motion.div>
 
@@ -672,7 +707,7 @@ export default function LandingPage() {
                         variants={staggerContainer}
                         className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16"
                     >
-                        {STATS_DATA.map((stat, i) => (
+                        {statsData.map((stat, i) => (
                             <motion.div
                                 key={i}
                                 variants={fadeInUp}
@@ -707,24 +742,24 @@ export default function LandingPage() {
                                 <div className="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
                                     <Activity className="w-6 h-6" />
                                 </div>
-                                <h3 className="text-2xl font-extrabold text-[#0B0C0B]">Efisien Frontier & Kurva Pareto</h3>
+                                <h3 className="text-2xl font-extrabold text-[#0B0C0B]">{t('landing.features.card_1_title', 'Efisien Frontier & Kurva Pareto')}</h3>
                                 <p className="text-sm text-[#6B706C] leading-relaxed">
-                                    Dinalar mengevaluasi ratusan simulasi alokasi saham untuk menemukan titik-titik optimal. Anda mendapatkan trade-off imbal hasil dan risiko terbaik.
+                                    {t('landing.features.card_1_desc', 'Dinalar mengevaluasi ratusan simulasi alokasi saham untuk menemukan titik-titik optimal. Anda mendapatkan trade-off imbal hasil dan risiko terbaik.')}
                                 </p>
                             </div>
 
                             {/* Inset White Sub-Card */}
                             <div className="p-5 rounded-xl bg-[#FFFFFF] border border-[#E7E9E6] shadow-xs space-y-3">
                                 <div className="flex items-center justify-between text-xs font-bold text-[#0B0C0B]">
-                                    <span>Kurva Pareto Efficient Frontier</span>
+                                    <span>{t('landing.features.card_1_sub_title', 'Kurva Pareto Efficient Frontier')}</span>
                                     <span className="text-emerald-600 font-mono font-bold">+24.85% E(R)</span>
                                 </div>
                                 <div className="h-32 w-full bg-[#F8FAF8] rounded-lg border border-[#E7E9E6] p-3 flex flex-col justify-between">
                                     <div className="flex justify-between items-center text-[10px] font-mono text-[#6B706C]">
-                                        <span>High Return</span>
+                                        <span>{t('landing.features.card_1_high_return', 'Return Tinggi')}</span>
                                         <span className="text-emerald-600 font-bold flex items-center gap-1">
                                             <TrendingUp className="w-3 h-3" />
-                                            Optimal Curve
+                                            {t('landing.features.card_1_optimal_curve', 'Kurva Optimal')}
                                         </span>
                                     </div>
                                     {/* Sparkline Chart matching Dashboard */}
@@ -735,8 +770,8 @@ export default function LandingPage() {
                                         />
                                     </div>
                                     <div className="flex justify-between text-[10px] font-mono text-[#6B706C]">
-                                        <span>Min Risk (8.4%)</span>
-                                        <span>Max Return (32.4%)</span>
+                                        <span>{t('landing.features.card_1_min_risk', 'Min Risiko (8.4%)')}</span>
+                                        <span>{t('landing.features.card_1_max_return', 'Maks Return (32.4%)')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -751,9 +786,9 @@ export default function LandingPage() {
                                 <div className="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
                                     <PieIcon className="w-6 h-6" />
                                 </div>
-                                <h3 className="text-2xl font-extrabold text-[#0B0C0B]">Alokasi Portofolio & Estimasi Lot</h3>
+                                <h3 className="text-2xl font-extrabold text-[#0B0C0B]">{t('landing.features.card_2_title', 'Alokasi Portofolio & Estimasi Lot')}</h3>
                                 <p className="text-sm text-[#6B706C] leading-relaxed">
-                                    Dinalar membagi alokasi bobot modal investasi secara proporsional dan mengonversinya langsung ke dalam estimasi jumlah lot saham riil untuk kemudahan eksekusi di aplikasi sekuritas Anda.
+                                    {t('landing.features.card_2_desc', 'Dinalar membagi alokasi bobot modal investasi secara proporsional dan mengonversinya langsung ke dalam estimasi jumlah lot saham riil untuk kemudahan eksekusi di aplikasi sekuritas Anda.')}
                                 </p>
                             </div>
 
@@ -761,10 +796,10 @@ export default function LandingPage() {
                             <div className="p-4 sm:p-5 rounded-xl bg-[#FFFFFF] border border-[#E7E9E6] shadow-xs space-y-3">
                                 <div className="flex items-center justify-between text-xs font-bold text-[#0B0C0B]">
                                     <div className="flex items-center gap-1.5">
-                                        <span>Alokasi Modal & Estimasi Lot</span>
+                                        <span>{t('landing.features.card_2_sub_title', 'Alokasi Modal & Estimasi Lot')}</span>
                                     </div>
                                     <span className="text-emerald-600 font-mono font-bold">
-                                        Modal Rp 100.000.000
+                                        {t('landing.features.card_2_capital_badge', `Modal ${currency} ${formatNumber(100000000)}`, { capital: `${currency} ${formatNumber(100000000)}` })}
                                     </span>
                                 </div>
 
@@ -772,10 +807,10 @@ export default function LandingPage() {
                                     <table className="w-full text-xs text-left">
                                         <thead className="border-b border-[#E7E9E6] text-[#6B706C] font-semibold">
                                             <tr>
-                                                <th className="py-2 px-2.5 font-bold">Emiten</th>
-                                                <th className="py-2 px-2 text-right font-bold">Bobot</th>
-                                                <th className="py-2 px-2.5 text-right font-bold">Nominal</th>
-                                                <th className="py-2 px-2.5 text-right font-bold">Estimasi</th>
+                                                <th className="py-2 px-2.5 font-bold">{t('landing.features.table_ticker', 'Emiten')}</th>
+                                                <th className="py-2 px-2 text-right font-bold">{t('landing.features.table_weight', 'Bobot')}</th>
+                                                <th className="py-2 px-2.5 text-right font-bold">{t('landing.features.table_nominal', 'Nominal')}</th>
+                                                <th className="py-2 px-2.5 text-right font-bold">{t('landing.features.table_estimate', 'Estimasi')}</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-[#F0F2F0] font-mono">
@@ -790,8 +825,8 @@ export default function LandingPage() {
                                                     </div>
                                                 </td>
                                                 <td className="py-2.5 px-2 text-right font-bold text-emerald-600">40.00%</td>
-                                                <td className="py-2.5 px-2.5 text-right font-bold text-[#0B0C0B]">Rp 40.000.000</td>
-                                                <td className="py-2.5 px-2.5 text-right font-extrabold text-emerald-600">40 Lot</td>
+                                                <td className="py-2.5 px-2.5 text-right font-bold text-[#0B0C0B]">{currency} {formatNumber(40000000)}</td>
+                                                <td className="py-2.5 px-2.5 text-right font-extrabold text-emerald-600">40 {t('landing.features.unit_lots', 'Lot')}</td>
                                             </tr>
                                             <tr className="hover:bg-[#F8FAF8] transition-colors">
                                                 <td className="py-2.5 px-2.5">
@@ -804,8 +839,8 @@ export default function LandingPage() {
                                                     </div>
                                                 </td>
                                                 <td className="py-2.5 px-2 text-right font-bold text-emerald-600">35.00%</td>
-                                                <td className="py-2.5 px-2.5 text-right font-bold text-[#0B0C0B]">Rp 35.000.000</td>
-                                                <td className="py-2.5 px-2.5 text-right font-extrabold text-emerald-600">74 Lot</td>
+                                                <td className="py-2.5 px-2.5 text-right font-bold text-[#0B0C0B]">{currency} {formatNumber(35000000)}</td>
+                                                <td className="py-2.5 px-2.5 text-right font-extrabold text-emerald-600">74 {t('landing.features.unit_lots', 'Lot')}</td>
                                             </tr>
                                             <tr className="hover:bg-[#F8FAF8] transition-colors">
                                                 <td className="py-2.5 px-2.5">
@@ -819,7 +854,7 @@ export default function LandingPage() {
                                                 </td>
                                                 <td className="py-2.5 px-2 text-right font-bold text-emerald-600">25.00%</td>
                                                 <td className="py-2.5 px-2.5 text-right font-bold text-[#0B0C0B]">$ 6,250.00</td>
-                                                <td className="py-2.5 px-2.5 text-right font-extrabold text-emerald-600">25 Lembar</td>
+                                                <td className="py-2.5 px-2.5 text-right font-extrabold text-emerald-600">25 {t('landing.features.unit_shares', 'Lembar')}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -843,10 +878,10 @@ export default function LandingPage() {
                         className="text-center max-w-3xl mx-auto mb-16 sm:mb-20 space-y-3"
                     >
                         <h2 className="text-3xl sm:text-5xl font-extrabold text-[#0B0C0B] tracking-tight">
-                            3 Langkah Menuju Portofolio Optimal
+                            {t('landing.how_it_works.title', '3 Langkah Menuju Portofolio Optimal')}
                         </h2>
                         <p className="text-base text-[#6B706C]">
-                            Proses sederhana dan intuitif dari pemilihan emiten hingga eksekusi alokasi portofolio.
+                            {t('landing.how_it_works.subtitle', 'Proses sederhana dan intuitif dari pemilihan emiten hingga eksekusi alokasi portofolio.')}
                         </p>
                     </motion.div>
 
@@ -865,9 +900,9 @@ export default function LandingPage() {
                             <div className="w-12 h-12 rounded-lg bg-[#0B0C0B] text-white flex items-center justify-center font-bold text-lg font-mono">
                                 01
                             </div>
-                            <h3 className="text-xl font-bold text-[#0B0C0B]">Pilih Saham Pilihan Anda</h3>
+                            <h3 className="text-xl font-bold text-[#0B0C0B]">{t('landing.how_it_works.step_1_title', 'Pilih Saham Pilihan Anda')}</h3>
                             <p className="text-sm text-[#6B706C] leading-relaxed">
-                                Telusuri katalog saham aktif pada menu Eksplorasi Saham dan masukkan emiten yang ingin Anda analisis ke dalam Keranjang Saham.
+                                {t('landing.how_it_works.step_1_desc', 'Telusuri katalog saham aktif pada menu Eksplorasi Saham dan masukkan emiten yang ingin Anda analisis ke dalam Keranjang Saham.')}
                             </p>
                         </motion.div>
 
@@ -879,9 +914,9 @@ export default function LandingPage() {
                             <div className="w-12 h-12 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-lg font-mono">
                                 02
                             </div>
-                            <h3 className="text-xl font-bold text-[#0B0C0B]">Tentukan Modal & Parameter</h3>
+                            <h3 className="text-xl font-bold text-[#0B0C0B]">{t('landing.how_it_works.step_2_title', 'Tentukan Modal & Parameter')}</h3>
                             <p className="text-sm text-[#6B706C] leading-relaxed">
-                                Atur nominal modal investasi yang ingin dialokasikan, suku bunga bebas risiko (Risk-Free Rate), serta rentang waktu historis analisis.
+                                {t('landing.how_it_works.step_2_desc', 'Atur nominal modal investasi yang ingin dialokasikan, suku bunga bebas risiko (Risk-Free Rate), serta rentang waktu historis analisis.')}
                             </p>
                         </motion.div>
 
@@ -893,9 +928,9 @@ export default function LandingPage() {
                             <div className="w-12 h-12 rounded-lg bg-[#0B0C0B] text-white flex items-center justify-center font-bold text-lg font-mono">
                                 03
                             </div>
-                            <h3 className="text-xl font-bold text-[#0B0C0B]">Eksekusi Rekomendasi AI</h3>
+                            <h3 className="text-xl font-bold text-[#0B0C0B]">{t('landing.how_it_works.step_3_title', 'Eksekusi Rekomendasi AI')}</h3>
                             <p className="text-sm text-[#6B706C] leading-relaxed">
-                                Dapatkan hasil optimasi dengan 3 opsi profil risiko, simpan laporan berformat PDF/PNG, atau bagikan tautan portofolio secara publik.
+                                {t('landing.how_it_works.step_3_desc', 'Dapatkan hasil optimasi dengan 3 opsi profil risiko, simpan laporan berformat PDF/PNG, atau bagikan tautan portofolio secara publik.')}
                             </p>
                         </motion.div>
                     </motion.div>
@@ -915,10 +950,10 @@ export default function LandingPage() {
                         className="text-center max-w-3xl mx-auto mb-16 space-y-3"
                     >
                         <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-                            Pilih Karakteristik Strategi Anda
+                            {t('landing.showcase.title', 'Pilih Karakteristik Strategi Anda')}
                         </h2>
                         <p className="text-base text-white/70">
-                            Algoritma Dinalar secara otomatis menyajikan 3 titik profil pada Frontier Efisien sesuai toleransi risiko Anda.
+                            {t('landing.showcase.subtitle', 'Algoritma Dinalar secara otomatis menyajikan 3 titik profil pada Frontier Efisien sesuai toleransi risiko Anda.')}
                         </p>
 
                         {/* Profile Tabs (Segmented Control style like admin) */}
@@ -931,7 +966,7 @@ export default function LandingPage() {
                                         : 'text-white/70 hover:text-white hover:bg-white/5'
                                         }`}
                                 >
-                                    Konservatif
+                                    {t('landing.showcase.tab_conservative', 'Konservatif')}
                                 </button>
                                 <button
                                     onClick={() => setActiveTabProfile('moderate')}
@@ -940,7 +975,7 @@ export default function LandingPage() {
                                         : 'text-white/70 hover:text-white hover:bg-white/5'
                                         }`}
                                 >
-                                    Moderat
+                                    {t('landing.showcase.tab_moderate', 'Moderat')}
                                 </button>
                                 <button
                                     onClick={() => setActiveTabProfile('aggressive')}
@@ -949,7 +984,7 @@ export default function LandingPage() {
                                         : 'text-white/70 hover:text-white hover:bg-white/5'
                                         }`}
                                 >
-                                    Agresif
+                                    {t('landing.showcase.tab_aggressive', 'Agresif')}
                                 </button>
                             </div>
                         </div>
@@ -965,19 +1000,19 @@ export default function LandingPage() {
                     >
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center border-b border-white/10 pb-8">
                             <div className="p-4 rounded-xl bg-[#1A1D1A] border border-white/5">
-                                <span className="text-xs text-white/50 block mb-1">Expected Return</span>
+                                <span className="text-xs text-white/50 block mb-1">{t('landing.showcase.expected_return', 'Expected Return')}</span>
                                 <span className="text-3xl font-extrabold font-mono text-emerald-400">
                                     {activeTabProfile === 'conservative' ? '+16.20%' : activeTabProfile === 'moderate' ? '+24.85%' : '+32.40%'}
                                 </span>
                             </div>
                             <div className="p-4 rounded-xl bg-[#1A1D1A] border border-white/5">
-                                <span className="text-xs text-white/50 block mb-1">Volatilitas Risiko</span>
+                                <span className="text-xs text-white/50 block mb-1">{t('landing.showcase.risk_volatility', 'Volatilitas Risiko')}</span>
                                 <span className="text-3xl font-extrabold font-mono text-white">
                                     {activeTabProfile === 'conservative' ? '8.40%' : activeTabProfile === 'moderate' ? '11.40%' : '18.90%'}
                                 </span>
                             </div>
                             <div className="p-4 rounded-xl bg-[#1A1D1A] border border-white/5">
-                                <span className="text-xs text-white/50 block mb-1">Sharpe Ratio</span>
+                                <span className="text-xs text-white/50 block mb-1">{t('landing.showcase.sharpe_ratio', 'Sharpe Ratio')}</span>
                                 <span className="text-3xl font-extrabold font-mono text-emerald-400">
                                     {activeTabProfile === 'conservative' ? '1.18' : activeTabProfile === 'moderate' ? '1.63' : '1.38'}
                                 </span>
@@ -988,17 +1023,17 @@ export default function LandingPage() {
                             <div className="space-y-1 text-left">
                                 <h4 className="font-bold text-white text-base">
                                     {activeTabProfile === 'conservative'
-                                        ? 'Meminimalisir Volatilitas'
+                                        ? t('landing.showcase.desc_conservative_title', 'Meminimalisir Volatilitas')
                                         : activeTabProfile === 'moderate'
-                                            ? 'Efisiensi Return per Unit Risiko'
-                                            : 'Maksimalisasi Imbal Hasil'}
+                                            ? t('landing.showcase.desc_moderate_title', 'Efisiensi Return per Unit Risiko')
+                                            : t('landing.showcase.desc_aggressive_title', 'Maksimalisasi Imbal Hasil')}
                                 </h4>
                                 <p className="text-xs text-white/60">
                                     {activeTabProfile === 'conservative'
-                                        ? 'Cocok untuk investor berprofil defensif yang mengutamakan stabilitas modal.'
+                                        ? t('landing.showcase.desc_conservative_text', 'Cocok untuk investor berprofil defensif yang mengutamakan stabilitas modal.')
                                         : activeTabProfile === 'moderate'
-                                            ? 'Pilihan utama paling direkomendasikan untuk portofolio seimbang dan optimal.'
-                                            : 'Cocok untuk investor agresif dengan toleransi risiko pasar yang tinggi.'}
+                                            ? t('landing.showcase.desc_moderate_text', 'Pilihan utama paling direkomendasikan untuk portofolio seimbang dan optimal.')
+                                            : t('landing.showcase.desc_aggressive_text', 'Cocok untuk investor agresif dengan toleransi risiko pasar yang tinggi.')}
                                 </p>
                             </div>
 
@@ -1006,7 +1041,7 @@ export default function LandingPage() {
                                 href={user ? (user.role === 'admin' ? '/admin/dashboard' : '/user/analyze/keranjang') : '/register'}
                                 className="px-6 py-2.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shrink-0 flex items-center gap-1.5 transition-all shadow-sm"
                             >
-                                <span>{user ? 'Mulai Analisis' : 'Coba Sekarang'}</span>
+                                <span>{user ? t('landing.showcase.cta_analyze', 'Mulai Analisis') : t('landing.showcase.cta_try', 'Coba Sekarang')}</span>
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
@@ -1027,10 +1062,10 @@ export default function LandingPage() {
                         className="text-center max-w-2xl mx-auto mb-16 space-y-3"
                     >
                         <h2 className="text-3xl sm:text-5xl font-extrabold text-[#0B0C0B] tracking-tight">
-                            FAQ
+                            {t('landing.faq.title', 'FAQ')}
                         </h2>
                         <p className="text-base text-[#6B706C]">
-                            Pertanyaan yang paling sering diajukan mengenai algoritma dan penggunaan Dinalar.
+                            {t('landing.faq.subtitle', 'Pertanyaan yang paling sering diajukan mengenai algoritma dan penggunaan Dinalar.')}
                         </p>
                     </motion.div>
 
@@ -1041,7 +1076,7 @@ export default function LandingPage() {
                         variants={staggerContainer}
                         className="space-y-4"
                     >
-                        {FAQ_LIST.map((faq, index) => {
+                        {faqList.map((faq, index) => {
                             const isOpen = openFaq === index;
                             return (
                                 <motion.div
@@ -1095,15 +1130,15 @@ export default function LandingPage() {
                         <div className="relative z-10 max-w-2xl mx-auto space-y-6">
                             <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary ring-1 ring-inset ring-primary/20 backdrop-blur-xs">
                                 <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                                <span>Mulai Hari Ini</span>
+                                <span>{t('landing.cta.badge', 'Mulai Hari Ini')}</span>
                             </div>
 
                             <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight text-foreground">
-                                Siap Mengoptimalkan Portofolio Saham Anda?
+                                {t('landing.cta.title', 'Siap Mengoptimalkan Portofolio Saham Anda?')}
                             </h2>
 
                             <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                                Bergabunglah sekarang dan rasakan keunggulan analisis modern untuk investasi yang terukur, terarah, dan presisi.
+                                {t('landing.cta.subtitle', 'Bergabunglah sekarang dan rasakan keunggulan analisis modern untuk investasi yang terukur, terarah, dan presisi.')}
                             </p>
 
                             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -1111,14 +1146,14 @@ export default function LandingPage() {
                                     href={user ? dashboardUrl : '/register'}
                                     className="w-full sm:w-auto px-8 py-2.5 rounded-lg font-semibold text-sm sm:text-base bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg transition-all flex items-center justify-center gap-2"
                                 >
-                                    <span>{user ? 'Buka Dashboard' : 'Daftar Gratis Sekarang'}</span>
+                                    <span>{user ? t('landing.cta.btn_dashboard', 'Buka Dashboard') : t('landing.cta.btn_register', 'Daftar Gratis Sekarang')}</span>
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
                                 <Link
                                     href={user ? (user.role === 'admin' ? '/admin/dashboard' : '/user/analyze/keranjang') : '/login'}
                                     className="w-full sm:w-auto px-7 py-2.5 rounded-lg font-medium text-sm sm:text-base dark:text-white border border-emerald-600 hover:text-white hover:bg-emerald-600 transition-all shadow-2xs backdrop-blur-xs"
                                 >
-                                    {user ? 'Mulai Analisis' : 'Masuk Akun'}
+                                    {user ? t('landing.cta.btn_analyze', 'Mulai Analisis') : t('landing.cta.btn_login', 'Masuk Akun')}
                                 </Link>
                             </div>
                         </div>
@@ -1136,38 +1171,38 @@ export default function LandingPage() {
                         <div className="space-y-4 md:col-span-1">
                             <img src="/images/newLogo.png?v=4" alt="Dinalar Logo" className="h-9 w-auto object-contain" />
                             <p className="text-white/50 text-xs leading-relaxed">
-                                Platform optimasi portofolio saham berbasis Artificial Intelligence. Maksimalkan return dan kendalikan risiko saham pilihan Anda.
+                                {t('landing.footer.brand_desc', 'Platform optimasi portofolio saham berbasis Artificial Intelligence. Maksimalkan return dan kendalikan risiko saham pilihan Anda.')}
                             </p>
                             <div className="font-mono text-[11px] text-emerald-400">dinalar.my.id</div>
                         </div>
 
                         {/* Col 2: Fitur Utama */}
                         <div className="space-y-3">
-                            <h5 className="font-bold text-white text-sm">Fitur Utama</h5>
+                            <h5 className="font-bold text-white text-sm">{t('landing.footer.col_features_title', 'Fitur Utama')}</h5>
                             <ul className="space-y-2 text-white/60">
                                 <li>
                                     <button onClick={() => scrollToSection('features')} className="hover:text-white cursor-pointer">
-                                        Eksplorasi Saham
+                                        {t('landing.footer.link_explore', 'Eksplorasi Saham')}
                                     </button>
                                 </li>
                                 <li>
                                     <button onClick={() => scrollToSection('features')} className="hover:text-white cursor-pointer">
-                                        Optimasi Portofolio
+                                        {t('landing.footer.link_optimization', 'Optimasi Portofolio')}
                                     </button>
                                 </li>
                                 <li>
                                     <button onClick={() => scrollToSection('features')} className="hover:text-white cursor-pointer">
-                                        Kurva Pareto Efficient Frontier
+                                        {t('landing.footer.link_pareto', 'Kurva Pareto Efficient Frontier')}
                                     </button>
                                 </li>
                                 <li>
                                     <button onClick={() => scrollToSection('features')} className="hover:text-white cursor-pointer">
-                                        Alokasi Bobot Portofolio
+                                        {t('landing.footer.link_allocation', 'Alokasi Bobot Portofolio')}
                                     </button>
                                 </li>
                                 <li>
                                     <button onClick={() => scrollToSection('features')} className="hover:text-white cursor-pointer">
-                                        Distribusi 5-Points Quantile
+                                        {t('landing.footer.link_quantile', 'Distribusi 5-Points Quantile')}
                                     </button>
                                 </li>
                             </ul>
@@ -1175,26 +1210,26 @@ export default function LandingPage() {
 
                         {/* Col 3: Navigasi */}
                         <div className="space-y-3">
-                            <h5 className="font-bold text-white text-sm">Akses Cepat</h5>
+                            <h5 className="font-bold text-white text-sm">{t('landing.footer.col_access_title', 'Akses Cepat')}</h5>
                             <ul className="space-y-2 text-white/60">
                                 <li>
                                     <Link href={user ? dashboardUrl : '/login'} className="hover:text-white transition-colors">
-                                        Dashboard
+                                        {t('landing.footer.link_dashboard', 'Dashboard')}
                                     </Link>
                                 </li>
                                 <li>
                                     <Link href={user ? '/user/saham' : '/login'} className="hover:text-white transition-colors">
-                                        Eksplorasi Saham
+                                        {t('landing.footer.link_explore', 'Eksplorasi Saham')}
                                     </Link>
                                 </li>
                                 <li>
                                     <Link href={user ? '/user/analyze/keranjang' : '/login'} className="hover:text-white transition-colors">
-                                        Keranjang Saham
+                                        {t('landing.footer.link_basket', 'Keranjang Saham')}
                                     </Link>
                                 </li>
                                 <li>
                                     <Link href={user ? '/user/analyze/history' : '/login'} className="hover:text-white transition-colors">
-                                        Riwayat Portofolio
+                                        {t('landing.footer.link_history', 'Riwayat Portofolio')}
                                     </Link>
                                 </li>
                             </ul>
@@ -1202,9 +1237,9 @@ export default function LandingPage() {
 
                         {/* Col 4: Kontak WhatsApp */}
                         <div className="space-y-3">
-                            <h5 className="font-bold text-white text-sm">Hubungi Kami</h5>
+                            <h5 className="font-bold text-white text-sm">{t('landing.footer.col_contact_title', 'Hubungi Kami')}</h5>
                             <p className="text-white/50 leading-relaxed text-[11px]">
-                                Punya pertanyaan, kendala, atau membutuhkan bantuan teknis? Hubungi kami langsung melalui WhatsApp.
+                                {t('landing.footer.contact_desc', 'Punya pertanyaan, kendala, atau membutuhkan bantuan teknis? Hubungi kami langsung melalui WhatsApp.')}
                             </p>
                             <a
                                 href="https://wa.me/62895361206884"
@@ -1219,8 +1254,81 @@ export default function LandingPage() {
                     </div>
 
                     {/* Bottom Bar */}
-                    <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-center gap-4 text-[11px] text-white/40">
-                        <p>© {new Date().getFullYear()} Dinalar - AI Stock Portfolio Optimization Platform. All Rights Reserved.</p>
+                    <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-white/40">
+                        <p>© {new Date().getFullYear()} Dinalar - AI Stock Portfolio Optimization Platform. {t('landing.footer.all_rights_reserved', 'All Rights Reserved.')}</p>
+                        <div className="flex items-center gap-2.5">
+                            {/* Appearance Settings Button & Dropdown */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button
+                                        type="button"
+                                        className="inline-flex items-center gap-1.5 px-1.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-white/90 hover:text-white border border-white/15 text-[11px] font-semibold transition-all active:scale-95 cursor-pointer shadow-2xs select-none"
+                                        aria-label={t('landing.footer.appearance_settings', 'Appearance Settings')}
+                                        title={t('landing.footer.appearance_settings', 'Appearance Settings')}
+                                    >
+                                        {appearance === 'light' ? (
+                                            <Sun className="size-3.5 text-emerald-400" />
+                                        ) : appearance === 'dark' ? (
+                                            <Moon className="size-3.5 text-emerald-400" />
+                                        ) : (
+                                            <Monitor className="size-3.5 text-emerald-400" />
+                                        )}
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                    align="end"
+                                    className="bg-[#141614] border border-white/15 text-white min-w-[175px] p-1.5 shadow-2xl rounded-xl z-50 backdrop-blur-md"
+                                >
+                                    <div className="px-2.5 py-1 text-[10px] font-bold text-white/40 uppercase tracking-wider">
+                                        {t('landing.footer.appearance_settings', 'Appearance Settings')}
+                                    </div>
+                                    <DropdownMenuItem
+                                        onClick={() => updateAppearance('light')}
+                                        className={`flex items-center justify-between text-xs px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors ${
+                                            appearance === 'light'
+                                                ? 'bg-emerald-600 text-white'
+                                                : 'text-white/80 hover:bg-white/10 hover:text-white'
+                                        }`}
+                                    >
+                                        <span className="flex items-center gap-2">
+                                            <Sun className="size-3.5 text-emerald-400" />
+                                            <span>{t('landing.footer.theme_light', 'Light')}</span>
+                                        </span>
+                                        {appearance === 'light' && <Check className="size-3.5 stroke-[2.5]" />}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={() => updateAppearance('dark')}
+                                        className={`flex items-center justify-between text-xs px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors ${
+                                            appearance === 'dark'
+                                                ? 'bg-emerald-600 text-white'
+                                                : 'text-white/80 hover:bg-white/10 hover:text-white'
+                                        }`}
+                                    >
+                                        <span className="flex items-center gap-2">
+                                            <Moon className="size-3.5 text-emerald-400" />
+                                            <span>{t('landing.footer.theme_dark', 'Dark')}</span>
+                                        </span>
+                                        {appearance === 'dark' && <Check className="size-3.5 stroke-[2.5]" />}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={() => updateAppearance('system')}
+                                        className={`flex items-center justify-between text-xs px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors ${
+                                            appearance === 'system'
+                                                ? 'bg-emerald-600 text-white'
+                                                : 'text-white/80 hover:bg-white/10 hover:text-white'
+                                        }`}
+                                    >
+                                        <span className="flex items-center gap-2">
+                                            <Monitor className="size-3.5 text-emerald-400" />
+                                            <span>{t('landing.footer.theme_system', 'System')}</span>
+                                        </span>
+                                        {appearance === 'system' && <Check className="size-3.5 stroke-[2.5]" />}
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+
+                            <LanguageToggle theme="dark" />
+                        </div>
                     </div>
                 </div>
             </footer>
