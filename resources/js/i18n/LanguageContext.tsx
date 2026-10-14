@@ -667,6 +667,22 @@ const idDictionary: NestedObject = {
         confirm_continue_btn: 'Konfirmasi & Lanjutkan',
         confirming: 'Mengonfirmasi...',
     },
+    settings: {
+        title: 'Pengaturan',
+        description: 'Kelola preferensi profil dan akun Anda',
+        nav_profile: 'Profil',
+        nav_password: 'Kata Sandi',
+        nav_appearance: 'Tampilan & Tema',
+        appearance_title: 'Pengaturan Tampilan & Tema',
+        appearance_desc: 'Perbarui pengaturan tema dan preferensi bahasa antarmuka akun Anda',
+        theme_title: 'Tema Tampilan',
+        theme_desc: 'Pilih tema terang, gelap, atau ikuti preferensi sistem perangkat Anda',
+        theme_light: 'Terang',
+        theme_dark: 'Gelap',
+        theme_system: 'Sistem',
+        language_title: 'Pengaturan Bahasa',
+        language_desc: 'Pilih bahasa tampilan antarmuka aplikasi (Bahasa Indonesia atau English)',
+    },
 };
 
 const enDictionary: NestedObject = {
@@ -1318,6 +1334,22 @@ const enDictionary: NestedObject = {
         confirm_password_input_placeholder: 'Enter account password',
         confirm_continue_btn: 'Confirm & Continue',
         confirming: 'Confirming...',
+    },
+    settings: {
+        title: 'Settings',
+        description: 'Manage your profile and account settings',
+        nav_profile: 'Profile',
+        nav_password: 'Password',
+        nav_appearance: 'Appearance & Theme',
+        appearance_title: 'Appearance & Theme Settings',
+        appearance_desc: "Update your account's appearance settings and language preferences",
+        theme_title: 'Theme Settings',
+        theme_desc: 'Choose light, dark, or system theme for your interface',
+        theme_light: 'Light',
+        theme_dark: 'Dark',
+        theme_system: 'System',
+        language_title: 'Language Settings',
+        language_desc: 'Choose your preferred interface language (Indonesian or English)',
     },
 };
 

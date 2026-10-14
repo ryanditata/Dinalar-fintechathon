@@ -11,20 +11,23 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Password settings',
-        href: '/settings/password',
-    },
-];
+import { useTranslation } from '@/i18n/LanguageContext';
 
 export default function Password() {
+    const { t } = useTranslation();
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
 
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: t('settings.nav_password', 'Password settings'),
+            href: '/settings/password',
+        },
+    ];
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Password settings" />
+            <Head title={t('settings.nav_password', 'Password settings')} />
 
             <SettingsLayout>
                 <div className="space-y-6">
