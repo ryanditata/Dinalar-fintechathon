@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useTranslation } from '@/i18n/LanguageContext';
 import {
     Dialog,
     DialogContent,
@@ -90,6 +91,8 @@ export default function StockAnalysisModal({
     timeframeLimits,
     initialTimeframe,
 }: Props) {
+    const { t, language } = useTranslation();
+
     if (!stock) return null;
 
     // Menentukan batas tanggal acuan
@@ -277,15 +280,28 @@ export default function StockAnalysisModal({
         fetchHistoricalAnalysis({ start: startDate, end: endDate });
     };
 
-    // Format Rupiah
-    const formatRupiah = (val: number | string | null | undefined) => {
+    const isUsdStock = stock.bursa === 'NASDAQ';
+
+    // Format harga saham (NASDAQ: 2 desimal USD, IDX: locale number)
+    const formatStockPrice = (val: number | string | null | undefined) => {
         if (val === null || val === undefined || isNaN(Number(val))) return '-';
-        return `${Number(val).toLocaleString('id-ID')}`;
+        const num = Number(val);
+        if (isUsdStock) {
+            return num.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
+        }
+        return num.toLocaleString(language === 'en' ? 'en-US' : 'id-ID', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        });
     };
 
-    // Format Tanggal (Contoh: 16 Sep 2026)
+    // Format Tanggal (Contoh: 16 Sep 2026 / Sep 16, 2026)
     const formatDate = (dateStr?: string) => {
         if (!dateStr) return '-';
+        const locale = language === 'en' ? 'en-US' : 'id-ID';
         try {
             const cleanDateStr = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr.split(' ')[0];
             const parts = cleanDateStr.split('-');
@@ -293,13 +309,13 @@ export default function StockAnalysisModal({
                 const year = parseInt(parts[0], 10);
                 const month = parseInt(parts[1], 10) - 1;
                 const day = parseInt(parts[2], 10);
-                return new Date(year, month, day).toLocaleDateString('id-ID', {
+                return new Date(year, month, day).toLocaleDateString(locale, {
                     day: 'numeric',
                     month: 'short',
                     year: 'numeric',
                 });
             }
-            return new Date(dateStr).toLocaleDateString('id-ID', {
+            return new Date(dateStr).toLocaleDateString(locale, {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric',
@@ -399,7 +415,7 @@ export default function StockAnalysisModal({
                                             variant="outline"
                                             className="text-[10px] sm:text-[11px] py-0.5 px-2 font-normal border-dashed text-muted-foreground"
                                         >
-                                            Belum Ada Sektor
+                                            {t('stock_modal.no_sector', 'Belum Ada Sektor')}
                                         </Badge>
                                     )}
                                 </div>
@@ -415,7 +431,7 @@ export default function StockAnalysisModal({
                             <div className="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-center gap-1.5 sm:gap-0.5 shrink-0 bg-muted/20 sm:bg-transparent p-2 sm:p-0 rounded-lg sm:rounded-none border border-border/50 sm:border-0">
                                 <div className="flex items-baseline gap-2">
                                     <span className="text-base sm:text-lg font-bold font-mono text-foreground">
-                                        {stock.bursa === 'NASDAQ' ? `${lastPrice.toFixed(2)}` : `${formatRupiah(lastPrice)}`}
+                                        {formatStockPrice(lastPrice)}
                                     </span>
                                 </div>
                                 {changeVal !== null && changeVal !== undefined && (
@@ -441,7 +457,7 @@ export default function StockAnalysisModal({
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-bold flex items-center gap-1.5 text-foreground">
                                 <ChartNetwork className="h-4 w-4 text-primary shrink-0" />
-                                <span>Horison Analisis</span>
+                                <span>{t('stock_modal.analysis_horizon', 'Horison Analisis')}</span>
                             </span>
                         </div>
 
@@ -459,7 +475,7 @@ export default function StockAnalysisModal({
                                             : 'text-muted-foreground hover:text-foreground'
                                         }`}
                                 >
-                                    {preset === 'all' ? 'All' : preset}
+                                    {preset === 'all' ? (language === 'en' ? 'All' : 'Semua') : preset}
                                 </Button>
                             ))}
                         </div>
@@ -470,7 +486,7 @@ export default function StockAnalysisModal({
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-bold flex items-center gap-1.5 text-foreground">
                                 <Calendar className="h-4 w-4 text-primary shrink-0" />
-                                <span>Rentang Waktu</span>
+                                <span>{t('stock_modal.date_range', 'Rentang Waktu')}</span>
                             </span>
                         </div>
 
@@ -481,7 +497,7 @@ export default function StockAnalysisModal({
                                 {/* Start Date */}
                                 <div className="space-y-1.5">
                                     <Label className="text-[11px] font-medium text-muted-foreground">
-                                        Tanggal Mulai
+                                        {t('stock_modal.start_date', 'Tanggal Mulai')}
                                     </Label>
                                     <Input
                                         type="date"
@@ -496,7 +512,7 @@ export default function StockAnalysisModal({
                                 {/* End Date */}
                                 <div className="space-y-1.5">
                                     <Label className="text-[11px] font-medium text-muted-foreground">
-                                        Tanggal Selesai
+                                        {t('stock_modal.end_date', 'Tanggal Selesai')}
                                     </Label>
                                     <Input
                                         type="date"
@@ -519,7 +535,7 @@ export default function StockAnalysisModal({
                                     className="h-9 text-xs font-semibold gap-1.5 px-4 cursor-pointer w-full sm:w-auto border border-border/60 hover:bg-muted shadow-2xs flex items-center justify-center"
                                 >
                                     <RefreshCw className={`h-3.5 w-3.5 ${isLoading && !activePreset ? 'animate-spin' : ''}`} />
-                                    <span>Terapkan</span>
+                                    <span>{t('stock_modal.apply', 'Terapkan')}</span>
                                 </Button>
                             </div>
                         </div>
@@ -530,7 +546,8 @@ export default function StockAnalysisModal({
                         <div className="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs flex items-center gap-2 shadow-2xs">
                             <ShieldAlert className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
                             <span>
-                                <strong>Catatan Rentang Singkat:</strong> Data historis &lt; 3 bulan ({metrics.data_points} hari bursa). Nilai return &amp; volatilitas tahunan (<em>annualized</em>) dapat berfluktuasi tinggi. Rujukan utama pergerakan riil modal adalah <strong>Return Periode</strong>.
+                                <strong>{t('stock_modal.short_range_note_title', 'Catatan Rentang Singkat:')}</strong>{' '}
+                                {t('stock_modal.short_range_note_desc', { days: metrics.data_points })}
                             </span>
                         </div>
                     )}
@@ -539,7 +556,7 @@ export default function StockAnalysisModal({
                     {isLoading ? (
                         <div className="h-56 flex flex-col items-center justify-center gap-2 text-muted-foreground">
                             <Loader2 className="h-7 w-7 animate-spin text-primary" />
-                            <span className="text-xs">Menghitung return historis &amp; volatilitas...</span>
+                            <span className="text-xs">{t('stock_modal.calculating_analysis', 'Menghitung return historis & volatilitas...')}</span>
                         </div>
                     ) : (
                         <div className="space-y-3.5">
@@ -548,14 +565,14 @@ export default function StockAnalysisModal({
                                 <div className="p-3 border-b border-border/50 flex items-center justify-between">
                                     <span className="text-xs font-bold flex items-center gap-1.5 text-foreground">
                                         <ChartArea className="h-3.5 w-3.5 text-primary" />
-                                        <span>Grafik Harga Penutupan</span>
+                                        <span>{t('stock_modal.closing_price_chart', 'Grafik Harga Penutupan')}</span>
                                     </span>
                                     <Badge
                                         variant="outline"
                                         className="text-[10px] py-0 px-2 font-mono font-semibold bg-muted/50 border-border/60 text-muted-foreground"
                                     >
                                         <Clock className="h-2.5 w-2.5 mr-1 text-primary" />
-                                        {metrics.data_points} Hari Bursa
+                                        {t('stock_modal.trading_days', { days: metrics.data_points })}
                                     </Badge>
                                 </div>
                                 <CardContent className="p-3">
@@ -585,7 +602,7 @@ export default function StockAnalysisModal({
                                                         domain={['auto', 'auto']}
                                                         tickLine={false}
                                                         width={55}
-                                                        tickFormatter={(v) => v.toLocaleString('id-ID')}
+                                                        tickFormatter={(v) => isUsdStock ? Number(v).toFixed(2) : Number(v).toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}
                                                     />
                                                     <Tooltip
                                                         content={({ active, payload }) => {
@@ -597,7 +614,7 @@ export default function StockAnalysisModal({
                                                                             {formatDate(d.date)}
                                                                         </div>
                                                                         <div className="font-bold text-foreground">
-                                                                            Harga: {formatRupiah(d.close_price)}
+                                                                            {t('stock_modal.price_label', 'Harga')}: {formatStockPrice(d.close_price)}
                                                                         </div>
                                                                         <div
                                                                             className={`font-mono text-[11px] font-semibold ${d.daily_return >= 0
@@ -605,7 +622,7 @@ export default function StockAnalysisModal({
                                                                                     : 'text-rose-600 dark:text-rose-400'
                                                                                 }`}
                                                                         >
-                                                                            Return Harian: {d.daily_return > 0 ? '+' : ''}
+                                                                            {t('stock_modal.daily_return_label', 'Return Harian')}: {d.daily_return > 0 ? '+' : ''}
                                                                             {d.daily_return}%
                                                                         </div>
                                                                     </div>
@@ -626,7 +643,7 @@ export default function StockAnalysisModal({
                                             </ResponsiveContainer>
                                         ) : (
                                             <div className="h-full flex items-center justify-center text-xs text-muted-foreground">
-                                                Tidak ada data harga pada rentang ini.
+                                                {t('stock_modal.no_price_data', 'Tidak ada data harga pada rentang ini.')}
                                             </div>
                                         )}
                                     </div>
@@ -662,7 +679,7 @@ export default function StockAnalysisModal({
                                                     ) : (
                                                         <TrendingDown className="h-3.5 w-3.5 shrink-0" />
                                                     )}
-                                                    <span>Return Periode</span>
+                                                    <span>{t('stock_modal.period_return', 'Return Periode')}</span>
                                                 </span>
                                                 <Badge
                                                     variant="secondary"
@@ -673,8 +690,8 @@ export default function StockAnalysisModal({
                                                     }`}
                                                 >
                                                     {activePreset
-                                                        ? `Return Periode · ${activePreset === 'all' ? 'All' : activePreset}`
-                                                        : 'Periode Custom'}
+                                                        ? t('stock_modal.period_return_preset', { preset: activePreset === 'all' ? (language === 'en' ? 'All' : 'Semua') : activePreset })
+                                                        : t('stock_modal.custom_period', 'Periode Custom')}
                                                 </Badge>
                                             </div>
                                             <div
@@ -690,7 +707,7 @@ export default function StockAnalysisModal({
                                             </div>
                                             <div>
                                                 <p className="text-[10px] text-muted-foreground leading-tight">
-                                                    Perubahan harga selama {metrics.horizon_data_points ?? metrics.data_points} hari bursa /
+                                                    {t('stock_modal.price_change_days', { days: metrics.horizon_data_points ?? metrics.data_points })}
                                                 </p>
                                                 {periodStartDate && periodEndDate && (
                                                     <p
@@ -710,34 +727,34 @@ export default function StockAnalysisModal({
                                 {/* 2. Card Rentang Harga Periode Ini */}
                                 <div className="rounded-xl border border-border/70 bg-card p-3 flex flex-col justify-between shadow-2xs">
                                     <div className="flex flex-col items-start gap-1 text-xs text-muted-foreground font-bold">
-                                            <span className="flex items-center gap-1 w-full truncate text-foreground">
-                                        <Clock className="h-3.5 w-3.5 text-primary shrink-0" />
-                                                <span>Rentang Harga</span>
-                                            </span>
-                                            <Badge
-                                                variant="secondary"
-                                        className="text-[9px] py-0 px-1.5 font-mono uppercase bg-muted text-muted-foreground shrink-0"
-                                            >
-                                                Low / High
-                                            </Badge>
+                                        <span className="flex items-center gap-1 w-full truncate text-foreground">
+                                            <Clock className="h-3.5 w-3.5 text-primary shrink-0" />
+                                            <span>{t('stock_modal.price_range', 'Rentang Harga')}</span>
+                                        </span>
+                                        <Badge
+                                            variant="secondary"
+                                            className="text-[9px] py-0 px-1.5 font-mono uppercase bg-muted text-muted-foreground shrink-0"
+                                        >
+                                            {t('stock_modal.low_high', 'Low / High')}
+                                        </Badge>
                                     </div>
                                     <div className="my-1 space-y-0.5 font-mono">
                                         <div className="flex justify-between items-center text-[11px]">
-                                            <span className="text-muted-foreground">Low:</span>
+                                            <span className="text-muted-foreground">{t('stock_modal.low', 'Low')}:</span>
                                             <span className="text-rose-600 dark:text-rose-400 font-bold">
-                                                {formatRupiah(metrics.min_price)}
+                                                {formatStockPrice(metrics.min_price)}
                                             </span>
                                         </div>
                                         <div className="flex justify-between items-center text-[11px]">
-                                            <span className="text-muted-foreground">High:</span>
+                                            <span className="text-muted-foreground">{t('stock_modal.high', 'High')}:</span>
                                             <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                                                {formatRupiah(metrics.max_price)}
+                                                {formatStockPrice(metrics.max_price)}
                                             </span>
                                         </div>
                                     </div>
-                                        <p className="text-[10px] text-muted-foreground leading-tight">
-                                            Harga terendah & tertinggi selama periode
-                                        </p>
+                                    <p className="text-[10px] text-muted-foreground leading-tight">
+                                        {t('stock_modal.price_range_desc', 'Harga terendah & tertinggi selama periode')}
+                                    </p>
                                 </div>
 
                                 {/* 3. Card Expected Return E(R) Tahunan */}
@@ -764,7 +781,7 @@ export default function StockAnalysisModal({
                                                     ) : (
                                                         <TrendingDown className="h-3.5 w-3.5 shrink-0" />
                                                     )}
-                                                    <span>Expected Return</span>
+                                                    <span>{t('stock_modal.expected_return', 'Expected Return')}</span>
                                                 </span>
                                                 <Badge
                                                     variant="secondary"
@@ -774,7 +791,7 @@ export default function StockAnalysisModal({
                                                             : 'bg-rose-500/20 text-rose-800 dark:text-rose-300'
                                                     }`}
                                                 >
-                                                    Expected Return Tahunan
+                                                    {t('stock_modal.annual_expected_return', 'Expected Return Tahunan')}
                                                 </Badge>
                                             </div>
                                             <div
@@ -789,7 +806,7 @@ export default function StockAnalysisModal({
                                                     : `${metrics.expected_return ?? 0}%`}
                                             </div>
                                             <p className="text-[10px] text-muted-foreground leading-tight">
-                                                Proyeksi 1 tahun berdasarkan {metrics.data_points} hari bursa
+                                                {t('stock_modal.projection_1y', { days: metrics.data_points })}
                                             </p>
                                         </div>
                                     );
@@ -800,20 +817,20 @@ export default function StockAnalysisModal({
                                     <div className="flex flex-col items-start gap-1 text-xs text-blue-700 dark:text-blue-400 font-bold">
                                         <span className="flex items-center gap-1 w-full truncate">
                                             <Activity className="h-3.5 w-3.5 shrink-0" />
-                                            <span>Volatilitas</span>
+                                            <span>{t('stock_modal.volatility', 'Volatilitas')}</span>
                                         </span>
                                         <Badge
                                             variant="secondary"
                                             className="text-[9px] py-0 px-1.5 font-mono uppercase bg-blue-500/20 text-blue-800 dark:text-blue-300 shrink-0"
                                         >
-                                            Volatilitas Tahunan
+                                            {t('stock_modal.annual_volatility', 'Volatilitas Tahunan')}
                                         </Badge>
                                     </div>
                                     <div className="text-xl sm:text-2xl font-extrabold font-mono text-foreground my-1">
                                         {metrics.volatility}%
                                     </div>
                                     <p className="text-[10px] text-muted-foreground leading-tight">
-                                        Fluktuasi tahunan berdasarkan {metrics.data_points} hari bursa
+                                        {t('stock_modal.annual_fluctuation', { days: metrics.data_points })}
                                     </p>
                                 </div>
 
@@ -831,7 +848,7 @@ export default function StockAnalysisModal({
                         onClick={onClose}
                         className="text-xs sm:text-sm cursor-pointer text-muted-foreground hover:text-foreground"
                     >
-                        Tutup
+                        {t('stock_modal.close', 'Tutup')}
                     </Button>
 
                     <Button
@@ -843,12 +860,12 @@ export default function StockAnalysisModal({
                         {isAlreadyInBasket ? (
                             <>
                                 <Check className="h-4 w-4" />
-                                <span>Perbarui</span>
+                                <span>{t('stock_modal.update', 'Perbarui')}</span>
                             </>
                         ) : (
                             <>
                                 <ShoppingBag className="h-4 w-4" />
-                                <span>Tambahkan</span>
+                                <span>{t('stock_modal.add_to_basket', 'Tambahkan')}</span>
                             </>
                         )}
                     </Button>

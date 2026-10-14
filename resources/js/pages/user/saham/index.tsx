@@ -12,6 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslation } from '@/i18n/LanguageContext';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type PaginatedData, type SharedData, type Stock } from '@/types';
 import { Deferred, Head, Link, router, usePage } from '@inertiajs/react';
@@ -28,17 +29,6 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/user/dashboard',
-    },
-    {
-        title: 'Eksplorasi Saham',
-        href: '/user/saham',
-    },
-];
 
 const SECTORS = [
     'Technology',
@@ -78,9 +68,21 @@ export default function UserStockIndex({
     total_count,
     timeframe_limits,
 }: Props) {
+    const { t, language } = useTranslation();
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
     const [selectedBursa, setSelectedBursa] = useState(filters.bursa || 'all');
     const [selectedSector, setSelectedSector] = useState(filters.sector || 'all');
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: t('nav.dashboard', 'Dashboard'),
+            href: '/user/dashboard',
+        },
+        {
+            title: t('saham.title', 'Eksplorasi Saham'),
+            href: '/user/saham',
+        },
+    ];
 
     const pageProps = usePage<SharedData>().props;
     const serverBasketTickers = (pageProps.basket_tickers as string[]) || [];
@@ -140,12 +142,12 @@ export default function UserStockIndex({
         }
     }, [isModalOpen]);
 
-    // Helper format harga IDR dari database
+    // Helper format harga IDR / mata uang dari database
     const formatPrice = (val: string | number | null | undefined) => {
         if (val === null || val === undefined) return '-';
         const num = typeof val === 'string' ? parseFloat(val) : val;
         if (isNaN(num)) return '-';
-        return new Intl.NumberFormat('id-ID', {
+        return new Intl.NumberFormat(language === 'en' ? 'en-US' : 'id-ID', {
             minimumFractionDigits: 0,
             maximumFractionDigits: 2,
         }).format(num);
@@ -226,10 +228,10 @@ export default function UserStockIndex({
             preserveScroll: true,
             preserveState: true,
             onSuccess: () => {
-                toast.success(`Saham ${clean} berhasil ditambahkan ke keranjang portofolio!`);
+                toast.success(t('saham.added_to_basket_toast', { ticker: clean }));
             },
             onError: () => {
-                toast.error(`Gagal menyimpan saham ${clean} ke keranjang.`);
+                toast.error(t('saham.add_to_basket_error', { ticker: clean }));
             },
         });
     };
@@ -238,7 +240,7 @@ export default function UserStockIndex({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Eksplorasi Saham" />
+            <Head title={t('saham.title', 'Eksplorasi Saham')} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4 sm:p-6 mx-auto w-full pb-16">
                 {/* 1. HERO HEADER SECTION */}
@@ -251,7 +253,7 @@ export default function UserStockIndex({
                         <div className="shrink-0">
                             <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary ring-1 ring-inset ring-primary/20 backdrop-blur-xs">
                                 <TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                                Market Explorer
+                                {t('saham.market_explorer', 'Market Explorer')}
                             </span>
                         </div>
 
@@ -300,7 +302,7 @@ export default function UserStockIndex({
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     type="text"
-                                    placeholder="Cari kode atau nama saham..."
+                                    placeholder={t('saham.search_placeholder', 'Cari kode ticker atau nama emiten...')}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     className="pl-10 pr-9 h-10 text-sm bg-background border-border/70 shadow-2xs w-full rounded-lg"
@@ -309,6 +311,8 @@ export default function UserStockIndex({
                                     <button
                                         type="button"
                                         onClick={handleClearSearch}
+                                        aria-label={t('saham.clear_search', 'Hapus Pencarian')}
+                                        title={t('saham.clear_search', 'Hapus Pencarian')}
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                                     >
                                         <X className="h-4 w-4" />
@@ -325,7 +329,7 @@ export default function UserStockIndex({
                         >
                             <Link href="/user/analyze/keranjang">
                                 <ShoppingBag className="h-4 w-4" />
-                                <span className="hidden sm:inline">Keranjang</span>
+                                <span className="hidden sm:inline">{t('nav.basket', 'Keranjang')}</span>
                                 <Badge
                                     variant="secondary"
                                     className="absolute -top-1.5 -right-1.5 flex items-center justify-center h-5 w-5 rounded-full text-[10px] font-bold bg-primary-foreground text-primary shadow-xs border border-primary/20 p-0"
@@ -349,7 +353,7 @@ export default function UserStockIndex({
                                         : 'text-muted-foreground hover:text-foreground'
                                 }`}
                             >
-                                Semua
+                                {t('common.all', 'Semua')}
                             </button>
                             {(bursa_list || ['IDX', 'NASDAQ']).map((bursa) => {
                                 const isSelected = selectedBursa === bursa;
@@ -381,10 +385,10 @@ export default function UserStockIndex({
                         <div className="flex-1 lg:flex-initial min-w-[130px] sm:min-w-[155px]">
                             <Select value={selectedSector} onValueChange={handleSectorChange}>
                                 <SelectTrigger className="w-full sm:w-[155px] h-10 text-xs sm:text-sm bg-background border-border/70 rounded-lg focus:ring-1 focus:ring-primary shadow-2xs cursor-pointer">
-                                    <SelectValue placeholder="Semua Sektor" />
+                                    <SelectValue placeholder={t('saham.filter_all_sectors', 'Semua Sektor')} />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-60">
-                                    <SelectItem value="all">Semua Sektor</SelectItem>
+                                    <SelectItem value="all">{t('saham.filter_all_sectors', 'Semua Sektor')}</SelectItem>
                                     {(availableSectors || SECTORS).map((sector) => (
                                         <SelectItem key={sector} value={sector}>
                                             {sector}
@@ -402,7 +406,7 @@ export default function UserStockIndex({
                         >
                             <Link href="/user/analyze/keranjang">
                                 <ShoppingBag className="h-4 w-4" />
-                                <span>Keranjang</span>
+                                <span>{t('nav.basket', 'Keranjang')}</span>
                                 <Badge
                                     variant="secondary"
                                     className="absolute -top-2 -right-2 flex items-center justify-center h-5 w-5 rounded-full text-[10px] font-bold bg-primary-foreground text-primary shadow-xs border border-primary/20 p-0"
@@ -417,18 +421,18 @@ export default function UserStockIndex({
                 {/* Info Total */}
                 <div className="flex flex-wrap items-center justify-between gap-1 text-xs text-muted-foreground px-1 -mt-2 -mb-2">
                     <span>
-                        Menampilkan <strong className="text-foreground">{stockList.length}</strong> emiten saham
-                        {total_count !== undefined && total_count !== stockList.length ? ` dari total ${total_count} saham` : ''}
+                        {t('saham.showing_emitens', { count: stockList.length })}
+                        {total_count !== undefined && total_count !== stockList.length ? ` ${t('saham.from_total', { total: total_count })}` : ''}
                     </span>
                     <div className="flex items-center gap-2 flex-wrap">
                         {selectedBursa !== 'all' && (
                             <span>
-                                Bursa: <strong className="text-primary">{selectedBursa}</strong>
+                                {t('saham.exchange_label', 'Bursa')}: <strong className="text-primary">{selectedBursa}</strong>
                             </span>
                         )}
                         {selectedSector !== 'all' && (
                             <span>
-                                Sektor: <strong className="text-foreground">{selectedSector}</strong>
+                                {t('saham.sector_label', 'Sektor')}: <strong className="text-foreground">{selectedSector}</strong>
                             </span>
                         )}
                     </div>
@@ -462,9 +466,11 @@ export default function UserStockIndex({
                         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground mb-3">
                             <Search className="h-6 w-6" />
                         </div>
-                        <h3 className="text-base font-semibold text-foreground">Tidak Ada Saham Ditemukan</h3>
+                        <h3 className="text-base font-semibold text-foreground">
+                            {t('saham.no_stocks_found_title', 'Tidak Ada Saham Ditemukan')}
+                        </h3>
                         <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                            Tidak ditemukan emiten yang cocok dengan kriteria pencarian "{searchQuery}". Coba kata kunci lain atau reset filter.
+                            {t('saham.no_stocks_found_desc', { query: searchQuery })}
                         </p>
                         <Button
                             size="sm"
@@ -475,7 +481,7 @@ export default function UserStockIndex({
                             className="mt-4 gap-1.5 text-xs cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
                         >
                             <RefreshCw className="h-3.5 w-3.5" />
-                            <span>Reset Pencarian</span>
+                            <span>{t('saham.reset_search', 'Reset Pencarian')}</span>
                         </Button>
                     </div>
                 ) : (
@@ -573,7 +579,16 @@ export default function UserStockIndex({
                                                         ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
                                                         : 'border-border/70 hover:bg-primary/10 hover:text-primary hover:border-primary/40'
                                                 }`}
-                                                title={isAdded ? 'Buka Analisis (Sudah di Keranjang)' : 'Analisis & Tambah ke Keranjang'}
+                                                title={
+                                                    isAdded
+                                                        ? t('saham.in_basket_title', 'Sudah di Keranjang (Buka Analisis)')
+                                                        : t('saham.analyze_add_title', 'Analisis & Tambah ke Keranjang')
+                                                }
+                                                aria-label={
+                                                    isAdded
+                                                        ? t('saham.in_basket_aria', { ticker: stock.ticker.replace('.JK', '') })
+                                                        : t('saham.analyze_add_aria', { ticker: stock.ticker.replace('.JK', '') })
+                                                }
                                             >
                                                 {isAdded ? (
                                                     <Check className="h-4 w-4" />
