@@ -21,36 +21,23 @@ import {
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { useTranslation } from '@/i18n/LanguageContext';
-
-interface HistoryItem {
-    id: number;
-    user_id: number;
-    reference_code?: string;
-    title: string;
-    initial_capital: number;
-    risk_free_rate: number;
-    tickers: string[];
-    best_portfolios?: {
-        sharpe?: { return?: number; risk?: number; sharpe?: number; expected_return?: number; volatility?: number; sharpe_ratio?: number;[key: string]: any };
-        max_sharpe?: { return?: number; risk?: number; sharpe?: number; expected_return?: number; volatility?: number; sharpe_ratio?: number;[key: string]: any };
-        min_variance?: { return?: number; risk?: number; sharpe?: number; expected_return?: number; volatility?: number; sharpe_ratio?: number;[key: string]: any };
-        [key: string]: any;
-    };
-    created_at: string;
-}
+import { usePortfolioHistorySWR, type HistoryItem } from '@/hooks/usePortfolioHistorySWR';
 
 interface HistoryProps {
     history?: HistoryItem[] | PaginatedData<HistoryItem> | { data: HistoryItem[] };
 }
 
-export default function MobileHistoryPage({ history }: HistoryProps) {
+export default function MobileHistoryPage({ history: initialHistory }: HistoryProps) {
     const { t, language } = useTranslation();
 
-    const list: HistoryItem[] = Array.isArray(history)
-        ? history
-        : (history && typeof history === 'object' && 'data' in history && Array.isArray(history.data)
-            ? history.data
-            : []);
+    // SWR Caching Layer: Instant portfolio history on revisit (0ms delay)
+    const {
+        list,
+        hasCachedHistory,
+        isRevalidating,
+        updateHistoryItem,
+        removeHistoryItem,
+    } = usePortfolioHistorySWR({ history: initialHistory });
 
     // Edit Modal State
     const [editingItem, setEditingItem] = useState<HistoryItem | null>(null);
@@ -75,13 +62,15 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
         }
 
         setIsUpdating(true);
+        const newTitle = editTitle.trim();
         router.put(
             `/user/analyze/history/${editingItem.id}`,
-            { title: editTitle.trim() },
+            { title: newTitle },
             {
                 preserveScroll: true,
                 onSuccess: () => {
                     toast.success(t('history.update_success'));
+                    updateHistoryItem(editingItem.id, { title: newTitle });
                     setEditingItem(null);
                 },
                 onError: () => {
@@ -97,11 +86,13 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
     const handleConfirmDelete = () => {
         if (!deletingItem) return;
         setIsDeleting(true);
+        const deleteId = deletingItem.id;
 
-        router.delete(`/user/analyze/history/${deletingItem.id}`, {
+        router.delete(`/user/analyze/history/${deleteId}`, {
             preserveScroll: true,
             onSuccess: () => {
                 toast.success(t('history.delete_success'));
+                removeHistoryItem(deleteId);
                 setDeletingItem(null);
             },
             onError: () => {
@@ -158,6 +149,154 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
         return `${language === 'en' ? 'IDR' : 'Rp'} ${capital.toLocaleString('id-ID')}`;
     };
 
+    const renderHistoryList = () => (
+        <div className="space-y-2.5 pt-1">
+            {list.length > 0 ? (
+                list.map((item) => {
+                    const isUsItem = Boolean(item.tickers && item.tickers.some((t) => !t.endsWith('.JK')));
+                    const profile =
+                        item.best_portfolios?.sharpe ||
+                        item.best_portfolios?.max_sharpe ||
+                        item.best_portfolios?.min_variance ||
+                        (Array.isArray(item.best_portfolios) ? item.best_portfolios[0] : null);
+
+                    const retVal = profile ? (profile.return ?? profile.expected_return) : null;
+                    const riskVal = profile ? (profile.risk ?? profile.volatility) : null;
+                    const sharpeVal = profile ? (profile.sharpe ?? profile.sharpe_ratio) : null;
+                    const retNum = Number(retVal);
+                    const isPositiveReturn = !isNaN(retNum) ? retNum >= 0 : true;
+
+                    return (
+                        <article
+                            key={item.id}
+                            onClick={() => router.visit(`/user/analyze/result/${item.id}`)}
+                            className="rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-xs cursor-pointer hover:border-zinc-300 active:scale-[0.99] transition-all select-none"
+                        >
+                            {/* Main Row (Padding 12) */}
+                            <div className="p-3.5 space-y-2.5">
+                                <div className="flex items-center justify-between text-xs">
+                                    <span className="font-mono text-[11px] font-semibold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                                        {item.reference_code || `DNL-REF-${item.id}`}
+                                    </span>
+                                    <span className="text-zinc-500 flex items-center gap-1 font-medium">
+                                        <Clock className="size-3" />
+                                        {formatDate(item.created_at)}
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <h3 className="text-[15px] font-semibold text-zinc-900 leading-snug">
+                                        {item.title}
+                                    </h3>
+                                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                        {/* Tickers Chips */}
+                                        <div className="flex items-center gap-1.5 flex-wrap">
+                                            {item.tickers.map((t, idx) => (
+                                                <span
+                                                    key={idx}
+                                                    className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-zinc-100 border border-zinc-200 text-zinc-900 font-semibold"
+                                                >
+                                                    {t.replace('.JK', '')}
+                                                </span>
+                                            ))}
+                                        </div>
+
+                                        <div className="text-[13px] font-bold text-zinc-900 font-sans shrink-0">
+                                            {formatHistoryCapital(item.initial_capital, isUsItem)}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Return | Volatilitas | Sharpe Ratio */}
+                                {profile && (
+                                    <div className="flex items-center justify-between gap-1 text-[10.5px] font-medium text-zinc-500 pt-0.5">
+                                        <span className="inline-flex items-center gap-1">
+                                            <span className="text-zinc-400">{t('history.metric_return')}</span>
+                                            <span
+                                                className={`font-mono font-bold ${isPositiveReturn
+                                                        ? 'text-emerald-600'
+                                                        : 'text-rose-600'
+                                                    }`}
+                                            >
+                                                {formatMetricReturn(retVal)}
+                                            </span>
+                                        </span>
+                                        <span className="text-zinc-300">|</span>
+                                        <span className="inline-flex items-center gap-1">
+                                            <span className="text-zinc-400">{t('history.metric_volatility')}</span>
+                                            <span className="font-mono font-bold text-zinc-800">
+                                                {formatMetricRisk(riskVal)}
+                                            </span>
+                                        </span>
+                                        <span className="text-zinc-300">|</span>
+                                        <span className="inline-flex items-center gap-1">
+                                            <span className="text-zinc-400">{t('history.metric_sharpe')}</span>
+                                            <span className="font-mono font-bold text-zinc-800">
+                                                {formatMetricSharpe(sharpeVal)}
+                                            </span>
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Footer Row (bg-zinc-100) */}
+                            <div className="bg-zinc-100 px-3.5 py-2 flex items-center justify-between border-t border-zinc-200 text-xs">
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            openEdit(item);
+                                        }}
+                                        className="text-zinc-500 hover:text-zinc-900 flex items-center gap-1 font-medium cursor-pointer"
+                                    >
+                                        <Edit2 className="size-3" />
+                                        {t('common.edit')}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setDeletingItem(item);
+                                        }}
+                                        className="text-rose-600 hover:text-rose-700 flex items-center gap-1 font-medium cursor-pointer"
+                                    >
+                                        <Trash className="size-3" />
+                                        {t('common.delete')}
+                                    </button>
+                                </div>
+
+                                <div className="text-[12px] font-semibold text-emerald-600 flex items-center gap-1">
+                                    <ChevronRight className="size-4" />
+                                </div>
+                            </div>
+                        </article>
+                    );
+                })
+            ) : (
+                <div className="py-12 text-center bg-zinc-50/50 rounded-2xl border border-zinc-200 p-6 space-y-3">
+                    <div className="size-12 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center mx-auto">
+                        <History className="size-6" />
+                    </div>
+                    <div>
+                        <p className="text-sm font-semibold text-zinc-900">
+                            {t('history.empty_history_title')}
+                        </p>
+                        <p className="text-xs text-zinc-500 mt-0.5">
+                            {t('history.empty_history_desc_short')}
+                        </p>
+                    </div>
+                    <Link
+                        href="/user/saham"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-600 text-white text-xs font-semibold shadow-xs"
+                    >
+                        {t('history.create_portfolio_btn')}
+                    </Link>
+                </div>
+            )}
+        </div>
+    );
+
     return (
         <MobileAppLayout>
             <Head title={t('history.title')} />
@@ -186,154 +325,14 @@ export default function MobileHistoryPage({ history }: HistoryProps) {
                         </div>
                     </div>
 
-                    {/* Daftar Riwayat Portofolio dengan Deferred Loading */}
-                    <Deferred data="history" fallback={<HistoryListSkeleton count={4} />}>
-                        <div className="space-y-2.5 pt-1">
-                        {list.length > 0 ? (
-                            list.map((item) => {
-                                const isUsItem = Boolean(item.tickers && item.tickers.some((t) => !t.endsWith('.JK')));
-                                const profile =
-                                    item.best_portfolios?.sharpe ||
-                                    item.best_portfolios?.max_sharpe ||
-                                    item.best_portfolios?.min_variance ||
-                                    (Array.isArray(item.best_portfolios) ? item.best_portfolios[0] : null);
-
-                                const retVal = profile ? (profile.return ?? profile.expected_return) : null;
-                                const riskVal = profile ? (profile.risk ?? profile.volatility) : null;
-                                const sharpeVal = profile ? (profile.sharpe ?? profile.sharpe_ratio) : null;
-                                const retNum = Number(retVal);
-                                const isPositiveReturn = !isNaN(retNum) ? retNum >= 0 : true;
-
-                                return (
-                                    <article
-                                        key={item.id}
-                                        onClick={() => router.visit(`/user/analyze/result/${item.id}`)}
-                                        className="rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-xs cursor-pointer hover:border-zinc-300 active:scale-[0.99] transition-all select-none"
-                                    >
-                                        {/* Main Row (Padding 12) */}
-                                        <div className="p-3.5 space-y-2.5">
-                                            <div className="flex items-center justify-between text-xs">
-                                                    <span className="font-mono text-[11px] font-semibold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                                                        {item.reference_code || `DNL-REF-${item.id}`}
-                                                    </span>
-                                                <span className="text-zinc-500 flex items-center gap-1 font-medium">
-                                                    <Clock className="size-3" />
-                                                    {formatDate(item.created_at)}
-                                                </span>
-                                            </div>
-
-                                            <div>
-                                                <h3 className="text-[15px] font-semibold text-zinc-900 leading-snug">
-                                                    {item.title}
-                                                </h3>
-                                                <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                                    {/* Tickers Chips */}
-                                                    <div className="flex items-center gap-1.5 flex-wrap">
-                                                        {item.tickers.map((t, idx) => (
-                                                            <span
-                                                                key={idx}
-                                                                className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-zinc-100 border border-zinc-200 text-zinc-900 font-semibold"
-                                                            >
-                                                                {t.replace('.JK', '')}
-                                                            </span>
-                                                        ))}
-                                                    </div>
-
-                                                    <div className="text-[13px] font-bold text-zinc-900 font-sans shrink-0">
-                                                        {formatHistoryCapital(item.initial_capital, isUsItem)}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Return | Volatilitas | Sharpe Ratio */}
-                                            {profile && (
-                                                <div className="flex items-center justify-between gap-1 text-[10.5px] font-medium text-zinc-500 pt-0.5">
-                                                    <span className="inline-flex items-center gap-1">
-                                                        <span className="text-zinc-400">{t('history.metric_return')}</span>
-                                                        <span
-                                                            className={`font-mono font-bold ${isPositiveReturn
-                                                                    ? 'text-emerald-600'
-                                                                    : 'text-rose-600'
-                                                                }`}
-                                                        >
-                                                            {formatMetricReturn(retVal)}
-                                                        </span>
-                                                    </span>
-                                                    <span className="text-zinc-300">|</span>
-                                                    <span className="inline-flex items-center gap-1">
-                                                        <span className="text-zinc-400">{t('history.metric_volatility')}</span>
-                                                        <span className="font-mono font-bold text-zinc-800">
-                                                            {formatMetricRisk(riskVal)}
-                                                        </span>
-                                                    </span>
-                                                    <span className="text-zinc-300">|</span>
-                                                    <span className="inline-flex items-center gap-1">
-                                                        <span className="text-zinc-400">{t('history.metric_sharpe')}</span>
-                                                        <span className="font-mono font-bold text-zinc-800">
-                                                            {formatMetricSharpe(sharpeVal)}
-                                                        </span>
-                                                    </span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Footer Row (bg-zinc-100) */}
-                                        <div className="bg-zinc-100 px-3.5 py-2 flex items-center justify-between border-t border-zinc-200 text-xs">
-                                            <div className="flex items-center gap-3">
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        openEdit(item);
-                                                    }}
-                                                    className="text-zinc-500 hover:text-zinc-900 flex items-center gap-1 font-medium cursor-pointer"
-                                                >
-                                                    <Edit2 className="size-3" />
-                                                    {t('common.edit')}
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setDeletingItem(item);
-                                                    }}
-                                                    className="text-rose-600 hover:text-rose-700 flex items-center gap-1 font-medium cursor-pointer"
-                                                >
-                                                    <Trash className="size-3" />
-                                                    {t('common.delete')}
-                                                </button>
-                                            </div>
-
-                                            <div className="text-[12px] font-semibold text-emerald-600 flex items-center gap-1">
-                                                <ChevronRight className="size-4" />
-                                            </div>
-                                        </div>
-                                    </article>
-                                );
-                            })
-                        ) : (
-                            <div className="py-12 text-center bg-zinc-50/50 rounded-2xl border border-zinc-200 p-6 space-y-3">
-                                <div className="size-12 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center mx-auto">
-                                    <History className="size-6" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-semibold text-zinc-900">
-                                        {t('history.empty_history_title')}
-                                    </p>
-                                    <p className="text-xs text-zinc-500 mt-0.5">
-                                        {t('history.empty_history_desc_short')}
-                                    </p>
-                                </div>
-                                <Link
-                                    href="/user/saham"
-                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-600 text-white text-xs font-semibold shadow-xs"
-                                >
-                                    {t('history.create_portfolio_btn')}
-                                </Link>
-                            </div>
-                        )}
-                    </div>
-                </Deferred>
+                    {/* Daftar Riwayat Portofolio: Tampilkan data cache langsung jika ada, fallback ke Deferred skeleton jika cold start */}
+                    {hasCachedHistory ? (
+                        renderHistoryList()
+                    ) : (
+                        <Deferred data="history" fallback={<HistoryListSkeleton count={4} />}>
+                            {renderHistoryList()}
+                        </Deferred>
+                    )}
             </section>
             </div>
 

@@ -6,6 +6,7 @@ import { StockItemCard } from '@/pages/user/mobile/components/StockItemCard';
 import { WalletLeatherHero } from '@/pages/user/mobile/components/WalletLeatherHero';
 import { MobileAppLayout } from '@/pages/user/mobile/layouts/MobileAppLayout';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { useDashboardSWR } from '@/hooks/useDashboardSWR';
 import { type SharedData } from '@/types';
 import { Deferred, Head, Link, router, usePage } from '@inertiajs/react';
 import { ChevronRight, Sparkles, TrendingUp, Zap } from 'lucide-react';
@@ -61,20 +62,25 @@ interface MobileDashboardProps {
     last_updated?: string;
 }
 
-export default function MobileDashboard({
-    popular_stocks = [],
-    top_gainers = [],
-    top_losers = [],
-    recent_optimizations = [],
-    latest_portfolio = null,
-    total_user_optimizations = 0,
-    total_stocks_count = 0,
-    risk_free_rate = 6.0,
-    last_updated,
-}: MobileDashboardProps) {
+export default function MobileDashboard(props: MobileDashboardProps) {
     const { t, language } = useTranslation();
     const pageProps = usePage<SharedData>().props;
     const { auth } = pageProps;
+
+    // Stale-While-Revalidate (SWR) client caching layer
+    const {
+        popular_stocks,
+        top_gainers,
+        top_losers,
+        recent_optimizations,
+        latest_portfolio,
+        total_user_optimizations,
+        total_stocks_count,
+        risk_free_rate,
+        last_updated,
+        hasCachedMarketData,
+        isRevalidating,
+    } = useDashboardSWR(props, auth?.user?.id);
 
     const [activeTab, setActiveTab] = useState<'popular' | 'gainers' | 'losers'>('popular');
 
@@ -118,9 +124,9 @@ export default function MobileDashboard({
                 {/* 4. Container Putih Besar (Section 6.5 & 7.1) */}
                 <section className="mx-1 rounded-[24px] bg-white p-4 border border-zinc-200 shadow-xs">
                     <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-base font-semibold text-emerald-600 tracking-tight">
-                            {t('dashboard.market_selection')}
-                        </h3>
+                            <h3 className="text-base font-semibold text-emerald-600 tracking-tight">
+                                {t('dashboard.market_selection')}
+                            </h3>
                         <Link
                             href="/user/saham"
                             className="text-[12px] font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-0.5"
@@ -164,11 +170,8 @@ export default function MobileDashboard({
                         </button>
                     </div>
 
-                    {/* List Saham (StockItemCard) dengan Deferred Loading */}
-                    <Deferred
-                        data={['popular_stocks', 'top_gainers', 'top_losers']}
-                        fallback={<DashboardStockCardsSkeleton count={5} />}
-                    >
+                    {/* List Saham (StockItemCard) dengan SWR Stale-While-Revalidate */}
+                    {hasCachedMarketData ? (
                         <div className="space-y-2">
                             {displayedStocks.length > 0 ? (
                                 displayedStocks.map((stock) => (
@@ -202,7 +205,46 @@ export default function MobileDashboard({
                                 </div>
                             )}
                         </div>
-                    </Deferred>
+                    ) : (
+                        <Deferred
+                            data={['popular_stocks', 'top_gainers', 'top_losers']}
+                            fallback={<DashboardStockCardsSkeleton count={5} />}
+                        >
+                            <div className="space-y-2">
+                                {displayedStocks.length > 0 ? (
+                                    displayedStocks.map((stock) => (
+                                        <StockItemCard
+                                            key={stock.id}
+                                            ticker={stock.ticker}
+                                            name={stock.name}
+                                            bursa={stock.bursa || 'IDX'}
+                                            price={stock.latest_price?.close_price}
+                                            change={stock.change}
+                                            changePercent={stock.change_percent}
+                                            recentPrices={stock.recent_prices}
+                                            analysisCount={stock.analysis_count}
+                                            showCurrencyPrefix={false}
+                                            actionLabel={t('common.analyze')}
+                                            onActionClick={() => {
+                                                router.get('/user/saham', {
+                                                    search: stock.ticker.replace('.JK', ''),
+                                                });
+                                            }}
+                                            onClick={() => {
+                                                router.get('/user/saham', {
+                                                    search: stock.ticker.replace('.JK', ''),
+                                                });
+                                            }}
+                                        />
+                                    ))
+                                ) : (
+                                    <div className="py-8 text-center text-xs text-zinc-500">
+                                        {t('dashboard.no_stocks_movement')}
+                                    </div>
+                                )}
+                            </div>
+                        </Deferred>
+                    )}
                 </section>
 
                 {/* 5. Riwayat Terakhir Card (Jika Ada Portofolio Tersimpan) */}

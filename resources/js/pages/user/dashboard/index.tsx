@@ -8,6 +8,7 @@ import { LanguageToggle } from '@/components/LanguageToggle';
 import { useTranslation } from '@/i18n/LanguageContext';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
+import { useDashboardSWR } from '@/hooks/useDashboardSWR';
 import { Deferred, Head, Link, router, usePage } from '@inertiajs/react';
 import {
     Activity,
@@ -94,20 +95,26 @@ interface DashboardProps {
     last_updated?: string;
 }
 
-export default function UserDashboard({
-    popular_stocks = [],
-    top_gainers = [],
-    top_losers = [],
-    recent_optimizations = [],
-    latest_portfolio = null,
-    total_user_optimizations = 0,
-    total_stocks_count = 0,
-    risk_free_rate = 6.0,
-    last_updated,
-}: DashboardProps) {
+export default function UserDashboard(props: DashboardProps) {
     const { t, language } = useTranslation();
     const pageProps = usePage<SharedData>().props;
     const { auth } = pageProps;
+
+    // Stale-While-Revalidate (SWR) client caching layer
+    const {
+        popular_stocks,
+        top_gainers,
+        top_losers,
+        recent_optimizations,
+        latest_portfolio,
+        total_user_optimizations,
+        total_stocks_count,
+        risk_free_rate,
+        last_updated,
+        hasCachedMarketData,
+        isRevalidating,
+    } = useDashboardSWR(props, auth?.user?.id);
+
     const serverBasketCount = pageProps.basket_count;
     const serverBasketTickers = pageProps.basket_tickers;
     const [stockTab, setStockTab] = useState<'popular' | 'gainers' | 'losers'>('popular');
@@ -310,115 +317,193 @@ export default function UserDashboard({
                         </div>
                     </div>
 
-                    <Deferred
-                        data={['popular_stocks', 'top_gainers', 'top_losers']}
-                        fallback={
+                    {hasCachedMarketData ? (
+                        activeStockList.length === 0 ? (
+                            <Card className="border border-border/70 p-8 text-center">
+                                <p className="text-xs text-muted-foreground">
+                                    {t('dashboard.no_popular_stocks', 'Belum ada data saham populer tersimpan saat ini.')}
+                                </p>
+                                <Button asChild size="sm" variant="outline" className="mt-3 text-xs">
+                                    <Link href="/user/saham">{t('dashboard.explore_stocks', 'Eksplorasi Saham')}</Link>
+                                </Button>
+                            </Card>
+                        ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {[1, 2, 3, 4, 5, 6].map((i) => (
-                                    <Card key={i} className="border border-border/70 p-4 space-y-3">
-                                        <div className="flex items-start justify-between">
-                                            <div className="space-y-1.5">
-                                                <Skeleton className="h-5 w-20 rounded-md" />
-                                                <Skeleton className="h-3 w-32 rounded-md" />
-                                            </div>
-                                            <Skeleton className="h-5 w-16 rounded-md" />
-                                        </div>
-                                        <div className="flex items-center justify-between pt-1">
-                                            <Skeleton className="h-6 w-24 rounded-md" />
-                                            <Skeleton className="h-7 w-20 rounded-md" />
-                                        </div>
-                                    </Card>
-                                ))}
-                            </div>
-                        }
-                    >
-                        {activeStockList.length === 0 ? (
-                        <Card className="border border-border/70 p-8 text-center">
-                            <p className="text-xs text-muted-foreground">
-                                {t('dashboard.no_popular_stocks', 'Belum ada data saham populer tersimpan saat ini.')}
-                            </p>
-                            <Button asChild size="sm" variant="outline" className="mt-3 text-xs">
-                                <Link href="/user/saham">{t('dashboard.explore_stocks', 'Eksplorasi Saham')}</Link>
-                            </Button>
-                        </Card>
-                    ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {activeStockList.map((stock) => {
-                                const cleanTicker = stock.ticker.replace('.JK', '');
-                                const isPositive = (stock.change_percent || 0) >= 0;
-                                const lastPrice = stock.latest_price ? Number(stock.latest_price.close_price) : 0;
+                                {activeStockList.map((stock) => {
+                                    const cleanTicker = stock.ticker.replace('.JK', '');
+                                    const isPositive = (stock.change_percent || 0) >= 0;
+                                    const lastPrice = stock.latest_price ? Number(stock.latest_price.close_price) : 0;
 
-                                return (
-                                    <Card
-                                        key={stock.id}
-                                        onClick={() => router.visit('/user/saham')}
-                                        className="border border-border/70 shadow-2xs hover:border-primary/50 hover:shadow-md transition-all duration-200 group cursor-pointer active:scale-[0.99]"
-                                    >
-                                        <div className="p-4 space-y-3">
-                                            <div className="flex items-start justify-between">
-                                                <div>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="font-mono font-extrabold text-base text-foreground group-hover:text-primary transition-colors">
-                                                            {cleanTicker}
+                                    return (
+                                        <Card
+                                            key={stock.id}
+                                            onClick={() => router.visit('/user/saham')}
+                                            className="border border-border/70 shadow-2xs hover:border-primary/50 hover:shadow-md transition-all duration-200 group cursor-pointer active:scale-[0.99]"
+                                        >
+                                            <div className="p-4 space-y-3">
+                                                <div className="flex items-start justify-between">
+                                                    <div>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="font-mono font-extrabold text-base text-foreground group-hover:text-primary transition-colors">
+                                                                {cleanTicker}
+                                                            </span>
+                                                            <Badge
+                                                                variant="outline"
+                                                                className={`text-[9px] py-0 px-1.5 font-semibold ${
+                                                                    stock.bursa === 'NASDAQ'
+                                                                        ? 'border-purple-500/30 text-purple-600 bg-purple-500/5'
+                                                                        : 'border-blue-500/30 text-blue-600 bg-blue-500/5'
+                                                                }`}
+                                                            >
+                                                                {stock.bursa || 'IDX'}
+                                                            </Badge>
+                                                        </div>
+                                                        <span className="text-xs text-muted-foreground block truncate max-w-[180px] mt-0.5">
+                                                            {stock.name}
                                                         </span>
-                                                        <Badge
-                                                            variant="outline"
-                                                            className={`text-[9px] py-0 px-1.5 font-semibold ${
-                                                                stock.bursa === 'NASDAQ'
-                                                                    ? 'border-purple-500/30 text-purple-600 bg-purple-500/5'
-                                                                    : 'border-blue-500/30 text-blue-600 bg-blue-500/5'
-                                                            }`}
-                                                        >
-                                                            {stock.bursa || 'IDX'}
-                                                        </Badge>
                                                     </div>
-                                                    <span className="text-xs text-muted-foreground block truncate max-w-[180px] mt-0.5">
-                                                        {stock.name}
-                                                    </span>
+
+                                                    <Button
+                                                        asChild
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="text-[11px] h-7 px-2 cursor-pointer border-border/60 hover:bg-emerald-600 hover:text-white"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <Link href="/user/saham">{t('common.analyze', 'Analisis')}</Link>
+                                                    </Button>
                                                 </div>
 
-                                                <Button
-                                                    asChild
-                                                    size="sm"
-                                                    variant="outline"
-                                                    className="text-[11px] h-7 px-2 cursor-pointer border-border/60 hover:bg-emerald-600 hover:text-white"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                >
-                                                    <Link href="/user/saham">{t('common.analyze', 'Analisis')}</Link>
-                                                </Button>
-                                            </div>
-
-                                            <div className="flex items-end justify-between pt-1">
-                                                <div>
-                                                    <span className="font-mono font-extrabold text-sm text-foreground block">
-                                                        {lastPrice > 0 ? formatStockPrice(lastPrice, stock.bursa) : '-'}
-                                                    </span>
-                                                    {stock.change_percent !== null && stock.change_percent !== undefined && (
-                                                        <span
-                                                            className={`text-[11px] font-mono font-bold flex items-center gap-0.5 mt-0.5 ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
-                                                                }`}
-                                                        >
-                                                            {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                                                            {isPositive ? '+' : ''}
-                                                            {stock.change_percent.toFixed(2)}%
+                                                <div className="flex items-end justify-between pt-1">
+                                                    <div>
+                                                        <span className="font-mono font-extrabold text-sm text-foreground block">
+                                                            {lastPrice > 0 ? formatStockPrice(lastPrice, stock.bursa) : '-'}
                                                         </span>
+                                                        {stock.change_percent !== null && stock.change_percent !== undefined && (
+                                                            <span
+                                                                className={`text-[11px] font-mono font-bold flex items-center gap-0.5 mt-0.5 ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+                                                                    }`}
+                                                            >
+                                                                {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                                                                {isPositive ? '+' : ''}
+                                                                {stock.change_percent.toFixed(2)}%
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Mini Sparkline Chart */}
+                                                    {stock.recent_prices && stock.recent_prices.length > 1 && (
+                                                        <div className="w-24 h-8 shrink-0">
+                                                            <SparklineChart prices={stock.recent_prices} className="w-24 h-8" />
+                                                        </div>
                                                     )}
                                                 </div>
-
-                                                {/* Mini Sparkline Chart */}
-                                                {stock.recent_prices && stock.recent_prices.length > 1 && (
-                                                    <div className="w-24 h-8 shrink-0">
-                                                        <SparklineChart prices={stock.recent_prices} className="w-24 h-8" />
-                                                    </div>
-                                                )}
                                             </div>
-                                        </div>
-                                    </Card>
-                                );
-                            })}
-                        </div>
+                                        </Card>
+                                    );
+                                })}
+                            </div>
+                        )
+                    ) : (
+                        <Deferred
+                            data={['popular_stocks', 'top_gainers', 'top_losers']}
+                            fallback={
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                                        <Card key={i} className="border border-border/70 p-4 space-y-3">
+                                            <div className="flex items-start justify-between">
+                                                <div className="space-y-1.5">
+                                                    <Skeleton className="h-5 w-20 rounded-md" />
+                                                    <Skeleton className="h-3 w-32 rounded-md" />
+                                                </div>
+                                                <Skeleton className="h-5 w-16 rounded-md" />
+                                            </div>
+                                            <div className="flex items-center justify-between pt-1">
+                                                <Skeleton className="h-6 w-24 rounded-md" />
+                                                <Skeleton className="h-7 w-20 rounded-md" />
+                                            </div>
+                                        </Card>
+                                    ))}
+                                </div>
+                            }
+                        >
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {activeStockList.map((stock) => {
+                                    const cleanTicker = stock.ticker.replace('.JK', '');
+                                    const isPositive = (stock.change_percent || 0) >= 0;
+                                    const lastPrice = stock.latest_price ? Number(stock.latest_price.close_price) : 0;
+
+                                    return (
+                                        <Card
+                                            key={stock.id}
+                                            onClick={() => router.visit('/user/saham')}
+                                            className="border border-border/70 shadow-2xs hover:border-primary/50 hover:shadow-md transition-all duration-200 group cursor-pointer active:scale-[0.99]"
+                                        >
+                                            <div className="p-4 space-y-3">
+                                                <div className="flex items-start justify-between">
+                                                    <div>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="font-mono font-extrabold text-base text-foreground group-hover:text-primary transition-colors">
+                                                                {cleanTicker}
+                                                            </span>
+                                                            <Badge
+                                                                variant="outline"
+                                                                className={`text-[9px] py-0 px-1.5 font-semibold ${
+                                                                    stock.bursa === 'NASDAQ'
+                                                                        ? 'border-purple-500/30 text-purple-600 bg-purple-500/5'
+                                                                        : 'border-blue-500/30 text-blue-600 bg-blue-500/5'
+                                                                }`}
+                                                            >
+                                                                {stock.bursa || 'IDX'}
+                                                            </Badge>
+                                                        </div>
+                                                        <span className="text-xs text-muted-foreground block truncate max-w-[180px] mt-0.5">
+                                                            {stock.name}
+                                                        </span>
+                                                    </div>
+
+                                                    <Button
+                                                        asChild
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="text-[11px] h-7 px-2 cursor-pointer border-border/60 hover:bg-emerald-600 hover:text-white"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <Link href="/user/saham">{t('common.analyze', 'Analisis')}</Link>
+                                                    </Button>
+                                                </div>
+
+                                                <div className="flex items-end justify-between pt-1">
+                                                    <div>
+                                                        <span className="font-mono font-extrabold text-sm text-foreground block">
+                                                            {lastPrice > 0 ? formatStockPrice(lastPrice, stock.bursa) : '-'}
+                                                        </span>
+                                                        {stock.change_percent !== null && stock.change_percent !== undefined && (
+                                                            <span
+                                                                className={`text-[11px] font-mono font-bold flex items-center gap-0.5 mt-0.5 ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+                                                                    }`}
+                                                            >
+                                                                {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                                                                {isPositive ? '+' : ''}
+                                                                {stock.change_percent.toFixed(2)}%
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Mini Sparkline Chart */}
+                                                    {stock.recent_prices && stock.recent_prices.length > 1 && (
+                                                        <div className="w-24 h-8 shrink-0">
+                                                            <SparklineChart prices={stock.recent_prices} className="w-24 h-8" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    );
+                                })}
+                            </div>
+                        </Deferred>
                     )}
-                    </Deferred>
                 </div>
 
                 {/* 3. OVERVIEW & QUICK METRICS */}

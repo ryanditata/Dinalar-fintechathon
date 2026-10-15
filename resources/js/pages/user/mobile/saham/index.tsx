@@ -7,6 +7,7 @@ import { MobileAppLayout } from '@/pages/user/mobile/layouts/MobileAppLayout';
 import { StockCardsSkeleton } from '@/pages/user/mobile/components/MobileSkeletons';
 import { StockExploreCard } from '@/pages/user/mobile/components/StockExploreCard';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { useStockListSWR } from '@/hooks/useStockListSWR';
 import { type PaginatedData, type SharedData, type Stock } from '@/types';
 import { Deferred, Head, Link, router, usePage } from '@inertiajs/react';
 import { Eye, EyeOff, Search, ShoppingBag, SlidersHorizontal, X } from 'lucide-react';
@@ -30,7 +31,7 @@ interface Props {
 }
 
 export default function MobileStockIndex({
-    stocks,
+    stocks: initialStocks,
     filters = {},
     bursa_list = ['IDX', 'NASDAQ'],
     availableSectors = [],
@@ -40,6 +41,17 @@ export default function MobileStockIndex({
     const { t } = useTranslation();
     const pageProps = usePage<SharedData>().props;
     const serverBasketTickers = (pageProps.basket_tickers as string[]) || [];
+
+    // SWR Caching Layer: Instantly display cached stocks (0ms) on page revisit
+    const {
+        stocks: cachedStocks,
+        hasCachedStocks,
+        isRevalidating,
+    } = useStockListSWR({
+        stocks: initialStocks,
+        filters,
+        total_count,
+    });
 
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
     const [selectedBursa, setSelectedBursa] = useState(filters.bursa || 'all');
@@ -70,7 +82,7 @@ export default function MobileStockIndex({
     const [selectedStockForModal, setSelectedStockForModal] = useState<Stock | null>(null);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-    const stockList: Stock[] = Array.isArray(stocks) ? stocks : stocks?.data || [];
+    const stockList: Stock[] = cachedStocks;
     const totalEmiten = total_count || stockList.length;
 
     // Filters
@@ -157,6 +169,84 @@ export default function MobileStockIndex({
     // Split stocks for Group Header "Hari Ini" (first 3) & "Bursa Terkini" (the rest)
     const todayStocks = stockList.slice(0, 3);
     const earlierStocks = stockList.slice(3);
+
+    const renderStockList = () => (
+        <>
+            {/* Group Header "Hari Ini" dengan garis horizontal Hijau (Section 6.9) */}
+            {todayStocks.length > 0 && (
+                <div className="space-y-2 pt-1">
+                    <div className="flex items-center gap-2.5">
+                        <span className="text-[12px] font-semibold text-emerald-600 whitespace-nowrap">
+                            {t('saham.today')}
+                        </span>
+                    </div>
+
+                    <div className="space-y-2">
+                        {todayStocks.map((stock) => {
+                            const isAdded =
+                                basketStocks.includes(stock.ticker) ||
+                                basketStocks.includes(stock.ticker.replace('.JK', ''));
+
+                            return (
+                                <StockExploreCard
+                                    key={stock.id}
+                                    ticker={stock.ticker}
+                                    name={stock.name}
+                                    bursa={stock.bursa || 'IDX'}
+                                    price={stock.latest_price?.close_price}
+                                    changePercent={stock.change_percent}
+                                    recentPrices={stock.recent_prices}
+                                    isAdded={isAdded}
+                                    onActionClick={() => handleOpenModal(stock)}
+                                    onClick={() => handleOpenModal(stock)}
+                                />
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* Group Header "Bursa Terkini" dengan garis horizontal Abu-Abu (Section 6.9) */}
+            {earlierStocks.length > 0 && (
+                <div className="space-y-2 pt-2">
+                    <div className="flex items-center gap-2.5">
+                        <span className="text-[12px] font-medium text-zinc-500 whitespace-nowrap">
+                            {t('saham.other_stocks')}
+                        </span>
+                    </div>
+
+                    <div className="space-y-2">
+                        {earlierStocks.map((stock) => {
+                            const isAdded =
+                                basketStocks.includes(stock.ticker) ||
+                                basketStocks.includes(stock.ticker.replace('.JK', ''));
+
+                            return (
+                                <StockExploreCard
+                                    key={stock.id}
+                                    ticker={stock.ticker}
+                                    name={stock.name}
+                                    bursa={stock.bursa || 'IDX'}
+                                    price={stock.latest_price?.close_price}
+                                    changePercent={stock.change_percent}
+                                    recentPrices={stock.recent_prices}
+                                    isAdded={isAdded}
+                                    onActionClick={() => handleOpenModal(stock)}
+                                    onClick={() => handleOpenModal(stock)}
+                                />
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {stockList.length === 0 && (
+                <div className="py-12 text-center text-xs text-zinc-500">
+                    {t('saham.no_stocks_found')}
+                </div>
+            )}
+        </>
+    );
 
     return (
         <MobileAppLayout>
@@ -257,82 +347,14 @@ export default function MobileStockIndex({
                         </div>
                     )}
 
-                    {/* Deferred Stock List: Tampilkan Skeleton saat pertama kali pindah page */}
-                    <Deferred data="stocks" fallback={<StockCardsSkeleton count={6} />}>
-                        {/* Group Header "Hari Ini" dengan garis horizontal Hijau (Section 6.9) */}
-                        {todayStocks.length > 0 && (
-                            <div className="space-y-2 pt-1">
-                                <div className="flex items-center gap-2.5">
-                                    <span className="text-[12px] font-semibold text-emerald-600 whitespace-nowrap">
-                                        {t('saham.today')}
-                                    </span>
-                                </div>
-
-                                <div className="space-y-2">
-                                    {todayStocks.map((stock) => {
-                                        const isAdded =
-                                            basketStocks.includes(stock.ticker) ||
-                                            basketStocks.includes(stock.ticker.replace('.JK', ''));
-
-                                        return (
-                                            <StockExploreCard
-                                                key={stock.id}
-                                                ticker={stock.ticker}
-                                                name={stock.name}
-                                                bursa={stock.bursa || 'IDX'}
-                                                price={stock.latest_price?.close_price}
-                                                changePercent={stock.change_percent}
-                                                recentPrices={stock.recent_prices}
-                                                isAdded={isAdded}
-                                                onActionClick={() => handleOpenModal(stock)}
-                                                onClick={() => handleOpenModal(stock)}
-                                            />
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Group Header "Bursa Terkini" dengan garis horizontal Abu-Abu (Section 6.9) */}
-                        {earlierStocks.length > 0 && (
-                            <div className="space-y-2 pt-2">
-                                <div className="flex items-center gap-2.5">
-                                    <span className="text-[12px] font-medium text-zinc-500 whitespace-nowrap">
-                                        {t('saham.other_stocks')}
-                                    </span>
-                                </div>
-
-                                <div className="space-y-2">
-                                    {earlierStocks.map((stock) => {
-                                        const isAdded =
-                                            basketStocks.includes(stock.ticker) ||
-                                            basketStocks.includes(stock.ticker.replace('.JK', ''));
-
-                                        return (
-                                            <StockExploreCard
-                                                key={stock.id}
-                                                ticker={stock.ticker}
-                                                name={stock.name}
-                                                bursa={stock.bursa || 'IDX'}
-                                                price={stock.latest_price?.close_price}
-                                                changePercent={stock.change_percent}
-                                                recentPrices={stock.recent_prices}
-                                                isAdded={isAdded}
-                                                onActionClick={() => handleOpenModal(stock)}
-                                                onClick={() => handleOpenModal(stock)}
-                                            />
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        )}
-
-                        {stockList.length === 0 && (
-                            <div className="py-12 text-center text-xs text-zinc-500">
-                                {t('saham.no_stocks_found')}
-                            </div>
-                        )}
-                    </Deferred>
+                    {/* Stock List: Tampilkan data cache langsung jika ada, fallback ke Deferred skeleton jika cold start */}
+                    {hasCachedStocks ? (
+                        renderStockList()
+                    ) : (
+                        <Deferred data="stocks" fallback={<StockCardsSkeleton count={6} />}>
+                            {renderStockList()}
+                        </Deferred>
+                    )}
                 </section>
             </div>
 

@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useStockAnalysisSWR, type PresetType } from '@/hooks/useStockAnalysisSWR';
 import { type Stock } from '@/types';
 import {
     Activity,
@@ -29,7 +30,7 @@ import {
     TrendingDown,
     TrendingUp,
 } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
     Area,
     AreaChart,
@@ -106,179 +107,27 @@ export default function StockAnalysisModal({
             ? timeframeLimits.max_date.substring(0, 10)
             : new Date().toISOString().substring(0, 10);
 
-    // Helper kalkulasi tanggal mulai lookback (3x horison) dari preset (untuk analisis & input Rentang Waktu)
-    const calculateLookbackStartDate = (
-        preset: '1D' | '5D' | '1M' | '3M' | '6M' | '1Y' | '3Y' | '5Y' | 'all',
-        anchorDateStr: string
-    ): string => {
-        if (preset === 'all') return minAllowedDate;
-        const anchor = new Date(anchorDateStr);
-        if (isNaN(anchor.getTime())) return minAllowedDate;
-        const target = new Date(anchor);
-
-        if (preset === '1D')       target.setDate(target.getDate() - 7);
-        else if (preset === '5D')  target.setDate(target.getDate() - 21);
-        else if (preset === '1M')  target.setMonth(target.getMonth() - 3);
-        else if (preset === '3M')  target.setMonth(target.getMonth() - 9);
-        else if (preset === '6M')  target.setFullYear(target.getFullYear() - 1);
-        else if (preset === '1Y')  target.setFullYear(target.getFullYear() - 2);
-        else if (preset === '3Y')  target.setFullYear(target.getFullYear() - 6);
-        else if (preset === '5Y')  target.setFullYear(target.getFullYear() - 10);
-
-        const formatted = target.toISOString().substring(0, 10);
-        return formatted < minAllowedDate ? minAllowedDate : formatted;
-    };
-
-    // State Input Parameter (Independen: State Manual Date & State Preset Terpisah)
-    const [startDate, setStartDate] = useState<string>(
-        initialTimeframe?.start || minAllowedDate
-    );
-    const [endDate, setEndDate] = useState<string>(
-        initialTimeframe?.end || maxAllowedDate
-    );
-    const [activePreset, setActivePreset] = useState<string>(
-        initialTimeframe?.preset || (initialTimeframe?.start ? '' : '1D')
-    );
-    const [effectiveTimeframe, setEffectiveTimeframe] = useState<{
-        start: string;
-        end: string;
-        horizon_start?: string;
-    }>({
-        start: initialTimeframe?.start || '',
-        end: initialTimeframe?.end || '',
-        horizon_start: '',
+    // SWR Analysis Layer: Instantly renders cached historical chart & metrics (0ms delay)
+    const {
+        startDate,
+        endDate,
+        activePreset,
+        effectiveTimeframe,
+        historicalPrices,
+        metrics,
+        isLoading,
+        isRevalidating,
+        handlePreset,
+        handleStartDateChange,
+        handleEndDateChange,
+        handleApplyDateRange,
+    } = useStockAnalysisSWR({
+        stock,
+        isOpen,
+        maxAllowedDate,
+        minAllowedDate,
+        initialTimeframe,
     });
-
-    // State Data & Metrics
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [historicalPrices, setHistoricalPrices] = useState<
-        Array<{ date: string; close_price: number; daily_return: number }>
-    >([]);
-    const [metrics, setMetrics] = useState<{
-        period_return: number;
-        expected_return: number;
-        volatility: number;
-        min_price: number;
-        max_price: number;
-        data_points: number;
-        horizon_data_points?: number;
-        base_price?: number;
-        latest_price?: number;
-    }>({
-        period_return: 0,
-        expected_return: 0,
-        volatility: 0,
-        min_price: 0,
-        max_price: 0,
-        data_points: 0,
-        horizon_data_points: 0,
-        base_price: 0,
-        latest_price: 0,
-    });
-
-    // Inisialisasi saat modal dibuka atau stock berubah
-    useEffect(() => {
-        if (isOpen && stock) {
-            const preset = initialTimeframe?.preset !== undefined
-                ? initialTimeframe.preset
-                : (initialTimeframe?.start ? '' : '1D');
-            setActivePreset(preset);
-
-            const initialStart = initialTimeframe?.start || (preset ? calculateLookbackStartDate(preset as any, maxAllowedDate) : minAllowedDate);
-            const initialEnd = initialTimeframe?.end || maxAllowedDate;
-            setStartDate(initialStart);
-            setEndDate(initialEnd);
-
-            if (preset) {
-                fetchHistoricalAnalysis({ preset });
-            } else {
-                fetchHistoricalAnalysis({ start: initialStart, end: initialEnd });
-            }
-        }
-    }, [isOpen, stock, initialTimeframe?.start, initialTimeframe?.end, initialTimeframe?.preset]);
-
-    // Fetch data dari endpoint historis (Mendukung query parameter independen)
-    const fetchHistoricalAnalysis = async (paramsObj: { preset?: string; start?: string; end?: string }) => {
-        if (!stock) return;
-        setIsLoading(true);
-        try {
-            const clean = stock.ticker.replace('.JK', '');
-            const params = new URLSearchParams();
-            if (paramsObj.preset) {
-                params.set('preset', paramsObj.preset);
-                params.set('end_date', maxAllowedDate);
-            } else {
-                if (paramsObj.start) params.set('start_date', paramsObj.start);
-                if (paramsObj.end) params.set('end_date', paramsObj.end);
-            }
-
-            const res = await fetch(`/user/saham/${clean}/historical?${params.toString()}`);
-            if (res.ok) {
-                const data = await res.json();
-                setHistoricalPrices(data.prices || []);
-                if (data.timeframe) {
-                    const lookbackStart = data.timeframe.start_date || '';
-                    const horizonStart = data.timeframe.horizon_start_date || lookbackStart;
-                    const end = data.timeframe.end_date || '';
-
-                    setEffectiveTimeframe({
-                        start: lookbackStart,
-                        end: end,
-                        horizon_start: horizonStart,
-                    });
-
-                    // Sinkronkan input Rentang Waktu dengan tanggal bursa lookback riil yang digunakan untuk analisis
-                    if (paramsObj.preset) {
-                        setStartDate(lookbackStart);
-                        setEndDate(end);
-                    }
-                }
-                setMetrics(
-                    data.metrics || {
-                        period_return: 0,
-                        expected_return: 0,
-                        volatility: 0,
-                        min_price: 0,
-                        max_price: 0,
-                        data_points: 0,
-                        horizon_data_points: 0,
-                        base_price: 0,
-                        latest_price: 0,
-                    }
-                );
-            }
-        } catch (err) {
-            console.error('Failed to load historical stock analysis:', err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    // 1. Klik Preset -> Update activePreset, langsung sinkronkan Rentang Waktu ke estimasi lookback analisis, lalu fetch data bursa riil
-    const handlePreset = (preset: '1D' | '5D' | '1M' | '3M' | '6M' | '1Y' | '3Y' | '5Y' | 'all') => {
-        setActivePreset(preset);
-        setStartDate(calculateLookbackStartDate(preset, maxAllowedDate));
-        setEndDate(maxAllowedDate);
-        fetchHistoricalAnalysis({ preset });
-    };
-
-    // 2. User mengetik/memilih manual di field Tanggal Mulai -> Reset preset aktif
-    const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setStartDate(e.target.value);
-        setActivePreset('');
-    };
-
-    // 2. User mengetik/memilih manual di field Tanggal Selesai -> Reset preset aktif
-    const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEndDate(e.target.value);
-        setActivePreset('');
-    };
-
-    // 3. Tombol Refresh murni memakai startDate dan endDate dari field manual (Mode Custom)
-    const handleApplyDateRange = () => {
-        setActivePreset('');
-        fetchHistoricalAnalysis({ start: startDate, end: endDate });
-    };
 
     const isUsdStock = stock.bursa ? stock.bursa !== 'IDX' : !stock.ticker.endsWith('.JK');
 
@@ -532,7 +381,7 @@ export default function StockAnalysisModal({
                                     onClick={handleApplyDateRange}
                                     className="h-9 text-xs font-semibold gap-1.5 px-4 cursor-pointer w-full sm:w-auto border border-border/60 hover:bg-muted shadow-2xs flex items-center justify-center"
                                 >
-                                    <RefreshCw className={`h-3.5 w-3.5 ${isLoading && !activePreset ? 'animate-spin' : ''}`} />
+                                    <RefreshCw className={`h-3.5 w-3.5 ${(isLoading || isRevalidating) && !activePreset ? 'animate-spin' : ''}`} />
                                     <span>{t('stock_modal.apply', 'Terapkan')}</span>
                                 </Button>
                             </div>

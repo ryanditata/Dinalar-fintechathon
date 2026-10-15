@@ -15,6 +15,7 @@ import {
 import { useTranslation } from '@/i18n/LanguageContext';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type PaginatedData, type SharedData, type Stock } from '@/types';
+import { useStockListSWR } from '@/hooks/useStockListSWR';
 import { Deferred, Head, Link, router, usePage } from '@inertiajs/react';
 import {
     Check,
@@ -61,7 +62,7 @@ interface Props {
 }
 
 export default function UserStockIndex({
-    stocks,
+    stocks: initialStocks,
     filters = {},
     bursa_list = ['IDX', 'NASDAQ'],
     availableSectors,
@@ -69,6 +70,20 @@ export default function UserStockIndex({
     timeframe_limits,
 }: Props) {
     const { t, language } = useTranslation();
+
+    // SWR Caching Layer
+    const {
+        stocks: cachedStocks,
+        totalCount: swrTotalCount,
+        hasCachedStocks,
+        isRevalidating,
+    } = useStockListSWR({
+        stocks: initialStocks,
+        filters,
+        total_count,
+    });
+
+    const stockList: Stock[] = cachedStocks;
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
     const [selectedBursa, setSelectedBursa] = useState(filters.bursa || 'all');
     const [selectedSector, setSelectedSector] = useState(filters.sector || 'all');
@@ -237,8 +252,6 @@ export default function UserStockIndex({
             },
         });
     };
-
-    const stockList = Array.isArray(stocks) ? stocks : stocks?.data || [];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -441,171 +454,316 @@ export default function UserStockIndex({
                 </div>
 
                 {/* 3. CARD GRID AREA */}
-                <Deferred
-                    data="stocks"
-                    fallback={
+                {hasCachedStocks ? (
+                    stockList.length === 0 ? (
+                        <div className="rounded-2xl border border-dashed border-border/80 bg-card p-12 text-center flex flex-col items-center justify-center">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground mb-3">
+                                <Search className="h-6 w-6" />
+                            </div>
+                            <h3 className="text-base font-semibold text-foreground">
+                                {t('saham.no_stocks_found_title', 'Tidak Ada Saham Ditemukan')}
+                            </h3>
+                            <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+                                {t('saham.no_stocks_found_desc', { query: searchQuery })}
+                            </p>
+                            <Button
+                                size="sm"
+                                onClick={() => {
+                                    setSearchQuery('');
+                                    handleBursaChange('all');
+                                }}
+                                className="mt-4 gap-1.5 text-xs cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
+                            >
+                                <RefreshCw className="h-3.5 w-3.5" />
+                                <span>{t('saham.reset_search', 'Reset Pencarian')}</span>
+                            </Button>
+                        </div>
+                    ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {[1, 2, 3, 4, 5, 6].map((i) => (
-                                <Card key={i} className="p-4 border border-border/70 space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <div className="space-y-1.5">
-                                            <Skeleton className="h-5 w-20 rounded-md" />
-                                            <Skeleton className="h-3 w-32 rounded-md" />
-                                        </div>
-                                        <Skeleton className="h-6 w-12 rounded-full" />
-                                    </div>
-                                    <div className="flex items-center justify-between pt-2">
-                                        <Skeleton className="h-6 w-24 rounded-md" />
-                                        <Skeleton className="h-8 w-16 rounded-md" />
-                                    </div>
-                                </Card>
-                            ))}
-                        </div>
-                    }
-                >
-                    {stockList.length === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-border/80 bg-card p-12 text-center flex flex-col items-center justify-center">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground mb-3">
-                            <Search className="h-6 w-6" />
-                        </div>
-                        <h3 className="text-base font-semibold text-foreground">
-                            {t('saham.no_stocks_found_title', 'Tidak Ada Saham Ditemukan')}
-                        </h3>
-                        <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                            {t('saham.no_stocks_found_desc', { query: searchQuery })}
-                        </p>
-                        <Button
-                            size="sm"
-                            onClick={() => {
-                                setSearchQuery('');
-                                handleBursaChange('all');
-                            }}
-                            className="mt-4 gap-1.5 text-xs cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
-                        >
-                            <RefreshCw className="h-3.5 w-3.5" />
-                            <span>{t('saham.reset_search', 'Reset Pencarian')}</span>
-                        </Button>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {stockList.map((stock) => {
-                            const isAdded = basketStocks.includes(stock.ticker) || basketStocks.includes(stock.ticker.replace('.JK', ''));
-                            const changeVal = stock.change_percent;
+                            {stockList.map((stock) => {
+                                const isAdded = basketStocks.includes(stock.ticker) || basketStocks.includes(stock.ticker.replace('.JK', ''));
+                                const changeVal = stock.change_percent;
 
-                            return (
-                                <Card
-                                    key={stock.id}
-                                    role="button"
-                                    tabIndex={0}
-                                    onClick={() => handleOpenAnalysisModal(stock)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' || e.key === ' ') {
-                                            e.preventDefault();
-                                            handleOpenAnalysisModal(stock);
-                                        }
-                                    }}
-                                    className={`group border cursor-pointer select-none transition-all duration-200 hover:shadow-md hover:border-primary/50 active:scale-[0.99] bg-card focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary ${
-                                        isAdded ? 'ring-1 ring-primary/40 border-primary/40' : 'border-border/70'
-                                    }`}
-                                >
-                                    <div className="flex items-center justify-between p-4 gap-3">
-                                        {/* AREA KIRI: Informasi Emiten */}
-                                        <div className="flex flex-col min-w-0">
-                                            <div className="flex items-center gap-1.5 flex-wrap">
-                                                <span className="font-bold text-base text-foreground font-mono tracking-tight group-hover:text-primary transition-colors">
-                                                    {stock.ticker.replace('.JK', '')}
-                                                </span>
-                                                <Badge
-                                                    variant="outline"
-                                                    className={`text-[10px] py-0 px-1.5 font-semibold ${
-                                                        stock.bursa === 'NASDAQ'
-                                                            ? 'border-purple-500/30 text-purple-600 dark:text-purple-400 bg-purple-500/5'
-                                                            : 'border-blue-500/30 text-blue-600 dark:text-blue-400 bg-blue-500/5'
-                                                    }`}
-                                                >
-                                                    {stock.bursa || 'IDX'}
-                                                </Badge>
-                                            </div>
-                                            <p
-                                                className="text-xs text-muted-foreground truncate max-w-36 sm:max-w-44 mt-0.5"
-                                                title={stock.name || stock.ticker}
-                                            >
-                                                {stock.name || stock.ticker.replace('.JK', '')}
-                                            </p>
-                                        </div>
-
-                                        {/* AREA TENGAH: Sparkline */}
-                                        <div className="flex-1 px-1 flex items-center justify-center">
-                                            <SparklineChart
-                                                prices={stock.recent_prices || []}
-                                                className="w-18 h-8"
-                                            />
-                                        </div>
-
-                                        {/* AREA KANAN: Harga & Tombol '+' Modal Trigger */}
-                                        <div className="flex items-center gap-3 shrink-0">
-                                            <div className="flex flex-col items-end">
-                                                <span className="font-bold text-base font-mono text-foreground leading-tight">
-                                                    {stock.latest_price
-                                                        ? formatPrice(stock.latest_price.close_price, stock.bursa)
-                                                        : '-'}
-                                                </span>
-                                                {changeVal !== null && changeVal !== undefined ? (
-                                                    <span
-                                                        className={`text-xs font-medium font-mono ${
-                                                            changeVal > 0
-                                                                ? 'text-emerald-600 dark:text-emerald-400'
-                                                                : changeVal < 0
-                                                                    ? 'text-rose-600 dark:text-rose-400'
-                                                                    : 'text-gray-500'
+                                return (
+                                    <Card
+                                        key={stock.id}
+                                        role="button"
+                                        tabIndex={0}
+                                        onClick={() => handleOpenAnalysisModal(stock)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                handleOpenAnalysisModal(stock);
+                                            }
+                                        }}
+                                        className={`group border cursor-pointer select-none transition-all duration-200 hover:shadow-md hover:border-primary/50 active:scale-[0.99] bg-card focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary ${
+                                            isAdded ? 'ring-1 ring-primary/40 border-primary/40' : 'border-border/70'
+                                        }`}
+                                    >
+                                        <div className="flex items-center justify-between p-4 gap-3">
+                                            {/* AREA KIRI: Informasi Emiten */}
+                                            <div className="flex flex-col min-w-0">
+                                                <div className="flex items-center gap-1.5 flex-wrap">
+                                                    <span className="font-bold text-base text-foreground font-mono tracking-tight group-hover:text-primary transition-colors">
+                                                        {stock.ticker.replace('.JK', '')}
+                                                    </span>
+                                                    <Badge
+                                                        variant="outline"
+                                                        className={`text-[10px] py-0 px-1.5 font-semibold ${
+                                                            stock.bursa === 'NASDAQ'
+                                                                ? 'border-purple-500/30 text-purple-600 dark:text-purple-400 bg-purple-500/5'
+                                                                : 'border-blue-500/30 text-blue-600 dark:text-blue-400 bg-blue-500/5'
                                                         }`}
                                                     >
-                                                        {changeVal > 0 ? `▲ +${changeVal.toFixed(2)}%` : changeVal < 0 ? `▼ ${changeVal.toFixed(2)}%` : '0.00%'}
-                                                    </span>
-                                                ) : (
-                                                    <span className="text-xs font-medium text-gray-400">-</span>
-                                                )}
+                                                        {stock.bursa || 'IDX'}
+                                                    </Badge>
+                                                </div>
+                                                <p
+                                                    className="text-xs text-muted-foreground truncate max-w-36 sm:max-w-44 mt-0.5"
+                                                    title={stock.name || stock.ticker}
+                                                >
+                                                    {stock.name || stock.ticker.replace('.JK', '')}
+                                                </p>
                                             </div>
 
-                                            {/* TOMBOL '+' TRIGGER MODAL (Kotak 1 Flowchart) */}
-                                            <Button
-                                                type="button"
-                                                size="icon"
-                                                variant={isAdded ? 'default' : 'outline'}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleOpenAnalysisModal(stock);
-                                                }}
-                                                className={`h-9 w-9 rounded-lg cursor-pointer transition-all shrink-0 ${
-                                                    isAdded
-                                                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
-                                                        : 'border-border/70 hover:bg-primary/10 hover:text-primary hover:border-primary/40'
-                                                }`}
-                                                title={
-                                                    isAdded
-                                                        ? t('saham.in_basket_title', 'Sudah di Keranjang (Buka Analisis)')
-                                                        : t('saham.analyze_add_title', 'Analisis & Tambah ke Keranjang')
-                                                }
-                                                aria-label={
-                                                    isAdded
-                                                        ? t('saham.in_basket_aria', { ticker: stock.ticker.replace('.JK', '') })
-                                                        : t('saham.analyze_add_aria', { ticker: stock.ticker.replace('.JK', '') })
-                                                }
-                                            >
-                                                {isAdded ? (
-                                                    <Check className="h-4 w-4" />
-                                                ) : (
-                                                    <Plus className="h-4 w-4" />
-                                                )}
-                                            </Button>
+                                            {/* AREA TENGAH: Sparkline */}
+                                            <div className="flex-1 px-1 flex items-center justify-center">
+                                                <SparklineChart
+                                                    prices={stock.recent_prices || []}
+                                                    className="w-18 h-8"
+                                                />
+                                            </div>
+
+                                            {/* AREA KANAN: Harga & Tombol '+' Modal Trigger */}
+                                            <div className="flex items-center gap-3 shrink-0">
+                                                <div className="flex flex-col items-end">
+                                                    <span className="font-bold text-base font-mono text-foreground leading-tight">
+                                                        {stock.latest_price
+                                                            ? formatPrice(stock.latest_price.close_price, stock.bursa)
+                                                            : '-'}
+                                                    </span>
+                                                    {changeVal !== null && changeVal !== undefined ? (
+                                                        <span
+                                                            className={`text-xs font-medium font-mono ${
+                                                                changeVal > 0
+                                                                    ? 'text-emerald-600 dark:text-emerald-400'
+                                                                    : changeVal < 0
+                                                                        ? 'text-rose-600 dark:text-rose-400'
+                                                                        : 'text-gray-500'
+                                                            }`}
+                                                        >
+                                                            {changeVal > 0 ? `▲ +${changeVal.toFixed(2)}%` : changeVal < 0 ? `▼ ${changeVal.toFixed(2)}%` : '0.00%'}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-xs font-medium text-gray-400">-</span>
+                                                    )}
+                                                </div>
+
+                                                {/* TOMBOL '+' TRIGGER MODAL */}
+                                                <Button
+                                                    type="button"
+                                                    size="icon"
+                                                    variant={isAdded ? 'default' : 'outline'}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleOpenAnalysisModal(stock);
+                                                    }}
+                                                    className={`h-9 w-9 rounded-lg cursor-pointer transition-all shrink-0 ${
+                                                        isAdded
+                                                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
+                                                            : 'border-border/70 hover:bg-primary/10 hover:text-primary hover:border-primary/40'
+                                                    }`}
+                                                    title={
+                                                        isAdded
+                                                            ? t('saham.in_basket_title', 'Sudah di Keranjang (Buka Analisis)')
+                                                            : t('saham.analyze_add_title', 'Analisis & Tambah ke Keranjang')
+                                                    }
+                                                    aria-label={
+                                                        isAdded
+                                                            ? t('saham.in_basket_aria', { ticker: stock.ticker.replace('.JK', '') })
+                                                            : t('saham.analyze_add_aria', { ticker: stock.ticker.replace('.JK', '') })
+                                                    }
+                                                >
+                                                    {isAdded ? (
+                                                        <Check className="h-4 w-4" />
+                                                    ) : (
+                                                        <Plus className="h-4 w-4" />
+                                                    )}
+                                                </Button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </Card>
-                            );
-                        })}
-                    </div>
+                                    </Card>
+                                );
+                            })}
+                        </div>
+                    )
+                ) : (
+                    <Deferred
+                        data="stocks"
+                        fallback={
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {[1, 2, 3, 4, 5, 6].map((i) => (
+                                    <Card key={i} className="p-4 border border-border/70 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <div className="space-y-1.5">
+                                                <Skeleton className="h-5 w-20 rounded-md" />
+                                                <Skeleton className="h-3 w-32 rounded-md" />
+                                            </div>
+                                            <Skeleton className="h-6 w-12 rounded-full" />
+                                        </div>
+                                        <div className="flex items-center justify-between pt-2">
+                                            <Skeleton className="h-6 w-24 rounded-md" />
+                                            <Skeleton className="h-8 w-16 rounded-md" />
+                                        </div>
+                                    </Card>
+                                ))}
+                            </div>
+                        }
+                    >
+                        {stockList.length === 0 ? (
+                            <div className="rounded-2xl border border-dashed border-border/80 bg-card p-12 text-center flex flex-col items-center justify-center">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground mb-3">
+                                    <Search className="h-6 w-6" />
+                                </div>
+                                <h3 className="text-base font-semibold text-foreground">
+                                    {t('saham.no_stocks_found_title', 'Tidak Ada Saham Ditemukan')}
+                                </h3>
+                                <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+                                    {t('saham.no_stocks_found_desc', { query: searchQuery })}
+                                </p>
+                                <Button
+                                    size="sm"
+                                    onClick={() => {
+                                        setSearchQuery('');
+                                        handleBursaChange('all');
+                                    }}
+                                    className="mt-4 gap-1.5 text-xs cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
+                                >
+                                    <RefreshCw className="h-3.5 w-3.5" />
+                                    <span>{t('saham.reset_search', 'Reset Pencarian')}</span>
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {stockList.map((stock) => {
+                                    const isAdded = basketStocks.includes(stock.ticker) || basketStocks.includes(stock.ticker.replace('.JK', ''));
+                                    const changeVal = stock.change_percent;
+
+                                    return (
+                                        <Card
+                                            key={stock.id}
+                                            role="button"
+                                            tabIndex={0}
+                                            onClick={() => handleOpenAnalysisModal(stock)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    e.preventDefault();
+                                                    handleOpenAnalysisModal(stock);
+                                                }
+                                            }}
+                                            className={`group border cursor-pointer select-none transition-all duration-200 hover:shadow-md hover:border-primary/50 active:scale-[0.99] bg-card focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary ${
+                                                isAdded ? 'ring-1 ring-primary/40 border-primary/40' : 'border-border/70'
+                                            }`}
+                                        >
+                                            <div className="flex items-center justify-between p-4 gap-3">
+                                                {/* AREA KIRI: Informasi Emiten */}
+                                                <div className="flex flex-col min-w-0">
+                                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                                        <span className="font-bold text-base text-foreground font-mono tracking-tight group-hover:text-primary transition-colors">
+                                                            {stock.ticker.replace('.JK', '')}
+                                                        </span>
+                                                        <Badge
+                                                            variant="outline"
+                                                            className={`text-[10px] py-0 px-1.5 font-semibold ${
+                                                                stock.bursa === 'NASDAQ'
+                                                                    ? 'border-purple-500/30 text-purple-600 dark:text-purple-400 bg-purple-500/5'
+                                                                    : 'border-blue-500/30 text-blue-600 dark:text-blue-400 bg-blue-500/5'
+                                                            }`}
+                                                        >
+                                                            {stock.bursa || 'IDX'}
+                                                        </Badge>
+                                                    </div>
+                                                    <p
+                                                        className="text-xs text-muted-foreground truncate max-w-36 sm:max-w-44 mt-0.5"
+                                                        title={stock.name || stock.ticker}
+                                                    >
+                                                        {stock.name || stock.ticker.replace('.JK', '')}
+                                                    </p>
+                                                </div>
+
+                                                {/* AREA TENGAH: Sparkline */}
+                                                <div className="flex-1 px-1 flex items-center justify-center">
+                                                    <SparklineChart
+                                                        prices={stock.recent_prices || []}
+                                                        className="w-18 h-8"
+                                                    />
+                                                </div>
+
+                                                {/* AREA KANAN: Harga & Tombol '+' Modal Trigger */}
+                                                <div className="flex items-center gap-3 shrink-0">
+                                                    <div className="flex flex-col items-end">
+                                                        <span className="font-bold text-base font-mono text-foreground leading-tight">
+                                                            {stock.latest_price
+                                                                ? formatPrice(stock.latest_price.close_price, stock.bursa)
+                                                                : '-'}
+                                                        </span>
+                                                        {changeVal !== null && changeVal !== undefined ? (
+                                                            <span
+                                                                className={`text-xs font-medium font-mono ${
+                                                                    changeVal > 0
+                                                                        ? 'text-emerald-600 dark:text-emerald-400'
+                                                                        : changeVal < 0
+                                                                            ? 'text-rose-600 dark:text-rose-400'
+                                                                            : 'text-gray-500'
+                                                                }`}
+                                                            >
+                                                                {changeVal > 0 ? `▲ +${changeVal.toFixed(2)}%` : changeVal < 0 ? `▼ ${changeVal.toFixed(2)}%` : '0.00%'}
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-xs font-medium text-gray-400">-</span>
+                                                        )}
+                                                    </div>
+
+                                                    {/* TOMBOL '+' TRIGGER MODAL */}
+                                                    <Button
+                                                        type="button"
+                                                        size="icon"
+                                                        variant={isAdded ? 'default' : 'outline'}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleOpenAnalysisModal(stock);
+                                                        }}
+                                                        className={`h-9 w-9 rounded-lg cursor-pointer transition-all shrink-0 ${
+                                                            isAdded
+                                                                ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
+                                                                : 'border-border/70 hover:bg-primary/10 hover:text-primary hover:border-primary/40'
+                                                        }`}
+                                                        title={
+                                                            isAdded
+                                                                ? t('saham.in_basket_title', 'Sudah di Keranjang (Buka Analisis)')
+                                                                : t('saham.analyze_add_title', 'Analisis & Tambah ke Keranjang')
+                                                        }
+                                                        aria-label={
+                                                            isAdded
+                                                                ? t('saham.in_basket_aria', { ticker: stock.ticker.replace('.JK', '') })
+                                                                : t('saham.analyze_add_aria', { ticker: stock.ticker.replace('.JK', '') })
+                                                        }
+                                                    >
+                                                        {isAdded ? (
+                                                            <Check className="h-4 w-4" />
+                                                        ) : (
+                                                            <Plus className="h-4 w-4" />
+                                                        )}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </Deferred>
                 )}
-                </Deferred>
             </div>
 
             {/* 4. MODAL DIALOG ANALISIS & PEMILIHAN SAHAM */}

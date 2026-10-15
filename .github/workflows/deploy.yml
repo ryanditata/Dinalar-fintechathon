@@ -43,6 +43,10 @@ jobs:
           exclude: |
             **/.git*
             **/.git*/**
+            **/.idea*
+            **/.idea*/**
+            android/**
+            assets/**
             **/node_modules/**
             .env
             tests/**

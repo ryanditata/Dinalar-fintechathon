@@ -10,6 +10,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from '@/components/ui/sheet';
+import { useStockAnalysisSWR } from '@/hooks/useStockAnalysisSWR';
 import { type Stock } from '@/types';
 import {
     Activity,
@@ -107,174 +108,27 @@ export function StockAnalysisSheet({
             ? timeframeLimits.max_date.substring(0, 10)
             : new Date().toISOString().substring(0, 10);
 
-    // Helper kalkulasi tanggal mulai lookback (3x horison) dari preset
-    const calculateLookbackStartDate = (
-        preset: '1D' | '5D' | '1M' | '3M' | '6M' | '1Y' | '3Y' | '5Y' | 'all',
-        anchorDateStr: string
-    ): string => {
-        if (preset === 'all') return minAllowedDate;
-        const anchor = new Date(anchorDateStr);
-        if (isNaN(anchor.getTime())) return minAllowedDate;
-        const target = new Date(anchor);
-
-        if (preset === '1D') target.setDate(target.getDate() - 7);
-        else if (preset === '5D') target.setDate(target.getDate() - 21);
-        else if (preset === '1M') target.setMonth(target.getMonth() - 3);
-        else if (preset === '3M') target.setMonth(target.getMonth() - 9);
-        else if (preset === '6M') target.setFullYear(target.getFullYear() - 1);
-        else if (preset === '1Y') target.setFullYear(target.getFullYear() - 2);
-        else if (preset === '3Y') target.setFullYear(target.getFullYear() - 6);
-        else if (preset === '5Y') target.setFullYear(target.getFullYear() - 10);
-
-        const formatted = target.toISOString().substring(0, 10);
-        return formatted < minAllowedDate ? minAllowedDate : formatted;
-    };
-
-    // State Input Parameter
-    const [startDate, setStartDate] = useState<string>(
-        initialTimeframe?.start || minAllowedDate
-    );
-    const [endDate, setEndDate] = useState<string>(
-        initialTimeframe?.end || maxAllowedDate
-    );
-    const [activePreset, setActivePreset] = useState<string>(
-        initialTimeframe?.preset || (initialTimeframe?.start ? '' : '1D')
-    );
-    const [effectiveTimeframe, setEffectiveTimeframe] = useState<{
-        start: string;
-        end: string;
-        horizon_start?: string;
-    }>({
-        start: initialTimeframe?.start || '',
-        end: initialTimeframe?.end || '',
-        horizon_start: '',
+    // SWR Analysis Layer: Instantly renders cached historical chart & metrics (0ms delay)
+    const {
+        startDate,
+        endDate,
+        activePreset,
+        effectiveTimeframe,
+        historicalPrices,
+        metrics,
+        isLoading,
+        isRevalidating,
+        handlePreset,
+        handleStartDateChange,
+        handleEndDateChange,
+        handleApplyDateRange,
+    } = useStockAnalysisSWR({
+        stock,
+        isOpen,
+        maxAllowedDate,
+        minAllowedDate,
+        initialTimeframe,
     });
-
-    // State Data & Metrics
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [historicalPrices, setHistoricalPrices] = useState<
-        Array<{ date: string; close_price: number; daily_return: number }>
-    >([]);
-    const [metrics, setMetrics] = useState<{
-        period_return: number;
-        expected_return: number;
-        volatility: number;
-        min_price: number;
-        max_price: number;
-        data_points: number;
-        horizon_data_points?: number;
-        base_price?: number;
-        latest_price?: number;
-    }>({
-        period_return: 0,
-        expected_return: 0,
-        volatility: 0,
-        min_price: 0,
-        max_price: 0,
-        data_points: 0,
-        horizon_data_points: 0,
-        base_price: 0,
-        latest_price: 0,
-    });
-
-    // Inisialisasi saat sheet dibuka
-    useEffect(() => {
-        if (isOpen && stock) {
-            const preset = initialTimeframe?.preset !== undefined
-                ? initialTimeframe.preset
-                : (initialTimeframe?.start ? '' : '1D');
-            setActivePreset(preset);
-
-            const initialStart = initialTimeframe?.start || (preset ? calculateLookbackStartDate(preset as any, maxAllowedDate) : minAllowedDate);
-            const initialEnd = initialTimeframe?.end || maxAllowedDate;
-            setStartDate(initialStart);
-            setEndDate(initialEnd);
-
-            if (preset) {
-                fetchHistoricalAnalysis({ preset });
-            } else {
-                fetchHistoricalAnalysis({ start: initialStart, end: initialEnd });
-            }
-        }
-    }, [isOpen, stock, initialTimeframe?.start, initialTimeframe?.end, initialTimeframe?.preset]);
-
-    // Fetch data historis
-    const fetchHistoricalAnalysis = async (paramsObj: { preset?: string; start?: string; end?: string }) => {
-        if (!stock) return;
-        setIsLoading(true);
-        try {
-            const clean = stock.ticker.replace('.JK', '');
-            const params = new URLSearchParams();
-            if (paramsObj.preset) {
-                params.set('preset', paramsObj.preset);
-                params.set('end_date', maxAllowedDate);
-            } else {
-                if (paramsObj.start) params.set('start_date', paramsObj.start);
-                if (paramsObj.end) params.set('end_date', paramsObj.end);
-            }
-
-            const res = await fetch(`/user/saham/${clean}/historical?${params.toString()}`);
-            if (res.ok) {
-                const data = await res.json();
-                setHistoricalPrices(data.prices || []);
-                if (data.timeframe) {
-                    const lookbackStart = data.timeframe.start_date || '';
-                    const horizonStart = data.timeframe.horizon_start_date || lookbackStart;
-                    const end = data.timeframe.end_date || '';
-
-                    setEffectiveTimeframe({
-                        start: lookbackStart,
-                        end: end,
-                        horizon_start: horizonStart,
-                    });
-
-                    if (paramsObj.preset) {
-                        setStartDate(lookbackStart);
-                        setEndDate(end);
-                    }
-                }
-                setMetrics(
-                    data.metrics || {
-                        period_return: 0,
-                        expected_return: 0,
-                        volatility: 0,
-                        min_price: 0,
-                        max_price: 0,
-                        data_points: 0,
-                        horizon_data_points: 0,
-                        base_price: 0,
-                        latest_price: 0,
-                    }
-                );
-            }
-        } catch (err) {
-            console.error('Failed to load historical stock analysis:', err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handlePreset = (preset: '1D' | '5D' | '1M' | '3M' | '6M' | '1Y' | '3Y' | '5Y' | 'all') => {
-        setActivePreset(preset);
-        setStartDate(calculateLookbackStartDate(preset, maxAllowedDate));
-        setEndDate(maxAllowedDate);
-        fetchHistoricalAnalysis({ preset });
-    };
-
-    const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setStartDate(e.target.value);
-        setActivePreset('');
-    };
-
-    const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEndDate(e.target.value);
-        setActivePreset('');
-    };
-
-    const handleApplyDateRange = () => {
-        setActivePreset('');
-        fetchHistoricalAnalysis({ start: startDate, end: endDate });
-    };
 
     const isUsStock = stock ? (stock.bursa ? stock.bursa !== 'IDX' : !stock.ticker.endsWith('.JK')) : false;
 
@@ -768,7 +622,7 @@ export function StockAnalysisSheet({
                                 onClick={handleApplyDateRange}
                                 className="w-full h-8 text-xs font-semibold gap-1 px-1 rounded-lg bg-white border border-zinc-200 text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 flex items-center justify-center shadow-2xs"
                             >
-                                <RefreshCw className={`size-3 shrink-0 ${isLoading && !activePreset ? 'animate-spin' : ''}`} />
+                                <RefreshCw className={`size-3 shrink-0 ${(isLoading || isRevalidating) && !activePreset ? 'animate-spin' : ''}`} />
                                 <span className="truncate">{t('analysis.apply')}</span>
                             </Button>
                         </div>
