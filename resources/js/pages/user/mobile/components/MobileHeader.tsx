@@ -28,7 +28,7 @@ export function MobileHeader({
         <header className="flex items-center justify-between px-4 pt-3 pb-2 w-full max-w-[430px] mx-auto select-none">
             {/* Kiri: Avatar Pengguna 40x40pt */}
             <Link
-                href="/settings/profile"
+                href="/user/profile"
                 className="size-10 rounded-full overflow-hidden shrink-0 active:scale-95 transition-transform"
                 aria-label={t('nav.profile')}
             >

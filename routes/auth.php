@@ -19,6 +19,9 @@ Route::middleware('guest')->group(function () {
     Route::get('auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])
         ->name('auth.google.callback');
 
+    Route::get('auth/google/exchange', [SocialAuthController::class, 'exchangeAppToken'])
+        ->name('auth.google.exchange');
+
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 

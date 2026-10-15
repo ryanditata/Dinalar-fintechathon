@@ -1,4 +1,7 @@
-import React from 'react';
+import { App } from '@capacitor/app';
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
+import React, { useState } from 'react';
 
 interface GoogleAuthButtonProps {
     text?: string;
@@ -9,9 +12,81 @@ export default function GoogleAuthButton({
     text = 'Lanjutkan dengan Google',
     className = '',
 }: GoogleAuthButtonProps) {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+        // Jika BUKAN di aplikasi native (misal di web browser laptop / HP biasa), biarkan tag <a> bekerja normal
+        if (!Capacitor.isNativePlatform()) {
+            return;
+        }
+
+        e.preventDefault();
+        if (isLoading) return;
+
+        setIsLoading(true);
+
+        try {
+            // 1. Pasang listener untuk menangkap deep link kembalinya dari Chrome Custom Tabs
+            let appUrlSub: any = null;
+            let browserSub: any = null;
+
+            const cleanup = async () => {
+                setIsLoading(false);
+                if (appUrlSub) {
+                    await appUrlSub.remove();
+                    appUrlSub = null;
+                }
+                if (browserSub) {
+                    await browserSub.remove();
+                    browserSub = null;
+                }
+            };
+
+            browserSub = await Browser.addListener('browserFinished', async () => {
+                await cleanup();
+            });
+
+            appUrlSub = await App.addListener('appUrlOpen', async (event) => {
+                if (event.url && event.url.startsWith('com.dinalar.app://auth/callback')) {
+                    await cleanup();
+                    try {
+                        await Browser.close();
+                    } catch {
+                        // ignore if already closed
+                    }
+
+                    // Ambil token dari query string deep link
+                    const rawUrl = event.url.replace('com.dinalar.app://', 'https://dinalar.app/');
+                    const parsed = new URL(rawUrl);
+                    const token = parsed.searchParams.get('token');
+
+                    if (token) {
+                        window.location.href = `/auth/google/exchange?token=${encodeURIComponent(token)}`;
+                    } else {
+                        window.location.href = '/user/dashboard';
+                    }
+                }
+            });
+
+            // 2. Buka Chrome Custom Tabs resmi bawaan OS Android
+            const origin = window.location.origin;
+            const targetUrl = `${origin}/auth/google/redirect?source=app`;
+
+            await Browser.open({
+                url: targetUrl,
+                windowName: '_self',
+            });
+        } catch (error) {
+            console.error('Error opening Google Auth in app:', error);
+            setIsLoading(false);
+            window.location.href = '/auth/google/redirect';
+        }
+    };
+
     return (
         <a
             href="/auth/google/redirect"
+            onClick={handleClick}
             className={`w-full inline-flex items-center justify-center gap-3 px-4 py-2.5 text-sm font-semibold text-foreground bg-background hover:bg-muted/70 active:bg-muted border border-border/80 rounded-xl shadow-2xs transition-all duration-200 hover:shadow-xs group cursor-pointer ${className}`}
         >
             <svg className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110" viewBox="0 0 24 24">
@@ -32,7 +107,7 @@ export default function GoogleAuthButton({
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                 />
             </svg>
-            <span>{text}</span>
+            <span>{isLoading ? 'Menghubungkan...' : text}</span>
         </a>
     );
 }

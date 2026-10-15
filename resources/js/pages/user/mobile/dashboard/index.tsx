@@ -87,9 +87,9 @@ export default function MobileDashboard({
 
     const heroAmount = latest_portfolio
         ? latest_portfolio.initial_capital
-        : 10000000;
+        : 0;
 
-    const heroRefCode = latest_portfolio?.reference_code || 'DNL-PORT-01';
+    const heroRefCode = latest_portfolio?.reference_code || '-';
 
     return (
         <MobileAppLayout>

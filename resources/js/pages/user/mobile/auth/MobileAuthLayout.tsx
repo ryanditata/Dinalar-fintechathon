@@ -1,7 +1,6 @@
 import { Toaster } from '@/components/ui/sonner';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Globe } from 'lucide-react';
 import React, { ReactNode } from 'react';
 
 interface MobileAuthLayoutProps {
@@ -44,19 +43,7 @@ export function MobileAuthLayout({
                 {/* Bagian Atas: Navigasi Back & Branding */}
                 <div className="w-full space-y-4">
                     {/* Top Header Bar */}
-                    <header className="flex items-center justify-between select-none">
-                        {backHref ? (
-                            <Link
-                                href={backHref}
-                                className="size-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center text-zinc-900 shadow-2xs active:scale-95 transition-transform"
-                                aria-label={t('common.back', 'Kembali')}
-                            >
-                                <ArrowLeft className="size-5 stroke-[2]" />
-                            </Link>
-                        ) : (
-                            <div className="size-10" />
-                        )}
-
+                    <header className="flex items-center justify-center select-none">
                         {/* Logo & Brand Name */}
                         <Link href="/" className="flex items-center gap-2 group active:scale-98 transition-transform">
                             <div className="size-8 rounded-xl bg-white border border-zinc-200/80 shadow-2xs flex items-center justify-center p-1 overflow-hidden">
@@ -70,8 +57,6 @@ export function MobileAuthLayout({
                                 DINA<span className="text-emerald-600">LAR</span>
                             </span>
                         </Link>
-
-                        <div className="size-10" />
                     </header>
 
                     {/* Judul & Subtitle Halaman */}

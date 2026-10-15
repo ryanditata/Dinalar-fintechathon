@@ -18,9 +18,9 @@ interface WalletLeatherHeroProps {
 }
 
 export function WalletLeatherHero({
-    amount = 43093.00,
+    amount = 0,
     cardHolder = 'INVESTOR DINALAR',
-    referenceCode = '828749-2847-03',
+    referenceCode = '-',
     label,
     sublabel,
     expectedReturn,
@@ -93,9 +93,9 @@ export function WalletLeatherHero({
         return num.toFixed(2);
     };
 
-    const formattedReturn = formatMetricPercent(expectedReturn, '+15.80%');
-    const formattedVolatility = formatVolatilityPercent(volatility, '8.20%');
-    const formattedSharpe = formatSharpeValue(sharpeRatio, '1.85');
+    const formattedReturn = formatMetricPercent(expectedReturn, '0%');
+    const formattedVolatility = formatVolatilityPercent(volatility, '0%');
+    const formattedSharpe = formatSharpeValue(sharpeRatio, '0');
 
     return (
         <section
