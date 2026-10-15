@@ -68,7 +68,7 @@ export default function PortfolioSetupPage({
             href: '/user/dashboard',
         },
         {
-            title: t('saham.title', 'Eksplorasi Saham'),
+            title: t('saham.market_explorer', 'Eksplorasi Saham'),
             href: '/user/saham',
         },
         {
@@ -172,6 +172,46 @@ export default function PortfolioSetupPage({
         });
     }, [basketStocks, detailedBasketStocks]);
 
+    // Helper mendapatkan bursa dari sebuah saham
+    const getStockBursa = (stock: Stock): string => {
+        const clean = stock.ticker.replace('.JK', '');
+        const detailed = detailedBasketStocks[stock.ticker] || detailedBasketStocks[clean];
+        const rawBursa = stock.bursa || (detailed as any)?.bursa;
+        if (rawBursa) {
+            return rawBursa === 'NYSE' ? 'NASDAQ' : rawBursa;
+        }
+        return stock.ticker.endsWith('.JK') ? 'IDX' : 'NASDAQ';
+    };
+
+    // Deteksi bursa unik dari seluruh saham di keranjang
+    const uniqueBursas = useMemo(() => {
+        const bursas = new Set<string>();
+        basketStocks.forEach((stock) => {
+            const b = getStockBursa(stock);
+            if (b) bursas.add(b);
+        });
+        return Array.from(bursas);
+    }, [basketStocks, detailedBasketStocks]);
+
+    const hasMixedBursa = uniqueBursas.length > 1;
+
+    // Rincian saham per bursa untuk tampilan banner peringatan
+    const stocksByBursa = useMemo(() => {
+        const groups: Record<string, string[]> = {};
+        basketStocks.forEach((stock) => {
+            const b = getStockBursa(stock);
+            if (!groups[b]) groups[b] = [];
+            groups[b].push(stock.ticker.replace('.JK', ''));
+        });
+        return groups;
+    }, [basketStocks, detailedBasketStocks]);
+
+    // Cek apakah seluruh saham di keranjang berasal dari bursa US / selain IDX
+    const isBasketUsMarket = useMemo(() => {
+        if (basketStocks.length === 0) return false;
+        return basketStocks.every((s) => getStockBursa(s) !== 'IDX');
+    }, [basketStocks, detailedBasketStocks]);
+
     const hasNegativeReturnStocks = negativeReturnStocks.length > 0;
     const hasMinStocks = basketStocks.length >= 2;
 
@@ -258,13 +298,26 @@ export default function PortfolioSetupPage({
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
+    // Sinkronisasi nominal modal investasi saat bursa berganti
+    useEffect(() => {
+        if (isBasketUsMarket) {
+            if (initialCapital >= 1000000) {
+                setInitialCapital(10000); // Default $10,000 untuk pasar saham global/US
+            }
+        } else if (basketStocks.length > 0) {
+            if (initialCapital > 0 && initialCapital < 100000) {
+                setInitialCapital(10000000); // Default Rp 10.000.000 untuk IDX
+            }
+        }
+    }, [isBasketUsMarket]);
+
     // Handler update massal horison / rentang tanggal ke seluruh saham di keranjang
     const applyTimeframeToBasket = (params: { preset?: string; start_date?: string; end_date?: string }) => {
         setIsUpdatingTimeframe(true);
         router.post('/user/analyze/basket/timeframe', params, {
             preserveScroll: true,
             onSuccess: (page: any) => {
-                const label = params.preset ? (params.preset === 'all' ? (language === 'en' ? 'All' : 'Semua') : params.preset) : t('basket.custom', 'kustom');
+                const label = params.preset ? (params.preset === 'all' ? 'All' : params.preset) : t('basket.custom', 'kustom');
                 toast.success(t('basket.sync_timeframe_success', { label }));
 
                 // Sinkronkan input Rentang Waktu dengan tanggal bursa lookback riil hasil kalkulasi server (sama persis seperti StockAnalysisModal)
@@ -332,8 +385,23 @@ export default function PortfolioSetupPage({
 
     // Helper format Rupiah / Currency
     const formatRupiah = (val: number | string | null | undefined) => {
-        if (val === null || val === undefined || isNaN(Number(val))) return 'Rp -';
-        return `Rp ${Number(val).toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}`;
+        const currencyPrefix = language === 'en' ? 'IDR' : 'Rp';
+        if (val === null || val === undefined || isNaN(Number(val))) return `${currencyPrefix} -`;
+        return `${currencyPrefix} ${Number(val).toLocaleString('id-ID')}`;
+    };
+
+    // Helper format harga saham sesuai bursa (selain IDX menggunakan lambang dolar $)
+    const formatStockPrice = (val: number | string | null | undefined, bursa?: string) => {
+        if (val === null || val === undefined || isNaN(Number(val))) return '-';
+        const num = Number(val);
+        const isUsMarket = bursa ? bursa !== 'IDX' : isBasketUsMarket;
+
+        if (isUsMarket) {
+            const hasDecimals = num % 1 !== 0;
+            return `$ ${num.toLocaleString('en-US', { minimumFractionDigits: hasDecimals ? 2 : 0, maximumFractionDigits: 2 })}`;
+        }
+
+        return formatRupiah(num);
     };
 
     // Helper format tanggal (Contoh: 16 Sep 2026 / Sep 16, 2026)
@@ -474,6 +542,11 @@ export default function PortfolioSetupPage({
             return;
         }
 
+        if (hasMixedBursa) {
+            toast.error(t('basket.mixed_bursa_error_toast', { bursas: uniqueBursas.join(', ') }));
+            return;
+        }
+
         if (hasNegativeReturnStocks) {
             const tickersList = negativeReturnStocks.map((s) => s.ticker.replace('.JK', '')).join(', ');
             toast.error(t('basket.negative_return_error_toast', { tickers: tickersList }));
@@ -544,7 +617,7 @@ export default function PortfolioSetupPage({
                         <div className="shrink-0">
                             <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary ring-1 ring-inset ring-primary/20 backdrop-blur-xs">
                                 <ShoppingBag className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                                {t('basket.title', 'Keranjang & Optimasi')}
+                                {t('basket.page_title', 'Keranjang & Optimasi')}
                             </span>
                         </div>
 
@@ -633,6 +706,8 @@ export default function PortfolioSetupPage({
                                                 const lastPrice = stock.latest_price
                                                     ? Number(stock.latest_price.close_price)
                                                     : 0;
+                                                const stockBursa = getStockBursa(stock);
+                                                const isUsStock = stockBursa !== 'IDX';
 
                                                 const expectedReturn: number | undefined =
                                                     detailed?.metrics?.expected_return !== undefined && detailed?.metrics?.expected_return !== null
@@ -686,12 +761,12 @@ export default function PortfolioSetupPage({
                                                                         <Badge
                                                                             variant="outline"
                                                                             className={`text-[9px] py-0 px-2 font-semibold rounded-full ${
-                                                                                stock.bursa === 'NASDAQ'
+                                                                                isUsStock
                                                                                     ? 'border-purple-500/30 text-purple-600 dark:text-purple-400 bg-purple-500/10'
                                                                                     : 'border-blue-500/30 text-blue-600 dark:text-blue-400 bg-blue-500/10'
                                                                             }`}
                                                                         >
-                                                                            {stock.bursa || 'IDX'}
+                                                                            {stockBursa}
                                                                         </Badge>
                                                                     </div>
                                                                     <p
@@ -741,7 +816,7 @@ export default function PortfolioSetupPage({
                                                                             {t('saham.price', 'Harga Terakhir')}
                                                                         </span>
                                                                         <span className="font-mono text-sm font-bold text-foreground">
-                                                                            {lastPrice > 0 ? formatRupiah(lastPrice) : '-'}
+                                                                            {lastPrice > 0 ? formatStockPrice(lastPrice, stockBursa) : '-'}
                                                                         </span>
                                                                         {dataPoints ? (
                                                                             <span className="text-[9px] text-muted-foreground font-mono mt-0.5 flex items-center gap-1">
@@ -799,7 +874,7 @@ export default function PortfolioSetupPage({
                                                                                     }`}
                                                                                 >
                                                                                     {timeframePreset
-                                                                                            ? (timeframePreset === 'all' ? (language === 'en' ? 'All' : 'Semua') : timeframePreset)
+                                                                                            ? (timeframePreset === 'all' ? 'All' : timeframePreset)
                                                                                         : (dataPoints ? `${dataPoints}D` : t('basket.custom', 'Custom'))}
                                                                                 </Badge>
                                                                             </div>
@@ -849,29 +924,48 @@ export default function PortfolioSetupPage({
                                     </div>
                                 )}
 
-                                {!hasMinStocks && basketStocks.length > 0 && (
-                                    <div className="mt-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-800 dark:text-amber-300 text-xs flex items-start gap-2">
-                                        <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                                        <div className="space-y-0.5">
-                                            <span>
-                                                {t('basket.min_2_stocks_desc', 'Tambahkan minimal 1 saham lagi ke keranjang agar dapat melakukan analisis.')}
+                                {/* 2. Banner Peringatan */}
+                                {/* Peringatan Bursa Berbeda */}
+                                {hasMixedBursa && (
+                                    <div className="mt-4 p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-800 dark:text-amber-300 text-xs flex items-start gap-2.5">
+                                        <AlertCircle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+                                        <div className="flex-1 min-w-0">
+                                            <span className="font-bold block text-amber-900 dark:text-amber-200">
+                                                {t('basket.mixed_bursa_title', 'Bursa Saham Berbeda Terdeteksi')}
                                             </span>
-                                            {hasNegativeReturnStocks && (
-                                                <span className="block text-rose-700 dark:text-rose-400 mt-1">
-                                                    {t('basket.negative_return_desc', { tickers: negativeReturnStocks.map((s) => s.ticker.replace('.JK', '')).join(', ') })}
-                                                </span>
-                                            )}
+                                            <p className="mt-0.5 text-amber-800 dark:text-amber-300 leading-relaxed text-[11px]">
+                                                {t('basket.mixed_bursa_desc', { bursas: uniqueBursas.join(', ') })}
+                                            </p>
                                         </div>
                                     </div>
                                 )}
 
-                                {hasMinStocks && hasNegativeReturnStocks && (
-                                    <div className="mt-4 p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-800 dark:text-rose-300 text-xs flex items-start gap-2">
-                                        <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                                        <div className="space-y-0.5">
-                                            <span>
-                                                {t('basket.negative_return_error_toast', { tickers: negativeReturnStocks.map((s) => s.ticker.replace('.JK', '')).join(', ') })}
+                                {/* Peringatan Return Negatif */}
+                                {hasNegativeReturnStocks && (
+                                    <div className="mt-4 p-3.5 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-800 dark:text-rose-300 text-xs flex items-start gap-2.5">
+                                        <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400 mt-0.5" />
+                                        <div className="flex-1 min-w-0">
+                                            <span className="font-bold block text-rose-900 dark:text-rose-200">
+                                                {t('basket.negative_return_title', 'Return Negatif Terdeteksi')}
                                             </span>
+                                            <p className="mt-0.5 text-rose-800 dark:text-rose-300 leading-relaxed text-[11px]">
+                                                {t('basket.negative_return_desc', { tickers: negativeReturnStocks.map((s) => s.ticker.replace('.JK', '')).join(', ') })}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Kurang Dari 2 Saham Warning Banner */}
+                                {!hasMinStocks && basketStocks.length > 0 && (
+                                    <div className="mt-4 p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-800 dark:text-amber-300 text-xs flex items-start gap-2.5">
+                                        <AlertCircle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+                                        <div className="flex-1 min-w-0">
+                                            <span className="font-bold block text-amber-900 dark:text-amber-200">
+                                                {t('basket.min_2_stocks_title', 'Minimal 2 Saham Berbeda')}
+                                            </span>
+                                            <p className="mt-0.5 text-amber-800 dark:text-amber-300 leading-relaxed text-[11px]">
+                                                {t('basket.min_2_stocks_desc', 'Tambahkan minimal 1 saham lagi ke keranjang agar dapat melakukan analisis.')}
+                                            </p>
                                         </div>
                                     </div>
                                 )}
@@ -895,25 +989,29 @@ export default function PortfolioSetupPage({
                                 {/* 1. Modal Investasi */}
                                 <div className="space-y-1.5">
                                     <Label className="text-xs font-semibold flex items-center justify-between">
-                                        <span>{t('basket.initial_capital', 'Total Modal Investasi (IDR)')}</span>
+                                        <span>
+                                            {isBasketUsMarket
+                                                ? t('basket.initial_capital_usd', 'Total Modal Investasi (USD)')
+                                                : t('basket.initial_capital', 'Total Modal Investasi (IDR)')}
+                                        </span>
                                         <Coins className="h-3.5 w-3.5 text-emerald-600" />
                                     </Label>
                                     <div className="relative">
-                                        <span className="absolute left-3 top-2.5 text-xs text-muted-foreground font-mono">
-                                            Rp
+                                        <span className={`absolute ${isBasketUsMarket ? 'left-3' : 'left-3'} top-2.5 text-xs text-muted-foreground font-mono font-bold`}>
+                                            {isBasketUsMarket ? '$' : (language === 'en' ? 'IDR' : 'Rp')}
                                         </span>
                                         <Input
                                             type="number"
-                                            min="1000000"
-                                            step="500000"
+                                            min={isBasketUsMarket ? 100 : 1000000}
+                                            step={isBasketUsMarket ? 100 : 500000}
                                             value={initialCapital}
-                                            onChange={(e) => setInitialCapital(Number(e.target.value))}
-                                            className="pl-9 font-mono text-sm font-bold bg-background"
+                                            onChange={(e) => setInitialCapital(Number(e.target.value) || 0)}
+                                            className={`${isBasketUsMarket ? 'pl-8' : 'pl-11'} font-mono text-sm font-bold bg-background`}
                                             required
                                         />
                                     </div>
                                     <span className="text-[10px] text-muted-foreground block truncate">
-                                        {t('basket.in_words', 'Terbilang:')} {formatRupiah(initialCapital)}
+                                        {t('basket.in_words', 'Terbilang:')} {isBasketUsMarket ? `$ ${Number(initialCapital).toLocaleString('en-US')}` : formatRupiah(initialCapital)}
                                     </span>
                                 </div>
 
@@ -971,7 +1069,7 @@ export default function PortfolioSetupPage({
                                                 {isUpdatingTimeframe && activePreset === preset ? (
                                                     <Loader2 className="h-2.5 w-2.5 animate-spin mr-1" />
                                                 ) : null}
-                                                {preset === 'all' ? (language === 'en' ? 'All' : 'Semua') : preset}
+                                                {preset === 'all' ? 'All' : preset}
                                             </Button>
                                         ))}
                                     </div>
@@ -1039,6 +1137,12 @@ export default function PortfolioSetupPage({
                                         <span>{t('basket.summary_selected_stocks', 'Jumlah Saham Terpilih:')}</span>
                                         <span className="font-mono font-bold text-foreground">{basketStocks.length} {t('basket.stocks_unit', 'Saham')}</span>
                                     </div>
+                                    {hasMixedBursa && (
+                                        <div className="flex items-center justify-between text-amber-600 dark:text-amber-400 font-medium">
+                                            <span>{t('basket.summary_mixed_bursa', 'Bursa Campuran:')}</span>
+                                            <span className="font-mono font-bold">{uniqueBursas.join(', ')}</span>
+                                        </div>
+                                    )}
                                     {hasNegativeReturnStocks && (
                                         <div className="flex items-center justify-between text-rose-600 dark:text-rose-400 font-medium">
                                             <span>{t('basket.summary_negative_return', 'Return Negatif:')}</span>
@@ -1077,7 +1181,7 @@ export default function PortfolioSetupPage({
                                 <div className="space-y-1.5">
                                     <Button
                                         type="submit"
-                                        disabled={!hasMinStocks || hasNegativeReturnStocks || isSubmitting}
+                                        disabled={!hasMinStocks || hasNegativeReturnStocks || hasMixedBursa || isSubmitting}
                                         className="w-full h-11 gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-xs cursor-pointer rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {isSubmitting ? (

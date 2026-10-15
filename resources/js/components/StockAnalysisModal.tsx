@@ -280,22 +280,20 @@ export default function StockAnalysisModal({
         fetchHistoricalAnalysis({ start: startDate, end: endDate });
     };
 
-    const isUsdStock = stock.bursa === 'NASDAQ';
+    const isUsdStock = stock.bursa ? stock.bursa !== 'IDX' : !stock.ticker.endsWith('.JK');
 
-    // Format harga saham (NASDAQ: 2 desimal USD, IDX: locale number)
+    // Format harga saham (pure angka: non-IDX desimal titik en-US, IDX pemisah ribuan titik id-ID)
     const formatStockPrice = (val: number | string | null | undefined) => {
         if (val === null || val === undefined || isNaN(Number(val))) return '-';
         const num = Number(val);
         if (isUsdStock) {
+            const hasDecimals = num % 1 !== 0;
             return num.toLocaleString('en-US', {
-                minimumFractionDigits: 2,
+                minimumFractionDigits: hasDecimals ? 2 : 0,
                 maximumFractionDigits: 2,
             });
         }
-        return num.toLocaleString(language === 'en' ? 'en-US' : 'id-ID', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 2,
-        });
+        return num.toLocaleString('id-ID');
     };
 
     // Format Tanggal (Contoh: 16 Sep 2026 / Sep 16, 2026)
@@ -475,7 +473,7 @@ export default function StockAnalysisModal({
                                             : 'text-muted-foreground hover:text-foreground'
                                         }`}
                                 >
-                                    {preset === 'all' ? (language === 'en' ? 'All' : 'Semua') : preset}
+                                    {preset === 'all' ? 'All' : preset}
                                 </Button>
                             ))}
                         </div>
@@ -601,8 +599,8 @@ export default function StockAnalysisModal({
                                                         tick={{ fontSize: 10, fill: 'currentColor', opacity: 0.6 }}
                                                         domain={['auto', 'auto']}
                                                         tickLine={false}
-                                                        width={55}
-                                                        tickFormatter={(v) => isUsdStock ? Number(v).toFixed(2) : Number(v).toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}
+                                                        width={60}
+                                                        tickFormatter={(v) => isUsdStock ? Number(v).toFixed(2) : Number(v).toLocaleString('id-ID')}
                                                     />
                                                     <Tooltip
                                                         content={({ active, payload }) => {
@@ -690,7 +688,7 @@ export default function StockAnalysisModal({
                                                     }`}
                                                 >
                                                     {activePreset
-                                                        ? t('stock_modal.period_return_preset', { preset: activePreset === 'all' ? (language === 'en' ? 'All' : 'Semua') : activePreset })
+                                                        ? t('stock_modal.period_return_preset', { preset: activePreset === 'all' ? 'All' : activePreset })
                                                         : t('stock_modal.custom_period', 'Periode Custom')}
                                                 </Badge>
                                             </div>

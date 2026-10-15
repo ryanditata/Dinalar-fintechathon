@@ -67,11 +67,11 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
             href: '/user/dashboard',
         },
         {
-            title: t('saham.title', 'Eksplorasi Saham'),
+            title: t('saham.market_explorer', 'Eksplorasi Saham'),
             href: '/user/saham',
         },
         {
-            title: t('history.title', 'Riwayat Portofolio'),
+            title: t('nav.portfolio_history', 'Riwayat Portofolio'),
             href: '/user/analyze/history',
         },
     ];
@@ -171,10 +171,18 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
         };
     }, [list]);
 
-    const formatRupiah = (val: number | string | null | undefined) => {
-        if (val === null || val === undefined || isNaN(Number(val))) return 'Rp -';
-        return `Rp ${Number(val).toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}`;
+    const formatCapital = (val: number | string | null | undefined, isUs: boolean = false) => {
+        const currencyPrefix = language === 'en' ? 'IDR' : 'Rp';
+        if (val === null || val === undefined || isNaN(Number(val))) return isUs ? '$ -' : `${currencyPrefix} -`;
+        const num = Number(val);
+        if (isUs) {
+            const hasDecimals = num % 1 !== 0;
+            return `$ ${num.toLocaleString('en-US', { minimumFractionDigits: hasDecimals ? 2 : 0, maximumFractionDigits: 2 })}`;
+        }
+        return `${currencyPrefix} ${num.toLocaleString('id-ID')}`;
     };
+
+    const formatRupiah = (val: number | string | null | undefined, isUs: boolean = false) => formatCapital(val, isUs);
 
     const formatDate = (dateStr: string) => {
         try {
@@ -192,7 +200,7 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={t('history.title', 'Riwayat Portofolio')} />
+            <Head title={t('nav.portfolio_history', 'Riwayat Portofolio')} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4 sm:p-6 mx-auto w-full pb-20">
                 {/* 1. HERO HEADER SECTION */}
@@ -204,7 +212,7 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                         <div className="shrink-0">
                             <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary ring-1 ring-inset ring-primary/20 backdrop-blur-xs">
                                 <History className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                                {t('history.title', 'Riwayat Portofolio')}
+                                {t('nav.portfolio_history', 'Riwayat Portofolio')}
                             </span>
                         </div>
 
@@ -250,9 +258,15 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                                     {t('history.accumulated_capital', 'Akumulasi Modal')}
                                 </span>
                                 <Deferred data="history" fallback={<Skeleton className="h-5 w-24 my-0.5 rounded-sm" />}>
-                                    <span className="text-xs sm:text-base font-extrabold font-mono text-foreground block truncate" title={formatRupiah(stats.totalCapital)}>
-                                        {formatRupiah(stats.totalCapital)}
-                                    </span>
+                                    {(() => {
+                                        const isAllUs = list.length > 0 && list.every((item) => item.tickers?.some((t) => !t.endsWith('.JK')));
+                                        const displayCap = formatCapital(stats.totalCapital, isAllUs);
+                                        return (
+                                            <span className="text-xs sm:text-base font-extrabold font-mono text-foreground block truncate" title={displayCap}>
+                                                {displayCap}
+                                            </span>
+                                        );
+                                    })()}
                                 </Deferred>
                             </div>
                         </div>
@@ -424,7 +438,10 @@ export default function OptimizationHistoryPage({ history }: HistoryProps) {
                                                         {/* Kolom 3: Modal Investasi */}
                                                         <TableCell className="py-4 px-4 align-top text-right whitespace-nowrap">
                                                             <span className="font-mono font-extrabold text-sm text-foreground block">
-                                                                {formatRupiah(item.initial_capital)}
+                                                                {(() => {
+                                                                    const isUs = item.tickers ? item.tickers.some((t) => !t.endsWith('.JK')) : false;
+                                                                    return formatCapital(item.initial_capital, isUs);
+                                                                })()}
                                                             </span>
                                                             <span className="text-[10px] text-muted-foreground block font-sans">
                                                                 Rf: {item.risk_free_rate || 6.0}%

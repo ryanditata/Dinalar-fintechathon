@@ -79,7 +79,7 @@ export default function UserStockIndex({
             href: '/user/dashboard',
         },
         {
-            title: t('saham.title', 'Eksplorasi Saham'),
+            title: t('saham.market_explorer', 'Eksplorasi Saham'),
             href: '/user/saham',
         },
     ];
@@ -142,15 +142,17 @@ export default function UserStockIndex({
         }
     }, [isModalOpen]);
 
-    // Helper format harga IDR / mata uang dari database
-    const formatPrice = (val: string | number | null | undefined) => {
+    // Helper format harga sesuai bursa (pure angka: non-IDX desimal titik en-US, IDX pemisah ribuan titik id-ID)
+    const formatPrice = (val: string | number | null | undefined, bursa?: string | null) => {
         if (val === null || val === undefined) return '-';
         const num = typeof val === 'string' ? parseFloat(val) : val;
         if (isNaN(num)) return '-';
-        return new Intl.NumberFormat(language === 'en' ? 'en-US' : 'id-ID', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 2,
-        }).format(num);
+        const isUsMarket = bursa ? bursa !== 'IDX' : false;
+        if (isUsMarket) {
+            const hasDecimals = num % 1 !== 0;
+            return num.toLocaleString('en-US', { minimumFractionDigits: hasDecimals ? 2 : 0, maximumFractionDigits: 2 });
+        }
+        return num.toLocaleString('id-ID');
     };
 
     // Filter server-side
@@ -240,7 +242,7 @@ export default function UserStockIndex({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={t('saham.title', 'Eksplorasi Saham')} />
+            <Head title={t('saham.market_explorer', 'Eksplorasi Saham')} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4 sm:p-6 mx-auto w-full pb-16">
                 {/* 1. HERO HEADER SECTION */}
@@ -545,7 +547,7 @@ export default function UserStockIndex({
                                             <div className="flex flex-col items-end">
                                                 <span className="font-bold text-base font-mono text-foreground leading-tight">
                                                     {stock.latest_price
-                                                        ? formatPrice(stock.latest_price.close_price)
+                                                        ? formatPrice(stock.latest_price.close_price, stock.bursa)
                                                         : '-'}
                                                 </span>
                                                 {changeVal !== null && changeVal !== undefined ? (

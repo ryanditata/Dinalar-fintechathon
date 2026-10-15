@@ -159,11 +159,11 @@ export default function OptimizationResultPage({
             href: '/user/dashboard',
         },
         {
-            title: t('saham.title', 'Eksplorasi Saham'),
+            title: t('saham.market_explorer', 'Eksplorasi Saham'),
             href: '/user/saham',
         },
         {
-            title: t('history.title', 'Riwayat Portofolio'),
+            title: t('nav.portfolio_history', 'Riwayat Portofolio'),
             href: '/user/analyze/history',
         },
         {
@@ -217,11 +217,42 @@ export default function OptimizationResultPage({
                     : bestPortfolios.sharpe || bestPortfolios.min_variance;
     }, [clickedPoint, selectedProfile, bestPortfolios, initialCapital]);
 
-    // Format IDR
-    const formatRupiah = (val: number | string | null | undefined) => {
-        if (val === null || val === undefined || isNaN(Number(val))) return 'Rp -';
-        return `Rp ${Number(val).toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}`;
+    // Helper deteksi apakah portofolio menangani bursa selain IDX (misal NASDAQ / US)
+    const isUsMarket = useMemo(() => {
+        const stockList = Object.values(stocks);
+        if (stockList.length > 0) {
+            return stockList.some((s) => {
+                const b = s.bursa === 'NYSE' ? 'NASDAQ' : s.bursa;
+                return b ? b !== 'IDX' : !s.ticker?.endsWith('.JK');
+            });
+        }
+        if (optimization?.tickers && optimization.tickers.length > 0) {
+            return optimization.tickers.some((ticker) => !ticker.endsWith('.JK'));
+        }
+        return false;
+    }, [stocks, optimization]);
+
+    // Formatters
+    const formatCurrency = (val: number | string | null | undefined, forceBursa?: string | null) => {
+        const useUsd = forceBursa ? forceBursa !== 'IDX' : isUsMarket;
+        if (val === null || val === undefined || isNaN(Number(val))) {
+            return useUsd ? '$ -' : `${language === 'en' ? 'IDR' : 'Rp'} -`;
+        }
+        const num = Number(val);
+        if (useUsd) {
+            const hasDecimals = num % 1 !== 0;
+            return `$ ${num.toLocaleString('en-US', { minimumFractionDigits: hasDecimals ? 2 : 0, maximumFractionDigits: 2 })}`;
+        }
+        const currencyPrefix = language === 'en' ? 'IDR' : 'Rp';
+        return `${currencyPrefix} ${num.toLocaleString('id-ID')}`;
     };
+
+    // Format Rupiah / Currency backward compatibility
+    const formatRupiah = (val: number | string | null | undefined) => formatCurrency(val);
+
+    const shareOrLotUnit = isUsMarket
+        ? t('result.shares_unit', language === 'en' ? 'Shares' : 'Lembar')
+        : t('result.lot_unit', 'Lot');
 
     // Format Percentage
     const formatPercent = (val: number | null | undefined) => {
@@ -271,21 +302,24 @@ export default function OptimizationResultPage({
         if (!singleCardRef.current) return;
 
         const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
-        const filename = `Portofolio-${targetProf}-${refCode}.png`;
+        const filePrefix = language === 'en' ? 'Portfolio' : 'Portofolio';
+        const filename = `${filePrefix}-${targetProf}-${refCode}.png`;
         await exportAsImage(singleCardRef.current, filename, true);
     };
 
     const handleExportPDF = async () => {
         try {
-            generatePortfolioPDFReport({
+            const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
+            const filePrefix = language === 'en' ? 'Portfolio-Report' : 'Laporan-Portofolio';
+            const filename = `${filePrefix}-${selectedProfile}-${refCode}.pdf`;
+            await generatePortfolioPDFReport({
                 optimization,
                 activePortfolio,
                 selectedProfile,
                 profileLabel: getProfileLabel(selectedProfile),
                 stocks,
+                language,
             });
-            const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
-            const filename = `Laporan-Portofolio-${selectedProfile}-${refCode}.pdf`;
             toast.success(t('result.pdf_download_success', 'Laporan PDF berhasil diunduh ({file})', { file: filename }));
         } catch (error) {
             console.error('Failed to generate PDF report:', error);
@@ -296,7 +330,8 @@ export default function OptimizationResultPage({
     const handleExportCompare = async () => {
         if (!compareCardRef.current) return;
         const refCode = optimization.reference_code || `DNL${optimization.user_id}-${optimization.id}`;
-        const filename = `Komparasi-Portofolio-3-Profil-${refCode}.png`;
+        const filePrefix = language === 'en' ? 'Portfolio-3-Profiles-Comparison' : 'Komparasi-Portofolio-3-Profil';
+        const filename = `${filePrefix}-${refCode}.png`;
         await exportAsImage(compareCardRef.current, filename, true);
     };
 
@@ -390,19 +425,22 @@ export default function OptimizationResultPage({
                 const cleanTicker = rawTicker.replace('.JK', '');
                 const stk = stocks[rawTicker] || stocks[cleanTicker];
                 const lastClose = stk?.latest_price ? Number(stk.latest_price.close_price) : 0;
-                const lotEstimate =
-                    activeProfData?.lot_estimation?.[rawTicker] ??
-                    activeProfData?.lot_estimation?.[cleanTicker] ??
-                    (lastClose > 0 ? Math.floor(alloc.nominal_idr / (lastClose * 100)) : 0);
+                const isNonIdx = stk?.bursa ? stk.bursa !== 'IDX' : (!rawTicker.endsWith('.JK') || isUsMarket);
+                const lotEstimate = isNonIdx
+                    ? (lastClose > 0 ? Math.floor(alloc.nominal_idr / lastClose) : 0)
+                    : (activeProfData?.lot_estimation?.[rawTicker] ??
+                       activeProfData?.lot_estimation?.[cleanTicker] ??
+                       (lastClose > 0 ? Math.floor(alloc.nominal_idr / (lastClose * 100)) : 0));
 
                 return {
                     ticker: cleanTicker,
                     name: stk?.name || cleanTicker,
-                    category: stk?.bursa || 'IDX',
+                    category: stk?.bursa || (isNonIdx ? 'NASDAQ' : 'IDX'),
                     weight: alloc.weight_percent,
                     nominal: alloc.nominal_idr,
                     lastClose,
                     lot: lotEstimate,
+                    isNonIdx,
                 };
             })
             .filter((item) => item.weight > 0.05)
@@ -415,13 +453,18 @@ export default function OptimizationResultPage({
         let stockLines = '';
         allocationsList.forEach((item, idx) => {
             stockLines += `${idx + 1}. *${item.ticker}* (${item.category})\n` +
-                `   ↳ ${t('result.wa_weight', 'Bobot:')} *${item.weight.toFixed(2)}%* | ${t('result.wa_nominal', 'Nominal:')} *${formatRupiah(item.nominal)}*\n` +
-                `   ↳ ${t('result.wa_price', 'Harga:')} *${item.lastClose > 0 ? `Rp ${item.lastClose.toLocaleString(isEn ? 'en-US' : 'id-ID')}` : '-'}* | ${t('result.wa_estimate', 'Estimasi:')} *${item.lot > 0 ? `${item.lot.toLocaleString(isEn ? 'en-US' : 'id-ID')} ${t('result.lot_unit', 'Lot')}` : '-'}*\n`;
+                `   ↳ ${t('result.wa_weight', 'Bobot:')} *${item.weight.toFixed(2)}%* | ${t('result.wa_nominal', 'Nominal:')} *${formatCurrency(item.nominal, item.category)}*\n` +
+                `   ↳ ${t('result.wa_price', 'Harga:')} *${item.lastClose > 0 ? formatCurrency(item.lastClose, item.category) : '-'}* | ${t('result.wa_estimate', 'Estimasi:')} *${item.lot > 0 ? `${item.lot.toLocaleString(isEn ? 'en-US' : 'id-ID')} ${shareOrLotUnit}` : '-'}*\n`;
         });
 
         const dateRangeStr = optimization.start_date && optimization.end_date
             ? `${formatDate(optimization.start_date)} - ${formatDate(optimization.end_date)}`
             : formatDate(optimization.created_at);
+
+        const totalEstimateLabel = isUsMarket
+            ? `• ${t('result.wa_estimated_shares', 'Total Estimasi Lembar:')}`
+            : `• ${t('result.wa_estimated_lots', 'Total Estimasi Lot:')}`;
+        const totalLotsText = totalLots > 0 ? `${totalLots.toLocaleString(isEn ? 'en-US' : 'id-ID')} ${shareOrLotUnit}` : '-';
 
         const text = `📊 *${t('result.wa_header', 'HASIL ANALISIS PORTOFOLIO SAHAM DINALAR')}*\n\n` +
             `• *${t('result.wa_title', 'Judul:')}* ${optimization.title || t('result.default_title', 'Portofolio Multi-Aset')}\n` +
@@ -429,7 +472,7 @@ export default function OptimizationResultPage({
             `• *${t('result.wa_ref_code', 'Kode Ref:')}* ${refCode}\n` +
             `• *${t('result.wa_analysis_date', 'Tanggal Analisis:')}* ${formatDate(optimization.created_at)}\n` +
             `• *${t('result.wa_time_range', 'Rentang Waktu:')}* ${dateRangeStr}\n` +
-            `• *${t('result.wa_investment_capital', 'Modal Investasi:')}* ${formatRupiah(initialCapital)}\n` +
+            `• *${t('result.wa_investment_capital', 'Modal Investasi:')}* ${formatCurrency(initialCapital)}\n` +
             `• *${t('result.wa_risk_free_rate', 'Risk-Free Rate:')}* ${optimization.risk_free_rate}%\n\n` +
             `📈 *${t('result.wa_metrics_title', 'METRIK PERFORMA:')}*\n` +
             `• ${t('result.wa_expected_return', 'Expected Return:')} *+${returnVal}%* (${t('result.wa_annual', 'Tahunan')})\n` +
@@ -438,8 +481,8 @@ export default function OptimizationResultPage({
             `💼 *${t('result.wa_allocation_title', 'RINCIAN ALOKASI SAHAM:')}*\n` +
             `${stockLines}\n` +
             `📌 *${t('result.wa_total_purchase', 'TOTAL PEMBELIAN:')}*\n` +
-            `• ${t('result.wa_total_capital', 'Total Modal:')} *${formatRupiah(totalNominal)}* (100.00%)\n` +
-            `• ${t('result.wa_total_estimate', 'Total Estimasi:')} *${totalLots.toLocaleString(isEn ? 'en-US' : 'id-ID')} ${t('result.lot_unit', 'Lot')}*\n\n` +
+            `• ${t('result.wa_total_capital', 'Total Modal:')} *${formatCurrency(totalNominal)}* (100.00%)\n` +
+            `• ${totalEstimateLabel} *${totalLotsText}*\n\n` +
             `${t('result.wa_footer', 'Analisis otomatis dengan Algoritma NSGA-II & Markowitz Frontier.\n🌐 Kunjungi: https://dinalar.my.id')}`;
 
         shareToWhatsAppText(text);
@@ -1262,140 +1305,161 @@ export default function OptimizationResultPage({
                         { id: 'min_variance', label: getProfileLabel('min_variance'), data: bestPortfolios.min_variance },
                         { id: 'sharpe', label: getProfileLabel('sharpe'), data: bestPortfolios.sharpe },
                         { id: 'max_return', label: getProfileLabel('max_return'), data: bestPortfolios.max_return }
-                    ].filter((profile) => profile.id === selectedProfile).map((profile) => profile.data && (
-                        <Card key={profile.id} className="border border-border/70 shadow-xs">
-                            <CardHeader className="pb-3 border-b border-border/50">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                    <div>
-                                        <CardTitle className="text-base font-bold flex items-center gap-2">
-                                            <Layers className="h-4 w-4 text-primary" />
-                                            <span>{t('result.allocation_details_title', 'Detail Alokasi Portofolio')}: {profile.label}</span>
-                                        </CardTitle>
-                                        <CardDescription className="text-xs">
-                                            {t('result.metric_return', 'Return')}: <span className="font-bold text-foreground">{formatPercent(profile.data.return)}</span> |
-                                            {' '}{t('result.metric_risk', 'Risiko (σ)')}: <span className="font-bold text-foreground">{formatPercent(profile.data.risk)}</span> |
-                                            {' '}{t('result.metric_sharpe', 'Sharpe')}: <span className="font-bold text-foreground">{profile.data.sharpe?.toFixed(3)}</span>
-                                        </CardDescription>
+                    ].filter((profile) => profile.id === selectedProfile && !!profile.data).map((profile) => {
+                        const profileData = profile.data!;
+                        return (
+                            <Card key={profile.id} className="border border-border/70 shadow-xs">
+                                <CardHeader className="pb-3 border-b border-border/50">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                        <div>
+                                            <CardTitle className="text-base font-bold flex items-center gap-2">
+                                                <Layers className="h-4 w-4 text-primary" />
+                                                <span>{t('result.allocation_details_title', 'Detail Alokasi Portofolio')}: {profile.label}</span>
+                                            </CardTitle>
+                                            <CardDescription className="text-xs">
+                                                {t('result.metric_return', 'Return')}: <span className="font-bold text-foreground">{formatPercent(profileData.return)}</span> |
+                                                {' '}{t('result.metric_risk', 'Risiko (σ)')}: <span className="font-bold text-foreground">{formatPercent(profileData.risk)}</span> |
+                                                {' '}{t('result.metric_sharpe', 'Sharpe')}: <span className="font-bold text-foreground">{profileData.sharpe?.toFixed(3)}</span>
+                                            </CardDescription>
+                                        </div>
                                     </div>
-                                </div>
-                            </CardHeader>
+                                </CardHeader>
 
-                            <CardContent className="p-0">
-                                <div className="overflow-x-auto w-full border-t border-border/40">
-                                    <Table className="min-w-[640px]">
-                                        <TableHeader className="bg-muted/30">
-                                            <TableRow>
-                                                <TableHead className="text-xs font-bold py-3">{t('result.ticker_column', 'Emiten Saham')}</TableHead>
-                                                <TableHead className="text-xs font-bold text-center py-3">{t('saham.exchange_label', 'Bursa')}</TableHead>
-                                                <TableHead className="text-xs font-bold text-right py-3">{t('result.weight_column', 'Bobot Alokasi')} (%)</TableHead>
-                                                <TableHead className="text-xs font-bold text-right py-3">{t('result.nominal_funds', 'Nominal Dana')} (IDR)</TableHead>
-                                                <TableHead className="text-xs font-bold text-right py-3">{t('stocks.price', 'Harga Terakhir')} (IDR)</TableHead>
-                                                <TableHead className="text-xs font-bold text-right py-3">{t('result.lots_column', 'Estimasi Lot')}</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {Object.entries(profile.data.capital_allocation || {})
-                                                .sort((a, b) => b[1].weight_percent - a[1].weight_percent)
-                                                .map(([rawTicker, alloc], idx) => {
+                                <CardContent className="p-0">
+                                    <div className="overflow-x-auto w-full border-t border-border/40">
+                                        <Table className="min-w-[640px]">
+                                            <TableHeader className="bg-muted/30">
+                                                <TableRow>
+                                                    <TableHead className="text-xs font-bold py-3">{t('result.ticker_column', 'Emiten Saham')}</TableHead>
+                                                    <TableHead className="text-xs font-bold text-center py-3">{t('saham.exchange_label', 'Bursa')}</TableHead>
+                                                    <TableHead className="text-xs font-bold text-right py-3">{t('result.weight_column', 'Bobot Alokasi')} (%)</TableHead>
+                                                    <TableHead className="text-xs font-bold text-right py-3">
+                                                        {t('result.nominal_funds', 'Nominal Dana')} ({isUsMarket ? 'USD' : (language === 'en' ? 'IDR' : 'Rp')})
+                                                    </TableHead>
+                                                    <TableHead className="text-xs font-bold text-right py-3">
+                                                        {t('stocks.price', 'Harga Terakhir')} ({isUsMarket ? 'USD' : (language === 'en' ? 'IDR' : 'Rp')})
+                                                    </TableHead>
+                                                    <TableHead className="text-xs font-bold text-right py-3">
+                                                        {isUsMarket
+                                                            ? t('result.shares_column', 'Estimasi Lembar Saham')
+                                                            : t('result.lots_column', 'Estimasi Lot')}
+                                                    </TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {Object.entries(profileData.capital_allocation || {})
+                                                    .sort((a, b) => b[1].weight_percent - a[1].weight_percent)
+                                                    .map(([rawTicker, alloc], idx) => {
+                                                        const cleanTicker = rawTicker.replace('.JK', '');
+                                                        const stk = stocks[rawTicker] || stocks[cleanTicker];
+                                                        const lastClose = stk?.latest_price ? Number(stk.latest_price.close_price) : 0;
+                                                        const isNonIdx = stk?.bursa ? stk.bursa !== 'IDX' : (!rawTicker.endsWith('.JK') || isUsMarket);
+                                                        const lotEstimate = isNonIdx
+                                                            ? (lastClose > 0 ? Math.floor(alloc.nominal_idr / lastClose) : 0)
+                                                            : (profileData.lot_estimation?.[rawTicker] ??
+                                                               profileData.lot_estimation?.[cleanTicker] ??
+                                                               (lastClose > 0 ? Math.floor(alloc.nominal_idr / (lastClose * 100)) : 0));
+
+                                                        if (alloc.weight_percent <= 0.05) return null;
+
+                                                        return (
+                                                            <TableRow key={cleanTicker} className="hover:bg-muted/20">
+                                                                <TableCell className="py-3">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span
+                                                                            className="h-3 w-3 rounded-full shrink-0"
+                                                                            style={{ backgroundColor: COLORS[idx % COLORS.length] }}
+                                                                        />
+                                                                        <div>
+                                                                            <span className="font-mono font-bold text-sm text-foreground">
+                                                                                {cleanTicker}
+                                                                            </span>
+                                                                            <span className="text-xs text-muted-foreground block truncate max-w-xs">
+                                                                                {stk?.name || cleanTicker}
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </TableCell>
+
+                                                                <TableCell className="py-3 text-center">
+                                                                    <Badge
+                                                                        variant="outline"
+                                                                        className={`text-[9px] py-0 px-1 font-semibold ${
+                                                                            isNonIdx
+                                                                                ? 'border-purple-500/30 text-purple-600 bg-purple-500/5'
+                                                                                : 'border-blue-500/30 text-blue-600 bg-blue-500/5'
+                                                                            }`}
+                                                                    >
+                                                                        {stk?.bursa || (isNonIdx ? 'NASDAQ' : 'IDX')}
+                                                                    </Badge>
+                                                                </TableCell>
+
+                                                                <TableCell className="py-3 text-right font-mono font-bold text-xs text-primary">
+                                                                    {alloc.weight_percent.toFixed(2)}%
+                                                                </TableCell>
+
+                                                                <TableCell className="py-3 text-right font-mono font-bold text-xs text-foreground">
+                                                                    {formatCurrency(alloc.nominal_idr, stk?.bursa)}
+                                                                </TableCell>
+
+                                                                <TableCell className="py-3 text-right font-mono text-xs text-muted-foreground">
+                                                                    {lastClose > 0 ? formatCurrency(lastClose, stk?.bursa) : '-'}
+                                                                </TableCell>
+
+                                                                <TableCell className="py-3 text-right font-mono font-extrabold text-xs text-emerald-600 dark:text-emerald-400">
+                                                                    {lotEstimate > 0 ? `${lotEstimate.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')} ${shareOrLotUnit}` : '-'}
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        );
+                                                    })}
+                                            </TableBody>
+                                            {(() => {
+                                                const validAllocations = Object.entries(profileData.capital_allocation || {})
+                                                    .filter(([_, a]) => a.weight_percent > 0.05);
+
+                                                const totalWeight = validAllocations.reduce((sum, [_, a]) => sum + a.weight_percent, 0);
+                                                const totalNominal = validAllocations.reduce((sum, [_, a]) => sum + a.nominal_idr, 0);
+                                                const totalLots = validAllocations.reduce((sum, [rawTicker, a]) => {
                                                     const cleanTicker = rawTicker.replace('.JK', '');
                                                     const stk = stocks[rawTicker] || stocks[cleanTicker];
                                                     const lastClose = stk?.latest_price ? Number(stk.latest_price.close_price) : 0;
-                                                    const lotEstimate = lastClose > 0 ? Math.floor(alloc.nominal_idr / (lastClose * 100)) : 0;
+                                                    const isNonIdx = stk?.bursa ? stk.bursa !== 'IDX' : (!rawTicker.endsWith('.JK') || isUsMarket);
+                                                    const lotEst = isNonIdx
+                                                        ? (lastClose > 0 ? Math.floor(a.nominal_idr / lastClose) : 0)
+                                                        : (profileData.lot_estimation?.[rawTicker] ??
+                                                           profileData.lot_estimation?.[cleanTicker] ??
+                                                           (lastClose > 0 ? Math.floor(a.nominal_idr / (lastClose * 100)) : 0));
+                                                    return sum + lotEst;
+                                                }, 0);
 
-                                                    if (alloc.weight_percent <= 0.05) return null;
-
-                                                    return (
-                                                        <TableRow key={cleanTicker} className="hover:bg-muted/20">
-                                                            <TableCell className="py-3">
-                                                                <div className="flex items-center gap-2">
-                                                                    <span
-                                                                        className="h-3 w-3 rounded-full shrink-0"
-                                                                        style={{ backgroundColor: COLORS[idx % COLORS.length] }}
-                                                                    />
-                                                                    <div>
-                                                                        <span className="font-mono font-bold text-sm text-foreground">
-                                                                            {cleanTicker}
-                                                                        </span>
-                                                                        <span className="text-xs text-muted-foreground block truncate max-w-xs">
-                                                                            {stk?.name || cleanTicker}
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
+                                                return (
+                                                    <tfoot className="bg-muted/10 border-t border-border/50">
+                                                        <TableRow>
+                                                            <TableCell colSpan={2} className="py-3 font-bold text-center text-xs">
+                                                                {t('common.total', 'Total')}
                                                             </TableCell>
-
-                                                            <TableCell className="py-3 text-center">
-                                                                <Badge
-                                                                    variant="outline"
-                                                                    className={`text-[9px] py-0 px-1 font-semibold ${
-                                                                        stk?.bursa === 'NASDAQ'
-                                                                            ? 'border-purple-500/30 text-purple-600 bg-purple-500/5'
-                                                                            : 'border-blue-500/30 text-blue-600 bg-blue-500/5'
-                                                                        }`}
-                                                                >
-                                                                    {stk?.bursa || 'IDX'}
-                                                                </Badge>
+                                                            <TableCell className="py-3 font-mono font-bold text-right text-xs text-primary">
+                                                                {totalWeight.toFixed(2)}%
                                                             </TableCell>
-
-                                                            <TableCell className="py-3 text-right font-mono font-bold text-xs text-primary">
-                                                                {alloc.weight_percent.toFixed(2)}%
+                                                            <TableCell className="py-3 font-mono font-bold text-right text-xs text-foreground">
+                                                                {formatCurrency(totalNominal)}
                                                             </TableCell>
-
-                                                            <TableCell className="py-3 text-right font-mono font-bold text-xs text-foreground">
-                                                                {formatRupiah(alloc.nominal_idr)}
+                                                            <TableCell className="py-3 font-mono text-right text-xs text-muted-foreground">
+                                                                -
                                                             </TableCell>
-
-                                                            <TableCell className="py-3 text-right font-mono text-xs text-muted-foreground">
-                                                                {lastClose > 0 ? `${lastClose.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}` : '-'}
-                                                            </TableCell>
-
-                                                            <TableCell className="py-3 text-right font-mono font-extrabold text-xs text-emerald-600 dark:text-emerald-400">
-                                                                {lotEstimate > 0 ? `${lotEstimate.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')} ${t('result.lot_unit', 'Lot')}` : '-'}
+                                                            <TableCell className="py-3 font-mono font-extrabold text-right text-xs text-emerald-600 dark:text-emerald-400">
+                                                                {totalLots > 0 ? `${totalLots.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')} ${shareOrLotUnit}` : '-'}
                                                             </TableCell>
                                                         </TableRow>
-                                                    );
-                                                })}
-                                        </TableBody>
-                                        {(() => {
-                                            const validAllocations = Object.entries(profile.data.capital_allocation || {})
-                                                .filter(([_, a]) => a.weight_percent > 0.05);
-
-                                            const totalWeight = validAllocations.reduce((sum, [_, a]) => sum + a.weight_percent, 0);
-                                            const totalNominal = validAllocations.reduce((sum, [_, a]) => sum + a.nominal_idr, 0);
-                                            const totalLots = validAllocations.reduce((sum, [rawTicker, a]) => {
-                                                const cleanTicker = rawTicker.replace('.JK', '');
-                                                const stk = stocks[rawTicker] || stocks[cleanTicker];
-                                                const lastClose = stk?.latest_price ? Number(stk.latest_price.close_price) : 0;
-                                                const lotEst = lastClose > 0 ? Math.floor(a.nominal_idr / (lastClose * 100)) : 0;
-                                                return sum + lotEst;
-                                            }, 0);
-
-                                            return (
-                                                <tfoot className="bg-muted/10 border-t border-border/50">
-                                                    <TableRow>
-                                                        <TableCell colSpan={2} className="py-3 font-bold text-center text-xs">
-                                                            {t('common.total', 'Total')}
-                                                        </TableCell>
-                                                        <TableCell className="py-3 font-mono font-bold text-right text-xs text-primary">
-                                                            {totalWeight.toFixed(2)}%
-                                                        </TableCell>
-                                                        <TableCell className="py-3 font-mono font-bold text-right text-xs text-foreground">
-                                                            {formatRupiah(totalNominal)}
-                                                        </TableCell>
-                                                        <TableCell className="py-3 font-mono text-right text-xs text-muted-foreground">
-                                                            -
-                                                        </TableCell>
-                                                        <TableCell className="py-3 font-mono font-extrabold text-right text-xs text-emerald-600 dark:text-emerald-400">
-                                                            {totalLots > 0 ? `${totalLots.toLocaleString(language === 'en' ? 'en-US' : 'id-ID')} ${t('result.lot_unit', 'Lot')}` : '-'}
-                                                        </TableCell>
-                                                    </TableRow>
-                                                </tfoot>
-                                            );
-                                        })()}
-                                    </Table>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
+                                                    </tfoot>
+                                                );
+                                            })()}
+                                        </Table>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        );
+                    })}
                 </div>
 
                 {/* 5. TABEL ANALISIS KUANTIL 5-POINTS (SHARPE, SORTINO, OMEGA) */}

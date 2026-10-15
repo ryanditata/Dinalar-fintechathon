@@ -172,11 +172,20 @@ export default function UserDashboard({
     const greeting = getGreetingInfo();
     const GreetingIcon = greeting.icon;
 
-    // Helper format Rupiah / Angka sesuai bahasa
-    const formatRupiah = (val: number | string | null | undefined) => {
+    // Helper format harga saham sesuai bursa (pure angka: non-IDX desimal titik en-US, IDX pemisah ribuan titik id-ID)
+    const formatStockPrice = (val: number | string | null | undefined, bursa?: string | null) => {
         if (val === null || val === undefined || isNaN(Number(val))) return '-';
-        return `${Number(val).toLocaleString(language === 'en' ? 'en-US' : 'id-ID')}`;
+        const num = Number(val);
+        const isUsMarket = bursa ? bursa !== 'IDX' : false;
+        if (isUsMarket) {
+            const hasDecimals = num % 1 !== 0;
+            return num.toLocaleString('en-US', { minimumFractionDigits: hasDecimals ? 2 : 0, maximumFractionDigits: 2 });
+        }
+        return num.toLocaleString('id-ID');
     };
+
+    // Helper format Rupiah / Angka backward compatibility
+    const formatRupiah = (val: number | string | null | undefined, bursa?: string | null) => formatStockPrice(val, bursa);
 
     // Format Percentage
     const formatPercent = (val: number | null | undefined) => {
@@ -382,7 +391,7 @@ export default function UserDashboard({
                                             <div className="flex items-end justify-between pt-1">
                                                 <div>
                                                     <span className="font-mono font-extrabold text-sm text-foreground block">
-                                                        {lastPrice > 0 ? formatRupiah(lastPrice) : '-'}
+                                                        {lastPrice > 0 ? formatStockPrice(lastPrice, stock.bursa) : '-'}
                                                     </span>
                                                     {stock.change_percent !== null && stock.change_percent !== undefined && (
                                                         <span

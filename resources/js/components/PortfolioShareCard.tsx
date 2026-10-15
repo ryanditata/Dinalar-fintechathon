@@ -66,10 +66,11 @@ const PALETTE = [
 
 // Helper format Rupiah / Currency
 const formatIdr = (val: number | string | null | undefined, lang: string = 'id', isUs: boolean = false) => {
-    if (val === null || val === undefined || isNaN(Number(val))) return isUs ? '$0' : (lang === 'en' ? 'IDR 0' : 'Rp 0');
+    if (val === null || val === undefined || isNaN(Number(val))) return isUs ? '$ 0' : (lang === 'en' ? 'IDR 0' : 'Rp 0');
     const num = Number(val);
     if (isUs) {
-        return `$${num.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
+        const hasDecimals = num % 1 !== 0;
+        return `$ ${num.toLocaleString('en-US', { minimumFractionDigits: hasDecimals ? 2 : 0, maximumFractionDigits: 2 })}`;
     }
     const prefix = lang === 'en' ? 'IDR' : 'Rp';
     return `${prefix} ${num.toLocaleString('id-ID')}`;
