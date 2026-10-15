@@ -1,0 +1,61 @@
+name: Deploy Dinalar to cPanel
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Ambil kode dari branch production
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Setup Node.js untuk kompilasi Vite/React
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # 3. Build aset React Inertia
+      - name: Install Dependencies & Build Frontend
+        env:
+          VITE_APP_NAME: 'Dinalar'
+        run: |
+          npm ci
+          npm run build
+
+      # 4. Kirim Core Laravel ke folder /production/
+      - name: Deploy Core Laravel to /production
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: 103.230.246.131
+          username: kyjurutw
+          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+          port: 2321
+          protocol: ftps
+          timeout: 120000
+          server-dir: /production/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            .env
+            tests/**
+
+      # 5. Kirim Folder Build React langsung ke /public_html/build/
+      - name: Deploy Frontend Assets to /public_html/build
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: 103.230.246.131
+          username: kyjurutw
+          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+          port: 2321
+          protocol: ftps
+          timeout: 120000
+          local-dir: ./public/build/
+          server-dir: /public_html/build/

@@ -61,7 +61,7 @@ export function MobileAuthLayout({
                         <Link href="/" className="flex items-center gap-2 group active:scale-98 transition-transform">
                             <div className="size-8 rounded-xl bg-white border border-zinc-200/80 shadow-2xs flex items-center justify-center p-1 overflow-hidden">
                                 <img
-                                    src="/images/newLogo.png?v=4"
+                                    src="/images/newLogo.png?v=5"
                                     alt="Dinalar Logo"
                                     className="w-full h-full object-contain"
                                 />

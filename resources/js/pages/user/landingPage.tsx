@@ -290,7 +290,7 @@ export default function LandingPage() {
                     <div className="flex items-center">
                         <Link href="/" className="flex items-center gap-3 group">
                             <img
-                                src="/images/newLogo.png?v=4"
+                                src="/images/newLogo.png?v=5"
                                 alt="Dinalar Logo"
                                 className="h-9 w-auto object-contain"
                             />
@@ -1169,7 +1169,7 @@ export default function LandingPage() {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                         {/* Col 1: Brand info */}
                         <div className="space-y-4 md:col-span-1">
-                            <img src="/images/newLogo.png?v=4" alt="Dinalar Logo" className="h-9 w-auto object-contain" />
+                            <img src="/images/newLogo.png?v=5" alt="Dinalar Logo" className="h-9 w-auto object-contain" />
                             <p className="text-white/50 text-xs leading-relaxed">
                                 {t('landing.footer.brand_desc', 'Platform optimasi portofolio saham berbasis Artificial Intelligence. Maksimalkan return dan kendalikan risiko saham pilihan Anda.')}
                             </p>

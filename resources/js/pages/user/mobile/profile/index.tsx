@@ -194,7 +194,7 @@ export default function MobileProfilePage() {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2.5">
                                 <img
-                                    src="/images/newLogo.png?v=4"
+                                    src="/images/newLogo.png?v=5"
                                     alt="Dinalar Logo"
                                     className="h-7 w-auto object-contain"
                                 />
