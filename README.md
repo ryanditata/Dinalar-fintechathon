@@ -1,5 +1,9 @@
 # 📈 Dinalar - AI Stock Portfolio Optimization Platform (Fintechathon)
 
+<img width="3064" height="1760" alt="Macbook-Air-dinalar my id" src="https://github.com/user-attachments/assets/1a9691e0-9fe1-409a-9bc1-a622781d978f" /> <img width="960" height="1954" alt="iPhone-14-PRO-MAX-dinalar my id" src="https://github.com/user-attachments/assets/2a504d60-b857-4759-8b6b-2121408137fd" />
+
+
+
 🌐 **Live Platform:** [https://dinalar.my.id](https://dinalar.my.id)
 
 > **Dinalar** (Digital Investment Analysis for Literacy and Rationality) is a modern stock portfolio analysis and optimization platform powered by **Modern Portfolio Theory (MPT / Markowitz Mean-Variance Optimization)**. Engineered for both Indonesian capital market investors (**IDX**) and global exchange investors (**NASDAQ / NYSE**), the platform provides interactive simulations, quantitative risk metrics, real-world discrete lot sizing, automated PDF report generation, and an adaptive interface for both Desktop Web and Mobile Android (via Capacitor).
