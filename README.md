@@ -1,58 +1,66 @@
-# 📈 Dinalar - Smart Portfolio Optimizer (Fintechathon)
+# 📈 Dinalar - AI Stock Portfolio Optimization Platform (Fintechathon)
 
-> **Dinalar** (Dinamika Alokasi Aset Cerdas) adalah platform analisis dan optimasi portofolio investasi saham modern berbasis **Modern Portfolio Theory (MPT / Markowitz Mean-Variance Optimization)**. Platform ini dirancang untuk investor pasar modal Indonesia (**IDX**) maupun bursa global (**NASDAQ / NYSE**), dilengkapi simulasi interaktif, kalkulasi metrik risiko kuantitatif, alokasi lot/lembar riil, export laporan PDF, serta antarmuka adaptif untuk Web Desktop dan Mobile Android (Capacitor).
+🌐 **Live Platform:** [https://dinalar.my.id](https://dinalar.my.id)
+
+> **Dinalar** (Digital Investment Analysis for Literacy and Rationality) is a modern stock portfolio analysis and optimization platform powered by **Modern Portfolio Theory (MPT / Markowitz Mean-Variance Optimization)**. Engineered for both Indonesian capital market investors (**IDX**) and global exchange investors (**NASDAQ / NYSE**), the platform provides interactive simulations, quantitative risk metrics, real-world discrete lot sizing, automated PDF report generation, and an adaptive interface for both Desktop Web and Mobile Android (via Capacitor).
 
 ---
 
-## 🌟 Fitur Utama
+## 🌟 Key Features
 
 ### 1. 🧮 Portfolio Optimization Engine (Modern Portfolio Theory)
-- **Mean-Variance Optimization (Markowitz)**: Menentukan alokasi aset paling efisien untuk memaksimalkan return pada tingkat risiko tertentu.
-- **Dua Profil Portofolio Rekomendasi**:
-  - **Max Sharpe Ratio (Tangency Portfolio)**: Alokasi bobot optimal yang memaksimalkan imbal hasil per unit risiko di atas *risk-free rate*.
-  - **Minimum Volatility Portfolio**: Alokasi defensif dengan volatilitas/risiko terendah.
-- **Efficient Frontier & Monte Carlo Simulation**: Visualisasi kurva batas efisien yang memetakan ribuan simulasi kombinasi bobot portofolio beserta aset individual.
-- **Metrik Risiko Kuantitatif Lengkap**:
-  - *Expected Annual Return* & *Annualized Volatility*
-  - *Sharpe Ratio*, *Sortino Ratio*, & *Omega Ratio*
-  - *Value at Risk (VaR 95%)* & *Conditional VaR (CVaR / Expected Shortfall 95%)*
-  - *Maximum Drawdown* & Matriks Korelasi / Kovarians antar saham.
-- **Kalkulasi Alokasi Lot Riil (Discrete Allocation)**:
-  - Pembagian modal investasi ke dalam satuan lot saham (100 lembar untuk bursa IDX, 1 lembar untuk bursa NASDAQ/NYSE).
-  - Perhitungan sisa dana (*cash leftover*) dan rekapitulasi modal riil terpakai.
+
+- **Mean-Variance Optimization (Markowitz)**: Identifies the most efficient asset allocation to maximize expected return for a targeted level of risk.
+- **Two Recommended Portfolio Profiles**:
+    - **Max Sharpe Ratio (Tangency Portfolio)**: Optimal asset weight allocation maximizing excess return per unit of volatility above the _risk-free rate_.
+    - **Minimum Volatility Portfolio**: Defensive allocation engineered to achieve the lowest possible portfolio variance and risk.
+- **Efficient Frontier & Monte Carlo Simulation**: Interactive visualization of the optimal boundary mapping thousands of simulated portfolio weight combinations alongside individual assets.
+- **Comprehensive Quantitative Risk Metrics**:
+    - _Expected Annual Return_ & _Annualized Volatility_
+    - _Sharpe Ratio_, _Sortino Ratio_, & _Omega Ratio_
+    - _Value at Risk (VaR 95%)_ & _Conditional VaR (CVaR / Expected Shortfall 95%)_
+    - _Maximum Drawdown_ & Inter-asset Correlation/Covariance Matrices.
+- **Discrete Lot Allocation Engine**:
+    - Converts theoretical continuous percentage weights into actionable round lots (100 shares per lot for the Indonesia Stock Exchange / IDX, 1 share per unit for US exchanges NASDAQ/NYSE).
+    - Automatically calculates cash leftover and net deployed capital.
 
 ### 2. 🌍 Multi-Exchange & Multi-Currency Support
-- Mendukung emiten saham bursa efek Indonesia (**IDX**) dan bursa saham global (**NASDAQ / NYSE**).
-- Format mata uang dan penomoran otomatis (**IDR / Rp** untuk IDX dan **$ USD** untuk non-IDX).
-- Pilihan horison waktu analisis yang fleksibel: **1D, 5D, 1M, 3M, 6M, 1Y, 3Y, 5Y**, hingga **All** (seluruh data historis).
-- Parameter suku bunga bebas risiko (*Risk-Free Rate*) yang dapat dikustomisasi (acuan SBN / BI-Rate / US Treasury Yield).
 
-### 3. 📱 Dual View Adaptive UI (Desktop Web & Mobile Hybrid / Android)
-- **Automatic Device View Resolver**: Sistem otomatis mendeteksi perangkat untuk menyajikan tampilan khusus mobile (*app-like bottom bar, swipeable sheets*) atau desktop (*comprehensive multi-column dashboard*).
-- **Capacitor Mobile Ready**: Sudah terkonfigurasi dengan Capacitor (`@capacitor/android`) untuk deployment ke aplikasi native Android APK.
-- **Bilingual (Multi-Bahasa)**: Dukungan penuh Bahasa Indonesia (ID) dan Bahasa Inggris (EN) dengan *real-time language switcher*.
-- **Modern Dark & Light Mode**: Desain elegan bernuansa fintech dengan tema gelap, terang, atau mengikuti sistem operasi.
+- Supports both Indonesia Stock Exchange (**IDX**) equities and global US equities (**NASDAQ / NYSE**).
+- Automated currency formatting and number localization (**IDR / Rp** for IDX and **USD / $** for US exchanges).
+- Flexible analysis timeframe horizons: **1D, 5D, 1M, 3M, 6M, 1Y, 3Y, 5Y**, and **All** (complete available historical data).
+- Configurable Risk-Free Rate (_$R_f$_) benchmarked against Indonesian Sovereign Bonds (SBN), Bank Indonesia BI-Rate, or US Treasury Yields.
 
-### 4. 📊 Data Scraper & Pipeline Saham Otomatis
-- **Yahoo Finance Integration**: Pengambilan data harga saham harian otomatis (*open, high, low, close, volume*).
-- **Artisan CLI Pipeline**: Perintah terjadwal (`php artisan stocks:fetch-daily`) untuk sinkronisasi harga emiten aktif secara berkala.
-- **Scraper & Export Excel**: Kemudahan bagi admin untuk men-scrape data historis emiten dan mengunduhnya dalam format Microsoft Excel (`.xlsx`).
-- **Bulk Stock Import**: Kemudahan impor daftar emiten saham melalui file Excel/CSV.
+### 3. 📱 Dual-View Adaptive UI (Desktop Web & Mobile Hybrid / Android)
 
-### 5. 🔗 Kolaborasi & Pelaporan
-- **Public Shareable Portfolio Link**: Buat tautan publik berbasis token unik (`/shared/portfolio/{token}`) agar hasil optimasi dapat dibagikan kepada rekan atau klien tanpa memerlukan login.
-- **Export Laporan PDF Resmi**: Pembuatan dokumen laporan analisis portofolio komprehensif dalam satu klik (*Executive Summary, Alokasi Bobot, Analisis Risiko, Tabel Pembelian Lot*).
-- **Riwayat Optimasi Portofolio**: Riwayat optimasi tersimpan di akun pengguna untuk evaluasi performa portofolio dari waktu ke waktu.
+- **Automatic Device View Resolver**: Context-aware runtime resolver that dynamically serves dedicated mobile views (_app-like bottom navigation, swipeable sheets_) or comprehensive desktop dashboards (_multi-column tables, multi-metric modals_).
+- **Capacitor Mobile Ready**: Fully pre-configured with Capacitor (`@capacitor/android`) for direct compilation into a native Android APK.
+- **Bilingual Support (Multi-Language)**: Native support for both Indonesian (ID) and English (EN) with a real-time language switcher.
+- **Modern Dark & Light Mode**: Premium fintech-grade aesthetic supporting Dark Mode, Light Mode, and system preferences.
+
+### 4. 📊 Automated Stock Pipeline & Data Ingestion
+
+- **Yahoo Finance Integration**: Automated daily closing price data fetching (_Open, High, Low, Close, Volume_).
+- **Artisan CLI Pipeline**: Scheduled console command (`php artisan stocks:fetch-daily`) with rate-limiting for automated price synchronization.
+- **Scraper & Excel Export**: Administrative tools to scrape historical ticker data and export datasets directly to Microsoft Excel (`.xlsx`).
+- **Bulk Stock Import**: Easy catalog expansion through Excel/CSV bulk import.
+
+### 5. 🔗 Collaboration & Reporting
+
+- **Public Shareable Portfolio Link**: Generates a secure, cryptographically random tokenized URL (`/shared/portfolio/{token}`) to share optimization results with clients or peers without requiring authentication.
+- **Official PDF Report Generator**: Generates comprehensive multi-page investment advisory reports in a single click (_Executive Summary, Weight Allocation, Risk Analysis, Discrete Lot Purchase Table, Regulatory Disclaimers_).
+- **Persistent Optimization History**: Saves historical analyses to the user's account for longitudinal portfolio tracking and performance evaluation.
 
 ### 6. 🛡️ Admin Management & Back-Office
-- **Admin Dashboard**: Statistik platform, jumlah pengguna online, total emiten aktif, dan metrik optimasi harian.
-- **Stock Management**: Manajemen master data saham, aktivasi/deaktivasi emiten, dan riwayat pergerakan harga.
-- **User Management**: Manajemen akun dan hak akses pengguna (*Admin / Regular User*).
-- **Optimization Log & Audit**: Pemantauan histori analisis seluruh pengguna dengan fitur ekspor rekap data ke Excel.
+
+- **Admin Dashboard**: Real-time platform telemetry, active user tracking, total active tickers, and daily optimization frequency.
+- **Stock Management**: Centralized equity master data management, ticker activation toggles, and historical price audits.
+- **User Management**: Role-based access control (RBAC) and user account administration (_Admin / Regular User_).
+- **Optimization Audit Logs**: Comprehensive historical log monitoring across all platform users with one-click Excel export.
 
 ---
 
-## 🏗️ Arsitektur & Teknologi
+## 🏗️ Architecture & Technology Stack
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -78,103 +86,106 @@
         └───────────────────────────────────────────┘
 ```
 
-### Stack Detail
+### Detailed Stack
+
 - **Backend**: [Laravel 12](https://laravel.com), PHP 8.2+, [Inertia.js v2](https://inertiajs.com)
 - **Frontend**: [React 19](https://react.dev), [TypeScript](https://www.typescriptlang.org), [Tailwind CSS v4](https://tailwindcss.com)
 - **UI Components & Charts**: [Radix UI](https://www.radix-ui.com), [Lucide React](https://lucide.dev), [Recharts](https://recharts.org), [Framer Motion](https://www.framer.com/motion/)
 - **Mobile Container**: [Capacitor 7/8](https://capacitorjs.com) (Android SDK)
-- **Data Engine**: Python 3 (Flask, SciPy, NumPy, Pandas, Gunicorn)
-- **Export Tools**: [jsPDF](https://github.com/parallax/jsPDF), [jsPDF-AutoTable](https://github.com/simonbengtsson/jsPDF-AutoTable), [PhpSpreadsheet](https://phpspreadsheet.readthedocs.io/)
+- **Quantitative Engine**: Python 3 (Flask, SciPy, NumPy, Pandas, Gunicorn)
+- **Export & Utility Tools**: [jsPDF](https://github.com/parallax/jsPDF), [jsPDF-AutoTable](https://github.com/simonbengtsson/jsPDF-AutoTable), [PhpSpreadsheet](https://phpspreadsheet.readthedocs.io/)
 
 ---
 
-## 📁 Struktur Direktori
+## 📁 Directory Structure
 
 ```
 Dinalar/
 ├── app/
 │   ├── Console/Commands/       # Artisan commands (stocks:fetch-daily)
 │   ├── Http/Controllers/
-│   │   ├── Admin/              # Dashboard, Saham, Scraper, Users, History
+│   │   ├── Admin/              # Dashboard, Stocks, Scraper, Users, History
 │   │   ├── Auth/               # Login, Register, Google OAuth 2.0
-│   │   └── User/               # Portfolio, Saham, UserDashboard
+│   │   └── User/               # Portfolio, Stocks, UserDashboard
 │   ├── Models/                 # Stock, StockPrice, UserBasket, PortfolioOptimization, User
-│   └── Services/               # DeviceViewResolver (Deteksi Web Desktop vs Mobile Native)
+│   └── Services/               # DeviceViewResolver (Desktop Web vs Native Mobile detection)
 ├── database/
-│   ├── migrations/             # Skema tabel database
-│   └── seeders/                # Database seeders (Admin & Dummy data)
+│   ├── migrations/             # Database schema migrations
+│   └── seeders/                # Database seeders (Admin & Seed data)
 ├── model/                      # Python Portfolio Optimizer Engine
 │   ├── app.py                  # Flask microservice API endpoint (/optimize)
-│   ├── optimize_portfolio.py   # MPT Markowitz, SLSQP optimizer, Monte Carlo
-│   └── requirements.txt        # Dependensi Python
+│   ├── optimize_portfolio.py   # MPT Markowitz, SLSQP optimizer, Monte Carlo, NSGA-II
+│   └── requirements.txt        # Python package dependencies
 ├── resources/
 │   ├── js/
-│   │   ├── components/         # Komponen UI bersama (Modals, Charts, Header, Sidebar)
-│   │   ├── i18n/               # Language Context & Kamus Terjemahan (ID & EN)
+│   │   ├── components/         # Shared UI components (Modals, Charts, Header, Sidebar)
+│   │   ├── i18n/               # Language Context & Localization dictionaries (ID & EN)
 │   │   ├── pages/
-│   │   │   ├── admin/          # Tampilan Back-office Admin
-│   │   │   ├── auth/           # Halaman Login, Register, Password Reset
-│   │   │   └── user/           # Tampilan Pengguna
-│   │   │       ├── analyze/    # Halaman Keranjang, Hasil Optimasi, Riwayat
-│   │   │       ├── dashboard/  # Dashboard Pengguna
-│   │   │       ├── mobile/     # Tampilan Khusus Mobile / Capacitor App
-│   │   │       └── saham/      # Katalog Saham & Analisis Historis
+│   │   │   ├── admin/          # Admin back-office views
+│   │   │   ├── auth/           # Login, Register, Password Reset pages
+│   │   │   └── user/           # User client views
+│   │   │       ├── analyze/    # Basket, Optimization Results, History pages
+│   │   │       ├── dashboard/  # User Dashboard
+│   │   │       ├── mobile/     # Dedicated Mobile / Capacitor App views
+│   │   │       └── saham/      # Stock Catalog & Historical Analysis views
 │   │   └── types/              # TypeScript interface definitions
-│   └── css/                    # Tailwind CSS v4 styling
+│   └── css/                    # Tailwind CSS v4 stylesheets
 ├── routes/
-│   ├── web.php                 # Route aplikasi utama, user, dan admin
-│   └── auth.php                # Route autentikasi & Google Socialite
-├── capacitor.config.ts         # Konfigurasi Capacitor untuk Android
-└── vite.config.ts              # Konfigurasi bundling Vite
+│   ├── web.php                 # Core application, user, and admin routing
+│   └── auth.php                # Authentication & Google Socialite routes
+├── capacitor.config.ts         # Capacitor Android container configuration
+└── vite.config.ts              # Vite asset bundling configuration
 ```
 
 ---
 
-## 🚀 Panduan Instalasi & Menjalankan Project
+## 🚀 Installation & Getting Started
 
-### 1. Prasyarat Sistem
-Pastikan perangkat Anda telah terpasang:
-- **PHP** >= 8.2 dengan ekstensi `pdo`, `mbstring`, `openssl`, `curl`, `gd`, `zip`
+### 1. System Prerequisites
+
+Ensure the following tools are installed on your machine:
+
+- **PHP** >= 8.2 with extensions: `pdo`, `mbstring`, `openssl`, `curl`, `gd`, `zip`
 - **Composer** (v2.x)
-- **Node.js** >= 18.x dan **NPM**
-- **Python** >= 3.9 dan **pip**
-- **MySQL** atau **SQLite**
+- **Node.js** >= 18.x and **NPM**
+- **Python** >= 3.9 and **pip**
+- **MySQL** or **SQLite**
 
 ---
 
-### 2. Kloning Repository & Instalasi Dependensi
+### 2. Clone Repository & Install Dependencies
 
 ```bash
-# 1. Clone repository
+# 1. Clone the repository
 git clone https://github.com/ryanditata/Dinalar-fintechathon.git
 cd Dinalar-fintechathon
 
-# 2. Install dependensi PHP (Composer)
+# 2. Install PHP backend dependencies (Composer)
 composer install
 
-# 3. Install dependensi JavaScript/React (NPM)
+# 3. Install JavaScript / React frontend dependencies (NPM)
 npm install
 ```
 
 ---
 
-### 3. Konfigurasi Environment (`.env`)
+### 3. Environment Configuration (`.env`)
 
-Salin file contoh konfigurasi dan buat application key:
+Copy the example environment file and generate the application encryption key:
 
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-Sesuaikan parameter database dan URL pada file `.env`:
+Configure your database connection and optimization engine parameters in `.env`:
 
 ```env
 APP_NAME=Dinalar
 APP_ENV=local
 APP_URL=http://localhost:8000
 
-# Konfigurasi Database (Contoh MySQL)
+# Database Configuration (Example for MySQL)
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
@@ -182,119 +193,120 @@ DB_DATABASE=dinalar
 DB_USERNAME=root
 DB_PASSWORD=
 
-# Atau gunakan SQLite jika ingin cepat tanpa MySQL:
+# Alternatively, use SQLite for zero-configuration setup:
 # DB_CONNECTION=sqlite
 
-# Konfigurasi Engine Optimasi Python (Pilih salah satu)
-# Opsi A: Menggunakan microservice cloud PythonAnywhere (Default)
+# Python Optimization Engine Endpoint (Select one)
+# Option A: PythonAnywhere Cloud Microservice (Default, ready-to-use)
 PYTHON_API_URL=https://ryanditata.pythonanywhere.com/optimize
 
-# Opsi B: Menggunakan service lokal Flask
+# Option B: Local Flask microservice
 # PYTHON_API_URL=http://127.0.0.1:10000/optimize
 ```
 
 ---
 
-### 4. Setup Database & Seed Data
+### 4. Database Migration & Seeding
 
-Jalankan migrasi database dan pengisian akun admin default:
+Execute the schema migrations and seed the default administrator account:
 
 ```bash
 php artisan migrate --seed
 ```
 
-> **Akun Admin Default:**
+> **Default Administrator Credentials:**
+>
 > - **Email**: `admin@example.com`
 > - **Password**: `password`
 
 ---
 
-### 5. Menjalankan Engine Optimasi Python (Opsional jika menjalankan lokal)
+### 5. Running the Python Optimization Engine (Optional for Local Execution)
 
-Jika Anda ingin menjalankan kalkulasi optimasi Python secara lokal di komputer Anda:
+If you prefer to run the mathematical optimization engine locally:
 
 ```bash
-# Masuk ke direktori model
+# Navigate to the model directory
 cd model
 
-# Install dependensi Python
+# Install Python dependencies
 pip install -r requirements.txt
 
-# Jalankan server Flask (port 10000)
+# Start the Flask microservice server (port 10000)
 python app.py
 ```
 
 ---
 
-### 6. Sinkronisasi Data Saham Awal
+### 6. Initial Stock Data Synchronization
 
-Untuk mengisi data harga historis saham IDX dan NASDAQ dari Yahoo Finance:
+Populate historical price data for IDX and NASDAQ tickers from Yahoo Finance:
 
 ```bash
-# Fetch data harga saham aktif
+# Fetch daily closing prices for all active tickers
 php artisan stocks:fetch-daily
 ```
 
 ---
 
-### 7. Menjalankan Server Aplikasi
+### 7. Starting the Development Servers
 
-Buka dua jendela terminal untuk menjalankan web server dan compiler aset:
+Open two terminal windows to run the web server and the frontend asset compiler simultaneously:
 
 ```bash
-# Terminal 1: Jalankan Web Server Laravel
+# Terminal 1: Run the Laravel Development Web Server
 php artisan serve
 
-# Terminal 2: Jalankan Vite Dev Server (Hot Module Replacement)
+# Terminal 2: Run the Vite Development Server (Hot Module Replacement)
 npm run dev
 ```
 
-Buka browser dan akses aplikasi di: **`http://localhost:8000`**
+Open your browser and navigate to: **`http://localhost:8000`**
 
 ---
 
-## 📱 Menjalankan Aplikasi Mobile (Capacitor Android)
+## 📱 Running the Mobile Application (Capacitor Android)
 
-Project ini siap di-build menjadi aplikasi Android native menggunakan Capacitor:
+This repository is fully configured for compilation into a native Android application:
 
 ```bash
-# 1. Build aset frontend produksi
+# 1. Build the production frontend assets
 npm run build
 
-# 2. Sinkronkan aset ke folder Android Capacitor
+# 2. Synchronize web assets to the Android Capacitor container
 npx cap sync android
 
-# 3. Buka project di Android Studio untuk menjalankan emulator / build APK
+# 3. Open the project in Android Studio to launch the emulator or build the APK
 npx cap open android
 ```
 
 ---
 
-## 🛠️ Perintah CLI Berguna
+## 🛠️ Helpful CLI Commands
 
-| Perintah | Deskripsi |
-| :--- | :--- |
-| `php artisan stocks:fetch-daily` | Mengambil harga penutupan harian terbaru untuk seluruh saham aktif |
-| `php artisan stocks:fetch-daily --ticker=BBCA.JK` | Mengambil data harga saham untuk emiten spesifik |
-| `php artisan stocks:fetch-daily --bursa=IDX` | Mengambil data harga saham khusus bursa tertentu (IDX / NASDAQ) |
-| `npm run dev` | Menjalankan Vite development server dengan HMR |
-| `npm run build` | Melakukan compile dan bundle aset untuk produksi |
-| `npm run types` | Menjalankan pengecekan tipe data TypeScript (`tsc --noEmit`) |
-| `npm run format` | Memformat kode frontend menggunakan Prettier & Tailwind plugin |
-| `npm run lint` | Menjalankan audit linter ESLint |
-| `npx cap sync android` | Sinkronisasi perubahan frontend ke project native Android |
-
----
-
-## 🔒 Hak Akses & Akun Bawaan
-
-| Role | Akses & Wewenang |
-| :--- | :--- |
-| **Admin** | Akses ke seluruh menu back-office (`/admin`), manajemen user, impor data saham, live scraper harga Yahoo Finance, audit riwayat optimasi global. |
-| **User** | Akses ke katalog saham, keranjang analisis portofolio, simulasi MPT Markowitz, riwayat optimasi pribadi, generator laporan PDF, dan tautan share publik. |
+| Command                                           | Description                                                            |
+| :------------------------------------------------ | :--------------------------------------------------------------------- |
+| `php artisan stocks:fetch-daily`                  | Fetches the latest daily closing prices for all active equities        |
+| `php artisan stocks:fetch-daily --ticker=BBCA.JK` | Fetches historical price data for a specific ticker                    |
+| `php artisan stocks:fetch-daily --bursa=IDX`      | Fetches historical prices filtered by exchange (IDX / NASDAQ)          |
+| `npm run dev`                                     | Launches the Vite development server with Hot Module Replacement (HMR) |
+| `npm run build`                                   | Compiles and bundles production frontend assets                        |
+| `npm run types`                                   | Executes TypeScript type checking (`tsc --noEmit`)                     |
+| `npm run format`                                  | Formats frontend code using Prettier with Tailwind CSS sorting plugin  |
+| `npm run lint`                                    | Runs ESLint code style and quality audits                              |
+| `npx cap sync android`                            | Synchronizes frontend build outputs to the native Android project      |
 
 ---
 
-## 📄 Lisensi
+## 🔒 Roles & Access Control
 
-Project ini dikembangkan sebagai karya inovasi untuk kompetisi **Fintechathon** dan dilindungi di bawah lisensi [MIT License](LICENSE).
+| Role      | Permissions & Scope                                                                                                                                                   |
+| :-------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Admin** | Unrestricted access to the administration back-office (`/admin`), user management, stock import, real-time Yahoo Finance scraper, and global optimization audit logs. |
+| **User**  | Access to equity exploration, persistent portfolio basket, MPT Markowitz optimization engine, personal history, PDF report generation, and public share links.        |
+
+---
+
+## 📄 License
+
+This project was developed as an innovation entry for the **Fintechathon** competition and is licensed under the [MIT License](LICENSE).
