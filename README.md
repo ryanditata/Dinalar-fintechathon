@@ -201,7 +201,7 @@ DB_PASSWORD=
 
 # Python Optimization Engine Endpoint (Select one)
 # Option A: PythonAnywhere Cloud Microservice (Default, ready-to-use)
-PYTHON_API_URL=https://ryanditata.pythonanywhere.com/optimize
+PYTHON_API_URL=
 
 # Option B: Local Flask microservice
 # PYTHON_API_URL=http://127.0.0.1:10000/optimize
